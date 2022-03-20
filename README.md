@@ -73,6 +73,8 @@ TBD
 
 ## Dock and Switcher replacement
 
+It is not my intention to hate the Dock here, but... Let's get rid of it 😄.
+
 There is no option to hide the Dock completely, so it's required to tweak its auto-hide configuration.
 
 1. In macOS _System Preferences_ → _Dock & Menu Bar_ enable _Automatically hide and show the Dock_.
