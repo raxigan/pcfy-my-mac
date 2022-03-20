@@ -1,0 +1,45 @@
+<keymap version="1" name="XWin IntelliJ" parent="Default for XWin">
+  <action id="ActivateDebugToolWindow" />
+  <action id="ActivateProblemsViewToolWindow" />
+  <action id="Arrangement.Alias.Rule.Add" />
+  <action id="Arrangement.Rule.Add" />
+  <action id="Diff.NextChange" />
+  <action id="Diff.PrevChange" />
+  <action id="Generate">
+    <keyboard-shortcut first-keystroke="alt help" />
+  </action>
+  <action id="GotoImplementation">
+    <keyboard-shortcut first-keystroke="ctrl alt b" />
+    <mouse-shortcut keystroke="control alt button1" />
+    <keyboard-shortcut first-keystroke="meta alt b" />
+  </action>
+  <action id="IntroduceVariable">
+    <keyboard-shortcut first-keystroke="ctrl alt v" />
+    <keyboard-shortcut first-keystroke="ctrl meta v" />
+  </action>
+  <action id="NewElement">
+    <keyboard-shortcut first-keystroke="alt help" />
+  </action>
+  <action id="NextEditorTab" />
+  <action id="PreviousEditorTab" />
+  <action id="RunToCursor">
+    <keyboard-shortcut first-keystroke="alt f9" />
+  </action>
+  <action id="ServiceView.AddService" />
+  <action id="ShowUsages">
+    <keyboard-shortcut first-keystroke="ctrl alt f7" />
+  </action>
+  <action id="Uml.NewElement" />
+  <action id="Vcs.QuickListPopupAction">
+    <keyboard-shortcut first-keystroke="alt back_quote" />
+    <keyboard-shortcut first-keystroke="alt #10000a7" />
+  </action>
+  <action id="Vcs.UpdateProject">
+    <keyboard-shortcut first-keystroke="ctrl t" />
+    <keyboard-shortcut first-keystroke="meta t" />
+  </action>
+  <action id="openAssertEqualsDiff">
+    <keyboard-shortcut first-keystroke="ctrl d" />
+    <keyboard-shortcut first-keystroke="alt 6" />
+  </action>
+</keymap>
