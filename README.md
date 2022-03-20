@@ -44,12 +44,11 @@ What you can get:
 >Karabiner-Elements stores rules in under `~/.config/karabiner/assets/complex_modifications` path. To tweak
 > the rules update the json files there and enable the rules in _Complex modifications_ tab.
 
->Bear in mind that many of the configured shortcuts may clash with the system ones, so you may need to disable some of them in the system.
+>Bear in mind that many of the configured shortcuts may clash with the system ones, so you may need to disable some of them in the _System Preferences_.
 
 >Rules order is important, remember about it about tweaking the existing ones and adding your own. 
 ### Importing IntelliJ IDEA keymap
 
-Importing Karabiner-Elements beforehand is required.
 1. Install IntelliJ plugin [XWin Keymap](https://plugins.jetbrains.com/plugin/13094-xwin-keymap) (it used to be preinstalled).
 2. Copy [XWin IntelliJ.xml](https://github.com/raxigan/macos-linux-mode/blob/init/XWin%20IntelliJ.xml) file into the keymap configuration directory: `~/Library/Application Support/JetBrains/IntelliJIdea2021.3/keymaps` (the path may differ).
 3. Restart IntelliJ IDEA and go to Preferences → Keymap and in the dropdown select *XWin IntelliJ* keymap.
@@ -68,6 +67,10 @@ mkdir ~/Library/KeyBindings && cp DefaultKeyBinding.dict ~/Library/KeyBindings
 
 Then restart your Mac.
 
+### What still works differently
+
+TBD
+
 ## Dock and Switcher replacement
 
 There is no option to hide the Dock completely, so it's required to tweak its auto-hide configuration.
@@ -83,9 +86,7 @@ defaults write com.apple.dock autohide-delay -float 2; killall Dock
 > defaults delete com.apple.dock autohide-delay; killall Dock
 >```
 
-3. Install [AltTab](https://alt-tab-macos.netlify.app/)
-
-Example configuration:
+3. Install [AltTab](https://alt-tab-macos.netlify.app/). Example configuration:
 
 <img src="./resources/alttab_controls.png"/>
 <img src="./resources/alttab_appearance.png"/>
@@ -108,6 +109,7 @@ Install [Rectangle](https://rectangleapp.com/), then if you want to operate usin
 - [@tezeko](https://github.com/tekezo) for [Karabiner-Elements](https://github.com/pqrs-org/Karabiner-Elements)
 - [@serhii-londar](https://github.com/serhii-londar) for [open-source-mac-os-apps](https://github.com/serhii-londar/open-source-mac-os-apps)
 - [@\[)amien](https://damieng.com/blog/2015/04/24/make-home-end-keys-behave-like-windows-on-mac-os-x/) for Home & End keys fix
-- [@Christian Long](https://apple.stackexchange.com/users/41838/christian-long) for Dock auto-hide config
+- [@Christian Long](https://apple.stackexchange.com/users/41838/christian-long) for [Dock auto-hide config](https://apple.stackexchange.com/a/82084)
+
 ## Contributing
 TBD
