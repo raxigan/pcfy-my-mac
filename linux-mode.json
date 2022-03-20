@@ -436,30 +436,6 @@
       ]
     },
     {
-      "description": "Print Screen",
-      "manipulators": [
-        {
-          "from": {
-            "key_code": "print_screen",
-            "modifiers": {
-              "mandatory": [
-                "control",
-                "option"
-              ],
-              "optional": [
-              ]
-            }
-          },
-          "to": [
-            {
-              "shell_command": "open -a iTerm"
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
       "description": "Ctrl + T",
       "manipulators": [
         {

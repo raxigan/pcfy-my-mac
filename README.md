@@ -39,6 +39,16 @@ The toolset (all open source):
 5. Click _Enable All_:
 <img src="./resources/karabiner-enable-all.png"/>
 
+### Rules description (the less obvious ones)
+
+| &nbsp; &nbsp; Rule &nbsp; &nbsp; | Notes                                                                                                                                                                                                                                                                     |
+|------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Win                                                  | Open Spotlight                                                                                                                                                                                                                                                                     |
+| Ctrl + Alt + T                                       | Open iTerm                                                                                                                                                                                                                                                                         |
+| Ctrl + Alt + S                                       | Open Preferences in IntelliJ IDEA (a workaround for https://youtrack.jetbrains.com/issue/IDEA-164155)                                                                                                                                                                              |
+| Option & Command swap                                | Thanks to this rule the setup also works with Mac keyboards, thus it should be active only for such devices. To add or change supported devices check identifiers section in the rule and set _vendor_id_ & _product_id_. Use Karabiner-EventViewer.app to check your device details. |
+| Alt + ` (+ 4 / + 5 / + 6)                            | Workaround rules for VSC popup issue in IntelliJ IDEA (Show History, Git Blame and Show Diff)                                                                                                                                                                                      |
+
 ### Importing IntelliJ IDEA keymap
 
 Importing karabiner-elements beforehand is required.
