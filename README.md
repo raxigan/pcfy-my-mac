@@ -37,7 +37,7 @@ What you can get:
 <table>
 <tr>
 <th align="center">
-<img width="1000" height="1">
+<img width="1100" height="1">
 <p>
 <small>
 PC keyboard shortcut
@@ -45,7 +45,7 @@ PC keyboard shortcut
 </p>
 </th>
 <th align="center">
-<img width="1000" height="1">
+<img width="1100" height="1">
 <p>
 <small>
 Mac keyboard shortcut
@@ -71,7 +71,7 @@ Notes
 <kbd>⌥</kbd>
 </td>
 <td>
-Open Spotlight (can be easily changed to run _Launcher_ or similar apps)
+Open Spotlight (can be easily changed to run Launcher, Alfred or other similar apps)
 </td>
 </tr>
 
@@ -97,7 +97,7 @@ Open iTerm
 <kbd>⌃</kbd> + <kbd>⌘</kbd> + <kbd>S</kbd>
 </td>
 <td>
-Open _Preferences_ in IntelliJ IDEA (workaround for https://youtrack.jetbrains.com/issue/IDEA-164155)
+Open Preferences in IntelliJ IDEA (workaround for https://youtrack.jetbrains.com/issue/IDEA-164155)
 </td>
 </tr>
 
