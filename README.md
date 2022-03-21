@@ -4,7 +4,7 @@ All-in-one project to help you get PC-like experience on your maOS. Mostly for d
 😉.
 
 What you can get:
-- PC keyboard shortcuts on your macOS, browser (chromium based) and IntelliJ
+- PC keyboard shortcuts on your macOS, browser (chromium based) and IntelliJ IDEA
     - the configuration works for both PC and Mac keyboards in same time (there is a special device-checking rule)
     - there are no custom shortcuts - all of them would do exactly the same on Linux/Windows or almost (e.g. <kbd>
       Win</kbd>/<kbd>Option</kbd> key opens Spotlight while on Windows or Linux Mint would open Start Menu)
@@ -33,13 +33,100 @@ What you can get:
 
 ### Rules description (the less obvious ones)
 
-| Rule   <img width=200/>                                                                        | Notes                                                                                                                                                                                                                                                                                       |
-|--------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| <kbd>Win</kbd>                                                                 | Open Spotlight (can be easily changed to run _Launcher_ or similar apps)                                                                                                                                                                                                                    |
-| <span><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>T</kbd></span>                                | Open iTerm                                                                                                                                                                                                                                                                                  |
-| <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>S</kbd>                                | Open _Preferences_ in IntelliJ IDEA (workaround for https://youtrack.jetbrains.com/issue/IDEA-164155)                                                                                                                                                                                       |
-| <kbd>Opt</kbd> & <kbd>Cmd</kbd> swap                                           | <p>Thanks to this rule the setup also works with Mac keyboards, thus it should be active only for Mac devices. To add or change supported devices check identifiers section in the rule and set _vendor_id_ & _product_id_. Use Karabiner-EventViewer.app to check your device details.</p> |
-| <kbd>Alt</kbd> + ` (+ <kbd>4</kbd> / + <kbd>5</kbd> / +  <kbd>6</kbd>) | Workaround rules for VSC popup issue in IntelliJ IDEA (Show History, Git Blame and Show Diff)                                                                                                                                                                                               |
+
+<table>
+<tr>
+<th align="center">
+<img width="1000" height="1">
+<p>
+<small>
+PC keyboard shortcut
+</small>
+</p>
+</th>
+<th align="center">
+<img width="1000" height="1">
+<p>
+<small>
+Mac keyboard shortcut
+</small>
+</p>
+</th>
+<th align="center">
+<img height="1">
+<p>
+<small>
+Notes
+</small>
+</p>
+</th>
+</tr>
+
+
+<tr>
+<td>
+<kbd>Win</kbd>
+</td>
+<td>
+<kbd>⌥</kbd>
+</td>
+<td>
+Open Spotlight (can be easily changed to run _Launcher_ or similar apps)
+</td>
+</tr>
+
+
+<tr>
+<td>
+<kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>T</kbd>
+</td>
+<td>
+<kbd>⌃</kbd> + <kbd>⌘</kbd> + <kbd>T</kbd>
+</td>
+<td>
+Open iTerm
+</td>
+</tr>
+
+
+<tr>
+<td>
+<kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>S</kbd>
+</td>
+<td>
+<kbd>⌃</kbd> + <kbd>⌘</kbd> + <kbd>S</kbd>
+</td>
+<td>
+Open _Preferences_ in IntelliJ IDEA (workaround for https://youtrack.jetbrains.com/issue/IDEA-164155)
+</td>
+</tr>
+
+
+<tr>
+<td>
+<kbd>Opt</kbd> & <kbd>Cmd</kbd> swap
+</td>
+<td>
+-
+</td>
+<td>
+Thanks to this rule the setup also works with Mac keyboards, thus it should be active only for Mac devices. To add or change supported devices check identifiers section in the rule and set vendor_id & product_id. Use Karabiner-EventViewer.app to check your device details.
+</td>
+</tr>
+
+
+<tr>
+<td>
+<kbd>Alt</kbd> + ` (+ <kbd>4</kbd> / + <kbd>5</kbd> / +  <kbd>6</kbd>)
+</td>
+<td>
+<kbd>⌘</kbd> + ` (+ <kbd>4</kbd> / + <kbd>5</kbd> / + <kbd>6</kbd>)
+</td>
+<td>
+Workaround rules for VSC popup issue in IntelliJ IDEA (Show History, Git Blame and Show Diff)
+</td>
+</tr>
+</table>
 
 >Karabiner-Elements stores rules in under `~/.config/karabiner/assets/complex_modifications` path. To tweak
 > the rules update the json files there and enable the rules in _Complex modifications_ tab.
@@ -50,7 +137,7 @@ What you can get:
 ### Importing IntelliJ IDEA keymap
 
 1. Install IntelliJ plugin [XWin Keymap](https://plugins.jetbrains.com/plugin/13094-xwin-keymap) (it used to be preinstalled).
-2. Copy [XWin IntelliJ.xml](https://github.com/raxigan/macos-linux-mode/blob/init/XWin%20IntelliJ.xml) file into the keymap configuration directory: `~/Library/Application Support/JetBrains/IntelliJIdea2021.3/keymaps` (the path may differ).
+2. Copy [XWin IntelliJ IDEA.xml](https://github.com/raxigan/macos-linux-mode/blob/init/XWin%20IntelliJ%20IDEA.xml) file into the keymap configuration directory: `~/Library/Application Support/JetBrains/IntelliJIdea2021.3/keymaps` (the path may differ).
 3. Restart IntelliJ IDEA and go to Preferences → Keymap and in the dropdown select *XWin IntelliJ* keymap.
 
 > Some configured shortcuts cannot be changed in the IDE because of validation there. For such cases
@@ -110,7 +197,7 @@ Install [Rectangle](https://rectangleapp.com/), then if you want to operate usin
 - [@rux616](https://github.com/rux616) for [karabiner-windows-mode](https://github.com/rux616/karabiner-windows-mode)
 - [@tezeko](https://github.com/tekezo) for [Karabiner-Elements](https://github.com/pqrs-org/Karabiner-Elements)
 - [@serhii-londar](https://github.com/serhii-londar) for [open-source-mac-os-apps](https://github.com/serhii-londar/open-source-mac-os-apps)
-- [@\[)amien](https://damieng.com/blog/2015/04/24/make-home-end-keys-behave-like-windows-on-mac-os-x/) for Home & End keys fix
+- [@Damien](https://www.maketecheasier.com/author/damienoh/) for [Home & End keys fix](https://www.maketecheasier.com/fix-home-end-button-for-external-keyboard-mac/)
 - [@Christian Long](https://apple.stackexchange.com/users/41838/christian-long) for [Dock auto-hide config](https://apple.stackexchange.com/a/82084)
 
 ## Contributing

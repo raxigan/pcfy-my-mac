@@ -1,4 +1,4 @@
-<keymap version="1" name="XWin IntelliJ" parent="Default for XWin">
+<keymap version="1" name="XWin IntelliJ IDEA" parent="Default for XWin">
   <action id="ActivateDebugToolWindow" />
   <action id="ActivateProblemsViewToolWindow" />
   <action id="Arrangement.Alias.Rule.Add" />
