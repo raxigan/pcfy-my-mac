@@ -1,13 +1,13 @@
-# macOS Linux mode
+# macOS PC mode
 
-All-in-one project to help you get PC-like experience on your maOS. Mostly for developers & other IT guys, but not only
+All-in-one project to help you get PC-like experience (known from Windows or Linux systems) on your maOS. Mostly for developers & other IT guys, but not only
 😉.
 
 What you can get:
 - PC keyboard shortcuts on your macOS, browser (chromium based) and IntelliJ IDEA
     - the configuration works for both PC and Mac keyboards in same time (there is a special device-checking rule)
-    - there are no custom shortcuts - all of them would do exactly the same on Linux/Windows or almost (e.g. <kbd>
-      Win</kbd>/<kbd>Option</kbd> key opens Spotlight while on Windows or Linux Mint would open Start Menu)
+    - no custom shortcuts - all of them would do exactly the same on Linux/Windows or almost (e.g. <kbd>
+      Win</kbd>/<kbd>Option</kbd> key opens Spotlight while on Windows would open Start Menu)
 - Dock & built-in switcher replacement
 - Basic window management
 
@@ -16,13 +16,13 @@ What you can get:
 ### Importing karabiner-elements rules
 
 1. Install [Karabiner-Elements](https://karabiner-elements.pqrs.org/)
-2. Open Karabiner-Elements, create new profile (e.g. _Linux mode_) and select it:
+2. Open Karabiner-Elements, create new profile (e.g. _PC mode_) and select it:
 <img src="./resources/karabiner-new-profile.png"/>
 
 3. Open the following URL in your browser and allow the website to open Karabiner-Elements.app:
 
      ```
-     karabiner://karabiner/assets/complex_modifications/import?url=https://raw.githubusercontent.com/raxigan/macos-linux-mode/init/linux-mode.json
+     karabiner://karabiner/assets/complex_modifications/import?url=https://raw.githubusercontent.com/raxigan/macos-pc-mode/init/pc-mode.json
      ```
 
 4. Click _Import_:
@@ -40,7 +40,7 @@ What you can get:
 <img width="1100" height="1">
 <p>
 <small>
-PC keyboard shortcut
+PC
 </small>
 </p>
 </th>
@@ -48,7 +48,7 @@ PC keyboard shortcut
 <img width="1100" height="1">
 <p>
 <small>
-Mac keyboard shortcut
+Mac
 </small>
 </p>
 </th>
@@ -68,7 +68,7 @@ Notes
 <kbd>Win</kbd>
 </td>
 <td>
-<kbd>⌥</kbd>
+<kbd>Opt</kbd>
 </td>
 <td>
 Open Spotlight (can be easily changed to run Launcher, Alfred or other similar apps)
@@ -81,7 +81,7 @@ Open Spotlight (can be easily changed to run Launcher, Alfred or other similar a
 <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>T</kbd>
 </td>
 <td>
-<kbd>⌃</kbd> + <kbd>⌘</kbd> + <kbd>T</kbd>
+<kbd>Ctrl</kbd> + <kbd>Cmd</kbd> + <kbd>T</kbd>
 </td>
 <td>
 Open iTerm
@@ -94,7 +94,7 @@ Open iTerm
 <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>S</kbd>
 </td>
 <td>
-<kbd>⌃</kbd> + <kbd>⌘</kbd> + <kbd>S</kbd>
+<kbd>Ctrl</kbd> + <kbd>Cmd</kbd> + <kbd>S</kbd>
 </td>
 <td>
 Open Preferences in IntelliJ IDEA (workaround for https://youtrack.jetbrains.com/issue/IDEA-164155)
@@ -104,10 +104,10 @@ Open Preferences in IntelliJ IDEA (workaround for https://youtrack.jetbrains.com
 
 <tr>
 <td>
-<kbd>Opt</kbd> & <kbd>Cmd</kbd> swap
+-
 </td>
 <td>
--
+<kbd>Opt</kbd> & <kbd>Cmd</kbd> swap
 </td>
 <td>
 Thanks to this rule the setup also works with Mac keyboards, thus it should be active only for Mac devices. To add or change supported devices check identifiers section in the rule and set vendor_id & product_id. Use Karabiner-EventViewer.app to check your device details.
@@ -120,7 +120,7 @@ Thanks to this rule the setup also works with Mac keyboards, thus it should be a
 <kbd>Alt</kbd> + ` (+ <kbd>4</kbd> / + <kbd>5</kbd> / +  <kbd>6</kbd>)
 </td>
 <td>
-<kbd>⌘</kbd> + ` (+ <kbd>4</kbd> / + <kbd>5</kbd> / + <kbd>6</kbd>)
+<kbd>Cmd</kbd> + ` (+ <kbd>4</kbd> / + <kbd>5</kbd> / + <kbd>6</kbd>)
 </td>
 <td>
 Workaround rules for VSC popup issue in IntelliJ IDEA (Show History, Git Blame and Show Diff)
@@ -137,7 +137,7 @@ Workaround rules for VSC popup issue in IntelliJ IDEA (Show History, Git Blame a
 ### Importing IntelliJ IDEA keymap
 
 1. Install IntelliJ plugin [XWin Keymap](https://plugins.jetbrains.com/plugin/13094-xwin-keymap) (it used to be preinstalled).
-2. Copy [XWin IntelliJ IDEA.xml](https://github.com/raxigan/macos-linux-mode/blob/init/XWin%20IntelliJ%20IDEA.xml) file into the keymap configuration directory: `~/Library/Application Support/JetBrains/IntelliJIdea2021.3/keymaps` (the path may differ).
+2. Copy [XWin IntelliJ IDEA.xml](https://github.com/raxigan/macos-pc-mode/blob/init/XWin%20IntelliJ%20IDEA.xml) file into the keymap configuration directory: `~/Library/Application Support/JetBrains/IntelliJIdea2021.3/keymaps` (the path may differ).
 3. Restart IntelliJ IDEA and go to Preferences → Keymap and in the dropdown select *XWin IntelliJ* keymap.
 
 > Some configured shortcuts cannot be changed in the IDE because of validation there. For such cases
@@ -165,7 +165,7 @@ It is not my intention to hate the Dock here, but... Let's get rid of it 😄.
 There is no option to hide the Dock completely, so it's required to tweak its auto-hide configuration.
 
 1. In macOS _System Preferences_ → _Dock & Menu Bar_ enable _Automatically hide and show the Dock_.
-2. Configure the Dock to show after 2 second (in case you really need) it by running this command in your terminal:
+2. Configure the Dock to show after 2 second (in case you really need it) by running this command in your terminal:
 ```
 defaults write com.apple.dock autohide-delay -float 2; killall Dock
 ```
