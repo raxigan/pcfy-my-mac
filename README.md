@@ -133,9 +133,9 @@ Install [Rectangle](https://rectangleapp.com/), then if you want to have basic w
 
 ## Contributing
 
-Clone the project and create symlinks pointing to files you want to use and edit in appropriate directories.
+Clone the project and create symlinks pointing to files you want to use & edit in appropriate directories:
 - Karabiner-Elements complex modifications directory: `~/.config/karabiner/assets/complex_modifications`
-- JetBrains IDE keymap directory: ~/Library/Application Support/JetBrains/{VERSION}/keymaps
+- JetBrains IDE keymap directory: `~/Library/Application Support/JetBrains/{VERSION}/keymaps`
 
 For example:
 ```
