@@ -9,7 +9,7 @@ Perfect if:
 
 What you can get:
 - PC keyboard shortcuts in your system, browser (Chromium based) and IntelliJ IDEA (other keymaps can be added easily)
-    - the configuration works for both PC and Mac keyboards at the same time (there is a special device-checking rule)
+    - the configuration works with both PC and Mac keyboards at the same time (there is a special device-checking rule)
     - no custom shortcuts - all of them would do exactly the same on Linux/Windows or almost the same (e.g. <kbd>
       Win</kbd>/<kbd>Option</kbd> key opens Spotlight while on Windows would open Start Menu)
 - Dock & built-in switcher replacement
@@ -25,20 +25,20 @@ What currently works:
   - <kbd>Ctrl</kbd>+<kbd>←</kbd>/<kbd>→</kbd> (jumping between words), <kbd>Home</kbd>/<kbd>End</kbd> (go to line start/end),
   - <kbd>Win</kbd>+<kbd>L</kbd> (lock screen),
   - <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>L</kbd> (open iTerm),
-  - <kbd>Win</kbd> (open Spotlight).
+  - <kbd>Win</kbd> (open Spotlight - can be easily changed to open Launcher, Alfred or any other app).
 - Browser shortcuts (only Chromium based like Chrome, Brave, Vivaldi etc.)
-  - <kbd>Ctrl</kbd>+<kbd>T</kbd> (new tab), <kbd>Ctrl</kbd>+<kbd>N</kbd> (new window), <kbd>Ctrl</kbd>+<kbd>H</kbd> (history)
+  - <kbd>Ctrl</kbd>+<kbd>T</kbd> (new tab), <kbd>Ctrl</kbd>+<kbd>N</kbd> (new window), <kbd>Ctrl</kbd>+<kbd>H</kbd> (history) and more
   - <kbd>F5</kbd> (refresh page) nad <kbd>Shift</kbd>+<kbd>F5</kbd> (refresh page with cache cleanup)
 - IntelliJ shortcuts - according to [official reference card](https://resources.jetbrains.com/storage/products/intellij-idea/docs/IntelliJIDEA_ReferenceCard.pdf)
   - Navigation, Refactoring, Compile and Run, Debugging, Usage Search, VCS / Local history - 100% working
-  - Editing - all except 1 working (*Sorround with...*)
-  - the rest - mostly working
+  - Editing - all working except one - *Surround with...*
+  - the rest - working in most cases
 
 ### Importing karabiner-elements rules
 
 1. Install [Karabiner-Elements](https://karabiner-elements.pqrs.org/)
 2. Open Karabiner-Elements, create new profile (e.g. _PC mode_) and select it:
-<img src="./resources/karabiner-new-profile.png"/>
+<img src="./resources/karabiner_new_profile.png"/>
 
 3. Open the following URL in your browser and allow the website to open Karabiner-Elements.app:
 
@@ -47,114 +47,25 @@ What currently works:
      ```
 
 4. Click _Import_:
-<img src="./resources/karabiner-import.png"/>
+<img src="./resources/karabiner_import.png"/>
 
 5. Click _Enable All_:
-<img src="./resources/karabiner-enable-all.png"/>
+<img src="./resources/karabiner_enable_all.png"/>
 
-### Rules description (the less obvious ones)
+> Karabiner-Elements stores rules in under `~/.config/karabiner/assets/complex_modifications` path. To tweak
+> the rules update the json files there and re-enable the rules in _Complex modifications_ tab. Rules order is important and it can be changed there also.
 
+> Bear in mind that many of the configured shortcuts may collide with the system ones, so you may need to disable some of them in your system.
+> Also remember about selecting the following checkbox in *System Preferences* to use F-keys as standard function keys:
+> 
+> <img src="./resources/f-keys.png"/>
 
-<table>
-<tr>
-<th align="center">
-<img width="1500" height="1">
-<p>
-<small>
-PC
-</small>
-</p>
-</th>
-<th align="center">
-<img width="1500" height="1">
-<p>
-<small>
-Mac
-</small>
-</p>
-</th>
-<th align="center">
-<img height="1">
-<p>
-<small>
-Notes
-</small>
-</p>
-</th>
-</tr>
+> #### Mac keyboards
+> There is a rule called *Opt & Cmd swap* thanks to which the setup works with
+> Mac keyboards as well. If it does not work for you or if you want to add additional Mac devices
+> update the rule in the [pc-mode.json](https://github.com/raxigan/macos-pc-mode/blob/main/pc-mode.json) file. It requires providing *product_id* and *vendor_id* numbers which
+> can be found via Karabiner-EventViewer.app in *Devices* tab.
 
-
-<tr>
-<td>
-<kbd>Win</kbd>
-</td>
-<td>
-<kbd>Opt</kbd>
-</td>
-<td>
-Open Spotlight (can be easily changed to run Launcher, Alfred or other similar apps)
-</td>
-</tr>
-
-
-<tr>
-<td>
-<kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>T</kbd>
-</td>
-<td>
-<kbd>Ctrl</kbd> + <kbd>Cmd</kbd> + <kbd>T</kbd>
-</td>
-<td>
-Open iTerm
-</td>
-</tr>
-
-
-<tr>
-<td>
-<kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>S</kbd>
-</td>
-<td>
-<kbd>Ctrl</kbd> + <kbd>Cmd</kbd> + <kbd>S</kbd>
-</td>
-<td>
-Open Preferences in IntelliJ IDEA (workaround for https://youtrack.jetbrains.com/issue/IDEA-164155)
-</td>
-</tr>
-
-
-<tr>
-<td>
--
-</td>
-<td>
-<kbd>Opt</kbd> & <kbd>Cmd</kbd> swap
-</td>
-<td>
-Thanks to this rule the setup also works with Mac keyboards, thus it should be active only for Mac devices. To add or change supported devices check identifiers section in the rule and set vendor_id & product_id. Use Karabiner-EventViewer.app to check your device details.
-</td>
-</tr>
-
-
-<tr>
-<td>
-<kbd>Alt</kbd> + ` (+ <kbd>4</kbd> / + <kbd>5</kbd> / +  <kbd>6</kbd>)
-</td>
-<td>
-<kbd>Cmd</kbd> + ` (+ <kbd>4</kbd> / + <kbd>5</kbd> / + <kbd>6</kbd>)
-</td>
-<td>
-Workaround rules for VSC popup issue in IntelliJ IDEA (Show History, Git Blame and Show Diff)
-</td>
-</tr>
-</table>
-
->Karabiner-Elements stores rules in under `~/.config/karabiner/assets/complex_modifications` path. To tweak
-> the rules update the json files there and enable the rules in _Complex modifications_ tab.
-
->Bear in mind that many of the configured shortcuts may collide with the system ones, so you may need to disable some of them in the _System Preferences_.
-
->Rules order is important, remember about it about tweaking the existing ones and adding your own. 
 ### Importing IntelliJ IDEA keymap
 
 1. Install IntelliJ plugin [XWin Keymap](https://plugins.jetbrains.com/plugin/13094-xwin-keymap) (it used to be preinstalled).
@@ -190,7 +101,7 @@ There is no option to hide or remove the Dock completely, so it's required to tw
 defaults write com.apple.dock autohide-delay -float 2; killall Dock
 ```
 
-> To restare default Dock settings run the command:
+> To restore default Dock settings run the command:
 > ```
 > defaults delete com.apple.dock autohide-delay; killall Dock
 >```
@@ -226,11 +137,10 @@ Clone the project and create symlinks pointing to files you want to use and edit
 - Karabiner-Elements complex modifications directory: `~/.config/karabiner/assets/complex_modifications`
 - JetBrains IDE keymap directory: ~/Library/Application Support/JetBrains/{VERSION}/keymaps
 
-Fo example:
+For example:
 ```
 cd ~/dev
 git clone https://github.com/raxigan/macos-pc-mode
 cd ~/.config/karabiner/assets/complex_modifications
 ln -sfn ~/dev/macos-pc-mode/pc-mode.json pc-mode.json
 ```
-
