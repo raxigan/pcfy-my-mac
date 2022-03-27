@@ -856,31 +856,6 @@
       ]
     },
     {
-      "description": "Win (Open Spotlight)",
-      "manipulators": [
-        {
-          "from": {
-            "key_code": "left_command",
-            "modifiers": {
-              "optional": [
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "left_command"
-            }
-          ],
-          "to_if_alone": [
-            {
-              "apple_vendor_keyboard_key_code": "spotlight"
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
       "description": "IntelliJ Preferences fix",
       "manipulators": [
         {
@@ -1163,6 +1138,31 @@
           "to": [
             {
               "key_code": "right_option"
+            }
+          ],
+          "type": "basic"
+        }
+      ]
+    },
+    {
+      "description": "Win (Open Spotlight)",
+      "manipulators": [
+        {
+          "from": {
+            "key_code": "left_command",
+            "modifiers": {
+              "optional": [
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "left_command"
+            }
+          ],
+          "to_if_alone": [
+            {
+              "apple_vendor_keyboard_key_code": "spotlight"
             }
           ],
           "type": "basic"

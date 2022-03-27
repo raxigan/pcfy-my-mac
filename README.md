@@ -1,17 +1,38 @@
 # macOS PC mode
 
-All-in-one project to help you get PC-like experience (known from Windows or Linux systems) on your maOS. Mostly for developers & other IT guys, but not only
-😉.
+All-in-one project to help you to get PC-like experience (known from Windows or Linux systems) on your macOS. Mostly for developers & other IT guys, but everyone is welcome 😉.
+
+Perfect if:
+- you are a software developer relying mostly on IntelliJ IDEA (or other JetBrains IDE)
+- you recently switched to macOS after many years of using Windows or Linux (or you still switch between one of those systems and macOS) and want to have muscle memory on your side
+- you prefer the PC way of managing windows using mostly keyboard instead of gestures
 
 What you can get:
-- PC keyboard shortcuts on your macOS, browser (chromium based) and IntelliJ IDEA
-    - the configuration works for both PC and Mac keyboards in same time (there is a special device-checking rule)
-    - no custom shortcuts - all of them would do exactly the same on Linux/Windows or almost (e.g. <kbd>
+- PC keyboard shortcuts on your macOS, browser (chromium based) and IntelliJ IDEA (other keymaps can be added easily)
+    - the configuration works for both PC and Mac keyboards at the same time (there is a special device-checking rule)
+    - no custom shortcuts - all of them would do exactly the same on Linux/Windows or almost the same (e.g. <kbd>
       Win</kbd>/<kbd>Option</kbd> key opens Spotlight while on Windows would open Start Menu)
 - Dock & built-in switcher replacement
 - Basic window management
 
+> You can pick whatever configurations you need and try them. All the changes all easily reversible.
+
 ## Keyboard shortcuts
+
+What currently works:
+- System-wide shortcuts
+  - 10+ typical editing shortcuts like <kbd>Ctrl</kbd>+<kbd>C</kbd>, <kbd>Ctrl</kbd>+<kbd>V</kbd> etc.,
+  - <kbd>Ctrl</kbd>+<kbd>←</kbd>/<kbd>→</kbd> (jumping between words), <kbd>Home</kbd>/<kbd>End</kbd> (go to line start/end),
+  - <kbd>Win</kbd>+<kbd>L</kbd> (lock screen),
+  - <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>L</kbd> (open iTerm),
+  - <kbd>Win</kbd> (open Spotlight).
+- Browser shortcuts (only Chromium based like Chrome, Brave, Vivaldi etc.)
+  - <kbd>Ctrl</kbd>+<kbd>T</kbd> (new tab), <kbd>Ctrl</kbd>+<kbd>N</kbd> (new window), <kbd>Ctrl</kbd>+<kbd>H</kbd> (history)
+  - <kbd>F5</kbd> (refresh page) nad <kbd>Shift</kbd>+<kbd>F5</kbd> (refresh page with cache cleanup)
+- IntelliJ shortcuts - according to [official reference card](https://resources.jetbrains.com/storage/products/intellij-idea/docs/IntelliJIDEA_ReferenceCard.pdf)
+  - Navigation, Refactoring, Compile and Run, Debugging, Usage Search, VCS / Local history - 100% working
+  - Editing - all except 1 working (*Sorround with...*)
+  - the rest - mostly working
 
 ### Importing karabiner-elements rules
 
@@ -22,7 +43,7 @@ What you can get:
 3. Open the following URL in your browser and allow the website to open Karabiner-Elements.app:
 
      ```
-     karabiner://karabiner/assets/complex_modifications/import?url=https://raw.githubusercontent.com/raxigan/macos-pc-mode/init/pc-mode.json
+     karabiner://karabiner/assets/complex_modifications/import?url=https://raw.githubusercontent.com/raxigan/macos-pc-mode/main/pc-mode.json
      ```
 
 4. Click _Import_:
@@ -37,7 +58,7 @@ What you can get:
 <table>
 <tr>
 <th align="center">
-<img width="1100" height="1">
+<img width="1500" height="1">
 <p>
 <small>
 PC
@@ -45,7 +66,7 @@ PC
 </p>
 </th>
 <th align="center">
-<img width="1100" height="1">
+<img width="1500" height="1">
 <p>
 <small>
 Mac
@@ -131,17 +152,20 @@ Workaround rules for VSC popup issue in IntelliJ IDEA (Show History, Git Blame a
 >Karabiner-Elements stores rules in under `~/.config/karabiner/assets/complex_modifications` path. To tweak
 > the rules update the json files there and enable the rules in _Complex modifications_ tab.
 
->Bear in mind that many of the configured shortcuts may clash with the system ones, so you may need to disable some of them in the _System Preferences_.
+>Bear in mind that many of the configured shortcuts may collide with the system ones, so you may need to disable some of them in the _System Preferences_.
 
 >Rules order is important, remember about it about tweaking the existing ones and adding your own. 
 ### Importing IntelliJ IDEA keymap
 
 1. Install IntelliJ plugin [XWin Keymap](https://plugins.jetbrains.com/plugin/13094-xwin-keymap) (it used to be preinstalled).
-2. Copy [XWin IntelliJ IDEA.xml](https://github.com/raxigan/macos-pc-mode/blob/init/XWin%20IntelliJ%20IDEA.xml) file into the keymap configuration directory: `~/Library/Application Support/JetBrains/IntelliJIdea2021.3/keymaps` (the path may differ).
-3. Restart IntelliJ IDEA and go to Preferences → Keymap and in the dropdown select *XWin IntelliJ* keymap.
+2. Copy [XWin IntelliJ IDEA.xml](https://github.com/raxigan/macos-pc-mode/blob/main/XWin%20IntelliJ%20IDEA.xml) file into the keymap configuration directory: `~/Library/Application Support/JetBrains/IntelliJIdea2021.3/keymaps` (the path may differ).
 
-> Some configured shortcuts cannot be changed in the IDE because of validation there. For such cases
-> it's required to perform the tweaks directly in the keymap then restart IDE.
+> Alternatively you can clone this repository and create symbolic link to the keymap file.
+
+3. Restart IntelliJ IDEA and go to Preferences → Keymap and from the dropdown list select *XWin IntelliJ* keymap.
+
+> Some configured shortcuts cannot be changed in the IDE because of validation. For such cases
+> it's required to perform the tweaks directly in the keymap file then restart the IDE.
 
 ### Fixing <kbd>Home</kbd> & <kbd>End</kbd> keys
 
@@ -154,18 +178,14 @@ mkdir ~/Library/KeyBindings && cp DefaultKeyBinding.dict ~/Library/KeyBindings
 
 Then restart your Mac.
 
-### What still works differently
-
-TBD
-
 ## Dock and Switcher replacement
 
 It is not my intention to hate the Dock here, but... Let's get rid of it 😄.
 
-There is no option to hide the Dock completely, so it's required to tweak its auto-hide configuration.
+There is no option to hide or remove the Dock completely, so it's required to tweak its auto-hide configuration.
 
 1. In macOS _System Preferences_ → _Dock & Menu Bar_ enable _Automatically hide and show the Dock_.
-2. Configure the Dock to show after 2 second (in case you really need it) by running this command in your terminal:
+2. Configure the Dock to show up after 2 second (in case you really need it) by running this command in your terminal:
 ```
 defaults write com.apple.dock autohide-delay -float 2; killall Dock
 ```
@@ -186,12 +206,12 @@ defaults write com.apple.dock autohide-delay -float 2; killall Dock
 
 ## Window management
 
-Install [Rectangle](https://rectangleapp.com/), then if you want to operate using <kbd>Win</kbd> and arrows you may want to set it up the following way: 
+Install [Rectangle](https://rectangleapp.com/), then if you want to have basic window snapping functionality (like in Windows via <kbd>Win</kbd>), you may set it up the following way:
 
 <img src="./resources/rectangle_settings.png"/>
 
-> Before setting up Rectangle shortcuts select _Default_ profile in Karabiner-Elements, then set up the shortcuts
-> and back to your custom profile again.
+> Before configuring Rectangle shortcuts select _Default_ profile in Karabiner-Elements (or just quit the app), then set up the shortcuts
+> and back to your custom profile again (or start the app).
 
 ## Credits
 - [@rux616](https://github.com/rux616) for [karabiner-windows-mode](https://github.com/rux616/karabiner-windows-mode)
@@ -201,4 +221,16 @@ Install [Rectangle](https://rectangleapp.com/), then if you want to operate usin
 - [@Christian Long](https://apple.stackexchange.com/users/41838/christian-long) for [Dock auto-hide config](https://apple.stackexchange.com/a/82084)
 
 ## Contributing
-TBD
+
+Clone the project and create symlinks pointing to files you want to use and edit in appropriate directories.
+- Karabiner-Elements complex modifications directory: `~/.config/karabiner/assets/complex_modifications`
+- JetBrains IDE keymap directory: ~/Library/Application Support/JetBrains/{VERSION}/keymaps
+
+Fo example:
+```
+cd ~/dev
+git clone https://github.com/raxigan/macos-pc-mode
+cd ~/.config/karabiner/assets/complex_modifications
+ln -sfn ~/dev/macos-pc-mode/pc-mode.json pc-mode.json
+```
+
