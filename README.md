@@ -1,6 +1,7 @@
 # macOS PC mode
 
-All-in-one project to help you to get PC-like experience (known from Windows or Linux systems) on your macOS. Mostly for developers & other IT guys, but everyone is welcome 😉.
+All-in-one project to help you to get PC-like experience (known from Windows or Linux systems) on your macOS. Mostly for developers & other IT guys, but everyone is welcome. 
+Tested on macOS Monterey 12.3.
 
 Perfect if:
 - you are a software developer relying mostly on IntelliJ IDEA (or other JetBrains IDE),
