@@ -137,11 +137,10 @@ Clone the project and create symlinks pointing to files you want to use and edit
 - Karabiner-Elements complex modifications directory: `~/.config/karabiner/assets/complex_modifications`
 - JetBrains IDE keymap directory: ~/Library/Application Support/JetBrains/{VERSION}/keymaps
 
-Fo example:
+For example:
 ```
 cd ~/dev
 git clone https://github.com/raxigan/macos-pc-mode
 cd ~/.config/karabiner/assets/complex_modifications
 ln -sfn ~/dev/macos-pc-mode/pc-mode.json pc-mode.json
 ```
-
