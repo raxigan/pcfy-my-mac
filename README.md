@@ -3,12 +3,12 @@
 All-in-one project to help you to get PC-like experience (known from Windows or Linux systems) on your macOS. Mostly for developers & other IT guys, but everyone is welcome 😉.
 
 Perfect if:
-- you are a software developer relying mostly on IntelliJ IDEA (or other JetBrains IDE)
-- you recently switched to macOS after many years of using Windows or Linux (or you still switch between one of those systems and macOS) and want to have muscle memory on your side
-- you prefer the PC way of managing windows using mostly keyboard instead of gestures
+- you are a software developer relying mostly on IntelliJ IDEA (or other JetBrains IDE),
+- you recently switched to macOS after many years of using Windows or Linux (or you still switch between one of those systems and macOS) and want to have muscle memory on your side,
+- you prefer the PC way of managing windows using mostly keyboard instead of gestures.
 
 What you can get:
-- PC keyboard shortcuts on your macOS, browser (chromium based) and IntelliJ IDEA (other keymaps can be added easily)
+- PC keyboard shortcuts in your system, browser (Chromium based) and IntelliJ IDEA (other keymaps can be added easily)
     - the configuration works for both PC and Mac keyboards at the same time (there is a special device-checking rule)
     - no custom shortcuts - all of them would do exactly the same on Linux/Windows or almost the same (e.g. <kbd>
       Win</kbd>/<kbd>Option</kbd> key opens Spotlight while on Windows would open Start Menu)
