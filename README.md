@@ -38,7 +38,7 @@ What currently works:
 
 1. Install [Karabiner-Elements](https://karabiner-elements.pqrs.org/)
 2. Open Karabiner-Elements, create new profile (e.g. _PC mode_) and select it:
-<img src="./resources/karabiner_new_profile.png"/>
+<img src="./resources/karabiner_new_profile.png" width="800"/>
 
 3. Open the following URL in your browser and allow the website to open Karabiner-Elements.app:
 
@@ -47,10 +47,10 @@ What currently works:
      ```
 
 4. Click _Import_:
-<img src="./resources/karabiner_import.png"/>
+<img src="./resources/karabiner_import.png" width="800"/>
 
 5. Click _Enable All_:
-<img src="./resources/karabiner_enable_all.png"/>
+<img src="./resources/karabiner_enable_all.png" width="800"/>
 
 > Karabiner-Elements stores rules in `~/.config/karabiner/assets/complex_modifications` directory. To tweak
 > the rules update the json files there and re-enable the rules in _Complex modifications_ tab. Rules order is important and it can be changed there also.
@@ -58,7 +58,7 @@ What currently works:
 > Bear in mind that many of the configured shortcuts may collide with the system ones, so you may need to disable some of them in your system.
 > Also remember about selecting the following checkbox in *System Preferences* to use F-keys as standard function keys:
 > 
-> <img src="./resources/f-keys.png"/>
+> <img src="./resources/f-keys.png" width="800"/>
 
 > #### Mac keyboards
 > There is a rule called *Opt & Cmd swap* thanks to which the setup works with
@@ -108,8 +108,8 @@ defaults write com.apple.dock autohide-delay -float 2; killall Dock
 
 3. Install [AltTab](https://alt-tab-macos.netlify.app/). Example configuration:
 
-<img src="./resources/alttab_controls.png"/>
-<img src="./resources/alttab_appearance.png"/>
+<img src="./resources/alttab_controls.png" width="600"/>
+<img src="./resources/alttab_appearance.png" width="600"/>
 
 > To keep the AltTab list clean and short it's recommended to use
 > the Blacklists feature to exclude less frequently used apps from it and/or
@@ -119,7 +119,7 @@ defaults write com.apple.dock autohide-delay -float 2; killall Dock
 
 Install [Rectangle](https://rectangleapp.com/), then if you want to have basic window snapping functionality (like in Windows via <kbd>Win</kbd>), you may set it up the following way:
 
-<img src="./resources/rectangle_settings.png"/>
+<img src="./resources/rectangle_settings.png" width="800"/>
 
 > Before configuring Rectangle shortcuts select _Default_ profile in Karabiner-Elements (or just quit the app), then set up the shortcuts
 > and back to your custom profile again (or start the app).
