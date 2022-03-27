@@ -52,7 +52,7 @@ What currently works:
 5. Click _Enable All_:
 <img src="./resources/karabiner_enable_all.png"/>
 
-> Karabiner-Elements stores rules in under `~/.config/karabiner/assets/complex_modifications` path. To tweak
+> Karabiner-Elements stores rules in `~/.config/karabiner/assets/complex_modifications` directory. To tweak
 > the rules update the json files there and re-enable the rules in _Complex modifications_ tab. Rules order is important and it can be changed there also.
 
 > Bear in mind that many of the configured shortcuts may collide with the system ones, so you may need to disable some of them in your system.
