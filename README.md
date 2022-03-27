@@ -63,7 +63,7 @@ What currently works:
 
 > #### Mac keyboards
 > There is a rule called *Opt & Cmd swap* thanks to which the setup works with
-> Mac keyboards as well. If it does not work for you or if you want to add additional Mac devices
+> Mac keyboards as well. If it does not work for you or if you want to add additional Mac devices,
 > update the rule in the [pc-mode.json](https://github.com/raxigan/macos-pc-mode/blob/main/pc-mode.json) file. It requires providing *product_id* and *vendor_id* numbers which
 > can be found via Karabiner-EventViewer.app in *Devices* tab.
 
@@ -127,7 +127,9 @@ Install [Rectangle](https://rectangleapp.com/), then if you want to have basic w
 
 ## Credits
 - [@rux616](https://github.com/rux616) for [karabiner-windows-mode](https://github.com/rux616/karabiner-windows-mode)
-- [@tezeko](https://github.com/tekezo) for [Karabiner-Elements](https://github.com/pqrs-org/Karabiner-Elements)
+- [@tezeko](https://github.com/tekezo) for [Karabiner-Elements](https://karabiner-elements.pqrs.org/)
+- [@lwouis](https://github.com/lwouis) for [AltTab](https://alt-tab-macos.netlify.app/)
+- [@rxhanson](https://github.com/rxhanson) for [Rectangle](https://rectangleapp.com/)
 - [@serhii-londar](https://github.com/serhii-londar) for [open-source-mac-os-apps](https://github.com/serhii-londar/open-source-mac-os-apps)
 - [@Damien](https://www.maketecheasier.com/author/damienoh/) for [Home & End keys fix](https://www.maketecheasier.com/fix-home-end-button-for-external-keyboard-mac/)
 - [@Christian Long](https://apple.stackexchange.com/users/41838/christian-long) for [Dock auto-hide config](https://apple.stackexchange.com/a/82084)
