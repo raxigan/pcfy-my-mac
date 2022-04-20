@@ -443,7 +443,6 @@
             {
               "bundle_identifiers": [
                 "^com\\.jetbrains",
-                "^com\\.googlecode\\.iterm2$",
                 "^com\\.apple\\.Terminal$"
               ],
               "type": "frontmost_application_unless"
@@ -515,7 +514,6 @@
             {
               "bundle_identifiers": [
                 "^com\\.jetbrains",
-                "^com\\.googlecode\\.iterm2$",
                 "^com\\.apple\\.Terminal$"
               ],
               "type": "frontmost_application_unless"
@@ -1163,6 +1161,38 @@
           "to_if_alone": [
             {
               "apple_vendor_keyboard_key_code": "spotlight"
+            }
+          ],
+          "type": "basic"
+        }
+      ]
+    },
+    {
+      "description": "Ctrl + T (New tab in iTerm)",
+      "manipulators": [
+        {
+          "conditions": [
+            {
+              "bundle_identifiers": [
+                "^com\\.googlecode.iterm2"
+              ],
+              "type": "frontmost_application_if"
+            }
+          ],
+          "from": {
+            "key_code": "t",
+            "modifiers": {
+              "mandatory": [
+                "control"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "y",
+              "modifiers": [
+                "left_command"
+              ]
             }
           ],
           "type": "basic"
