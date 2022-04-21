@@ -125,6 +125,36 @@ Install [Rectangle](https://rectangleapp.com/), then if you want to have basic w
 > Before configuring Rectangle shortcuts select _Default_ profile in Karabiner-Elements (or just quit the app), then set up the shortcuts
 > and back to your custom profile again (or start the app).
 
+## Additional system settings
+
+Here are a few additional system tweaks you might find useful.
+
+- Enable Dock autohide:
+```
+defaults write com.apple.dock autohide -bool true
+```
+- Set autohide delay:
+```
+defaults write com.apple.dock autohide-delay -float 2
+`````
+- Shorten dock popup animation:
+```
+defaults write com.apple.dock autohide-time-modifier -float 0.5
+```
+- Show hidden files in Finder:
+```
+defaults write com.apple.finder AppleShowAllFiles -bool true
+````
+- Show folders on top in Finder:
+```
+defaults write com.apple.finder _FXSortFoldersFirst -bool true
+```
+- Show full POSIX path in Finder window title:
+```
+defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+````
+
+
 ## Credits
 - [@rux616](https://github.com/rux616) for [karabiner-windows-mode](https://github.com/rux616/karabiner-windows-mode)
 - [@tezeko](https://github.com/tekezo) for [Karabiner-Elements](https://karabiner-elements.pqrs.org/)
