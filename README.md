@@ -25,7 +25,7 @@ What currently works:
   - 10+ typical editing shortcuts like <kbd>Ctrl</kbd>+<kbd>C</kbd>, <kbd>Ctrl</kbd>+<kbd>V</kbd> etc.,
   - <kbd>Ctrl</kbd>+<kbd>←</kbd>/<kbd>→</kbd> (jumping between words), <kbd>Home</kbd>/<kbd>End</kbd> (go to line start/end),
   - <kbd>Win</kbd>+<kbd>L</kbd> (lock screen),
-  - <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>L</kbd> (open iTerm),
+  - <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>T</kbd> (open iTerm),
   - <kbd>Win</kbd> (open Spotlight - can be easily changed to open Launcher, Alfred or any other app).
 - Browser shortcuts (only Chromium based like Chrome, Brave, Vivaldi etc.)
   - <kbd>Ctrl</kbd>+<kbd>T</kbd> (new tab), <kbd>Ctrl</kbd>+<kbd>N</kbd> (new window), <kbd>Ctrl</kbd>+<kbd>H</kbd> (history) and more
@@ -136,8 +136,8 @@ defaults write com.apple.dock autohide -bool true
 - Set autohide delay:
 ```
 defaults write com.apple.dock autohide-delay -float 2
-`````
-- Shorten dock popup animation:
+```
+- Shorten Dock popup animation:
 ```
 defaults write com.apple.dock autohide-time-modifier -float 0.5
 ```
