@@ -235,7 +235,8 @@
               "bundle_identifiers": [
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$"
+                "^com\\.apple\\.Terminal$",
+                "^dev\\.warp\\.Warp-Stable$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -442,8 +443,7 @@
           "conditions": [
             {
               "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "^com\\.apple\\.Terminal$"
+                "^com\\.jetbrains"
               ],
               "type": "frontmost_application_unless"
             }
@@ -513,8 +513,7 @@
           "conditions": [
             {
               "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "^com\\.apple\\.Terminal$"
+                "^com\\.jetbrains"
               ],
               "type": "frontmost_application_unless"
             }
