@@ -1,0 +1,52 @@
+{
+  "keymap": [
+    {
+      "key": "cmd-d",
+      "trigger": "-duplicate-line"
+    },
+    {
+      "key": "ctrl-d",
+      "trigger": "duplicate-line"
+    },
+    {
+      "key": "alt-shift-down",
+      "trigger": "-move-line-down"
+    },
+    {
+      "key": "cmd-shift-down",
+      "trigger": "-move-line-down"
+    },
+    {
+      "key": "shift-ctrl-down",
+      "trigger": "move-line-down"
+    },
+    {
+      "key": "alt-shift-up",
+      "trigger": "-move-line-up"
+    },
+    {
+      "key": "cmd-shift-up",
+      "trigger": "-move-line-up"
+    },
+    {
+      "key": "shift-ctrl-up",
+      "trigger": "move-line-up"
+    },
+    {
+      "key": "cmd-backspace",
+      "trigger": "-delete-line"
+    },
+    {
+      "key": "ctrl-y",
+      "trigger": "delete-line"
+    },
+    {
+      "key": "ctrl-shift-down",
+      "trigger": "-go-to-next-symbol"
+    },
+    {
+      "key": "ctrl-shift-up",
+      "trigger": "-go-to-prev-symbol"
+    }
+  ]
+}
