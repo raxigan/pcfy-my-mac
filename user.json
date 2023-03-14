@@ -47,6 +47,82 @@
     {
       "key": "ctrl-shift-up",
       "trigger": "-go-to-prev-symbol"
+    },
+    {
+      "key": "alt-right",
+      "trigger": "-goto-word-right"
+    },
+    {
+      "key": "ctrl-right",
+      "trigger": "goto-word-right"
+    },
+    {
+      "key": "alt-left",
+      "trigger": "-goto-word-left"
+    },
+    {
+      "key": "ctrl-left",
+      "trigger": "goto-word-left"
+    },
+    {
+      "key": "shift-left",
+      "trigger": "-shift-arrow-left"
+    },
+    {
+      "key": "shift-left",
+      "trigger": "shift-arrow-left"
+    },
+    {
+      "key": "shift-right",
+      "trigger": "-shift-arrow-right"
+    },
+    {
+      "key": "shift-right",
+      "trigger": "shift-arrow-right"
+    },
+    {
+      "key": "shift-alt-right",
+      "trigger": "-shift-goto-word-right"
+    },
+    {
+      "key": "shift-ctrl-right",
+      "trigger": "shift-goto-word-right"
+    },
+    {
+      "key": "shift-alt-left",
+      "trigger": "-shift-goto-word-left"
+    },
+    {
+      "key": "shift-ctrl-left",
+      "trigger": "shift-goto-word-left"
+    },
+    {
+      "key": "cmd-a",
+      "trigger": "-select-all"
+    },
+    {
+      "key": "ctrl-a",
+      "trigger": "select-all"
+    },
+    {
+      "key": "ctrl-a",
+      "trigger": "-home"
+    },
+    {
+      "key": "cmd-c",
+      "trigger": "-copy"
+    },
+    {
+      "key": "ctrl-c",
+      "trigger": "copy"
+    },
+    {
+      "key": "cmd-v",
+      "trigger": "-paste"
+    },
+    {
+      "key": "ctrl-v",
+      "trigger": "paste"
     }
   ]
 }
