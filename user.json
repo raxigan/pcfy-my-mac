@@ -123,6 +123,50 @@
     {
       "key": "ctrl-v",
       "trigger": "paste"
+    },
+    {
+      "key": "alt-up",
+      "trigger": "-expand-selection"
+    },
+    {
+      "key": "ctrl-w",
+      "trigger": "expand-selection"
+    },
+    {
+      "key": "alt-down",
+      "trigger": "-shrink-selection"
+    },
+    {
+      "key": "shift-ctrl-w",
+      "trigger": "shrink-selection"
+    },
+    {
+      "key": "cmd-f",
+      "trigger": "-find"
+    },
+    {
+      "key": "ctrl-f",
+      "trigger": "find"
+    },
+    {
+      "key": "ctrl-f",
+      "trigger": "-arrow-right"
+    },
+    {
+      "key": "cmd-g",
+      "trigger": "-next-occurrence"
+    },
+    {
+      "key": "f3",
+      "trigger": "next-occurrence"
+    },
+    {
+      "key": "cmd-shift-g",
+      "trigger": "-prev-occurrence"
+    },
+    {
+      "key": "shift-f3",
+      "trigger": "prev-occurrence"
     }
   ]
 }
