@@ -167,6 +167,46 @@
     {
       "key": "shift-f3",
       "trigger": "prev-occurrence"
+    },
+    {
+      "key": "cmd-digit1",
+      "trigger": "-focus-and-toggle-left-panel"
+    },
+    {
+      "key": "alt-digit1",
+      "trigger": "focus-and-toggle-left-panel"
+    },
+    {
+      "key": "cmd-shift-o",
+      "trigger": "-show-goto-file-panel"
+    },
+    {
+      "key": "shift-ctrl-n",
+      "trigger": "show-goto-file-panel"
+    },
+    {
+      "key": "cmd-r",
+      "trigger": "-replace"
+    },
+    {
+      "key": "ctrl-r",
+      "trigger": "replace"
+    },
+    {
+      "key": "ctrl-r",
+      "trigger": "-go-to-run"
+    },
+    {
+      "key": "cmd-shift-r",
+      "trigger": "-replace-in-path"
+    },
+    {
+      "key": "shift-ctrl-r",
+      "trigger": "replace-in-path"
+    },
+    {
+      "key": "ctrl-shift-r",
+      "trigger": "-run/run-at-caret"
     }
   ]
 }
