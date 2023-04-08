@@ -1197,6 +1197,27 @@
           "type": "basic"
         }
       ]
+    },
+    {
+      "description": "Disable default app switcher",
+      "manipulators": [
+        {
+          "from": {
+            "key_code": "tab",
+            "modifiers": {
+              "mandatory": [
+                "command"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "f13"
+            }
+          ],
+          "type": "basic"
+        }
+      ]
     }
   ],
   "title": "PC mode"
