@@ -9,7 +9,9 @@
               "bundle_identifiers": [
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$"
+                "^com\\.apple\\.Terminal$",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -46,7 +48,9 @@
               "bundle_identifiers": [
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$"
+                "^com\\.apple\\.Terminal$",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -85,7 +89,9 @@
               "bundle_identifiers": [
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$"
+                "^com\\.apple\\.Terminal$",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -122,7 +128,9 @@
               "bundle_identifiers": [
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$"
+                "^com\\.apple\\.Terminal$",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -161,7 +169,9 @@
               "bundle_identifiers": [
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$"
+                "^com\\.apple\\.Terminal$",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -198,7 +208,9 @@
               "bundle_identifiers": [
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$"
+                "^com\\.apple\\.Terminal$",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -236,7 +248,9 @@
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
                 "^com\\.apple\\.Terminal$",
-                "^dev\\.warp\\.Warp-Stable$"
+                "Fleet.app",
+                "^dev\\.warp\\.Warp-Stable$",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -273,7 +287,9 @@
               "bundle_identifiers": [
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$"
+                "^com\\.apple\\.Terminal$",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -310,7 +326,9 @@
               "bundle_identifiers": [
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$"
+                "^com\\.apple\\.Terminal$",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -347,7 +365,9 @@
               "bundle_identifiers": [
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$"
+                "^com\\.apple\\.Terminal$",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -384,7 +404,9 @@
               "bundle_identifiers": [
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$"
+                "^com\\.apple\\.Terminal$",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -413,7 +435,7 @@
       ]
     },
     {
-      "description": "Ctrl + Alt + T (Open iTerm)",
+      "description": "Ctrl + Alt + T (Open Warp)",
       "manipulators": [
         {
           "from": {
@@ -429,7 +451,7 @@
           },
           "to": [
             {
-              "shell_command": "open -a iTerm"
+              "shell_command": "open -a Warp"
             }
           ],
           "type": "basic"
@@ -443,7 +465,8 @@
           "conditions": [
             {
               "bundle_identifiers": [
-                "^com\\.jetbrains"
+                "^com\\.jetbrains",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -478,7 +501,9 @@
           "conditions": [
             {
               "bundle_identifiers": [
-                "^com\\.jetbrains"
+                "^com\\.jetbrains",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -513,7 +538,9 @@
           "conditions": [
             {
               "bundle_identifiers": [
-                "^com\\.jetbrains"
+                "^com\\.jetbrains",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -550,7 +577,9 @@
               "bundle_identifiers": [
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$"
+                "^com\\.apple\\.Terminal$",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -587,7 +616,8 @@
               "bundle_identifiers": [
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$"
+                "^com\\.apple\\.Terminal$",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -724,7 +754,9 @@
               "bundle_identifiers": [
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$"
+                "^com\\.apple\\.Terminal$",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -761,7 +793,9 @@
               "bundle_identifiers": [
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$"
+                "^com\\.apple\\.Terminal$",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -859,7 +893,9 @@
           "conditions": [
             {
               "bundle_identifiers": [
-                "^com\\.jetbrains"
+                "^com\\.jetbrains",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_if"
             }
@@ -894,7 +930,9 @@
           "conditions": [
             {
               "bundle_identifiers": [
-                "^com\\.jetbrains"
+                "^com\\.jetbrains",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_if"
             }
@@ -928,7 +966,9 @@
           "conditions": [
             {
               "bundle_identifiers": [
-                "^com\\.jetbrains"
+                "^com\\.jetbrains",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_if"
             }
@@ -959,7 +999,9 @@
           "conditions": [
             {
               "bundle_identifiers": [
-                "^com\\.jetbrains"
+                "^com\\.jetbrains",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_if"
             }
@@ -990,7 +1032,9 @@
           "conditions": [
             {
               "bundle_identifiers": [
-                "^com\\.jetbrains"
+                "^com\\.jetbrains",
+                "Fleet.app",
+                "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_if"
             }
