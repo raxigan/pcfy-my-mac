@@ -12,4 +12,6 @@
     <keyboard-shortcut first-keystroke="alt #10000a7" />
   </action>
   <action id="Vcs.RollbackChangedLines" />
+  <action id="context.load" />
+  <action id="context.save" />
 </keymap>

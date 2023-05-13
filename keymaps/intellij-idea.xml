@@ -37,4 +37,6 @@
     <keyboard-shortcut first-keystroke="ctrl t" />
     <keyboard-shortcut first-keystroke="meta t" />
   </action>
+  <action id="context.load" />
+  <action id="context.save" />
 </keymap>

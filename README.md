@@ -70,11 +70,11 @@ What currently works:
 ### Importing IntelliJ IDEA keymap
 
 1. Install IntelliJ plugin [XWin Keymap](https://plugins.jetbrains.com/plugin/13094-xwin-keymap) (it used to be preinstalled).
-2. Copy [XWin IntelliJ IDEA.xml](https://github.com/raxigan/macos-pc-mode/blob/main/XWin%20IntelliJ%20IDEA.xml) file into the keymap configuration directory: `~/Library/Application Support/JetBrains/IntelliJIdea2021.3/keymaps` (the path may differ).
+2. Copy [XWin IntelliJ IDEA.xml](https://github.com/raxigan/macos-pc-mode/blob/main/keymaps%2Fintellij-idea.xml) file into the keymap configuration directory: `~/Library/Application Support/JetBrains/IntelliJIdea2021.3/keymaps` (the path may differ).
 
 > Alternatively you can clone this repository and create symbolic link to the keymap file.
 
-3. Restart IntelliJ IDEA and go to Preferences → Keymap and from the dropdown list select *XWin IntelliJ* keymap.
+3. Restart IntelliJ IDEA and go to Preferences → Keymap and from the dropdown list select *XWin IntelliJ IDEA* keymap.
 
 > Some configured shortcuts cannot be changed in the IDE because of validation. For such cases
 > it's required to perform the tweaks directly in the keymap file then restart the IDE.
