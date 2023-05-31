@@ -5,7 +5,6 @@ setup_color() {
   RED=$(printf '\033[31m')
   GREEN=$(printf '\033[32m')
   YELLOW=$(printf '\033[33m')
-  BLUE=$(printf '\033[34m')
   BOLD=$(printf '\033[1m')
   RESET=$(printf '\033[0m')
 }
@@ -84,9 +83,15 @@ install_jq() {
   fi
 }
 
-#KARABINER_CONFIG=~/.config/karabiner
-KARABINER_CONFIG_DIR=../karabiner-config
+PROFILE_NAME="PC mode"
+
+KARABINER_CONFIG_DIR=~/.config/karabiner
 KARABINER_CONFIG=$KARABINER_CONFIG_DIR/karabiner.json
+
+apply_rules() {
+  jq --arg PROFILE_NAME "$PROFILE_NAME" '(.profiles[] | select(.name == $PROFILE_NAME) | .complex_modifications.rules) += $rules[].rules' \
+    $KARABINER_CONFIG --slurpfile rules ../karabiner-elements/"$1" --indent 4 >INPUT.tmp && mv INPUT.tmp $KARABINER_CONFIG
+}
 
 install_karabiner() {
   if [ -f $KARABINER_CONFIG ]; then
@@ -116,16 +121,13 @@ main() {
   install_jq
   install_karabiner
 
-  # shellcheck disable=SC2034
-  PROFILE_NAME="PC mode"
-
   # do karabiner.json backup
   DATE=$(date +"%m-%d-%Y-%T")
   cp $KARABINER_CONFIG $KARABINER_CONFIG_DIR/karabiner-"$DATE".json
 
   # delete existing profile
   echo "delete existing profile"
-  jq 'del(.profiles[] | select(.name == "$PROFILE_NAME"))' $KARABINER_CONFIG >INPUT.tmp && mv INPUT.tmp $KARABINER_CONFIG
+  jq --arg PROFILE_NAME "$PROFILE_NAME" 'del(.profiles[] | select(.name == $PROFILE_NAME))' $KARABINER_CONFIG >INPUT.tmp && mv INPUT.tmp $KARABINER_CONFIG
 
   # add profile
   echo "add profile"
@@ -134,24 +136,22 @@ main() {
 
   # add rules to profile
   echo "add rules to profile"
-  jq '(.profiles[] | select(.name == "$PROFILE_NAME") | .complex_modifications.rules) += $rules[].rules' \
+  jq --arg PROFILE_NAME "$PROFILE_NAME" '(.profiles[] | select(.name == $PROFILE_NAME) | .complex_modifications.rules) += $rules[].rules' \
     $KARABINER_CONFIG --slurpfile rules ../karabiner-elements/main-rules.json --indent 4 >INPUT.tmp && mv INPUT.tmp $KARABINER_CONFIG
 
   #echo "install Albert rule"
-  echo "Do you want to install additional launcher rules? [Spotlight/Alfred/None]"
+  echo "Switch from Spotlight to Alfred? [Y/n]"
 
   read -r opt
 
   case ${opt:u} in
-  SPOTLIGHT*)
+  N*)
     echo "Installing spotlight rules"
-    jq '(.profiles[] | select(.name == "$PROFILE_NAME") | .complex_modifications.rules) += $rules[].rules' \
-      $KARABINER_CONFIG --slurpfile rules ../karabiner-elements/spotlight-rules.json --indent 4 >INPUT.tmp && mv INPUT.tmp $KARABINER_CONFIG
+    apply_rules spotlight-rules.json
     ;;
-  RED*)
+  Y*)
     echo "Installing alfred rules"
-    jq '(.profiles[] | select(.name == "$PROFILE_NAME") | .complex_modifications.rules) += $rules[].rules' \
-      $KARABINER_CONFIG --slurpfile rules ../karabiner-elements/alfred-rules.json --indent 4 >INPUT.tmp && mv INPUT.tmp $KARABINER_CONFIG
+    apply_rules alfred-rules.json
     ;;
   *)
     echo "Invalid choice. Shell change skipped."
@@ -159,8 +159,70 @@ main() {
     ;;
   esac
 
-  # Install IDE keymaps
-  # TODO: support IDEs not installed via toolbox
+  echo "${RESET}Is your ${RESET}${BOLD}external${RESET} keyboard mac or PC? [Mac/PC]"
+
+  read -r opt
+
+  case ${opt:u} in
+  MAC*)
+    echo "Preparing for Mac keyboard..."
+    jq --arg PROFILE_NAME "$PROFILE_NAME" '.profiles |= map(if .name == $PROFILE_NAME then walk(if type == "object" and .conditions then del(.conditions[] | select(.identifiers[]?.is_built_in_keyboard)) else . end) else . end)' $KARABINER_CONFIG --indent 4 \
+      >INPUT.tmp && mv INPUT.tmp $KARABINER_CONFIG
+    ;;
+  PC*) echo "Preparing for PC keyboard...";;
+  *)
+    echo "Invalid choice. Shell change skipped."
+    return
+    ;;
+  esac
+
+  echo "Do you use Terminal/iTerm/Warp? [Terminal/iTerm/Warp/none]"
+
+  read -r opt
+
+  case ${opt:u} in
+  TERMINAL*)
+    echo "Installing Terminal rules"
+    apply_rules terminal-rules.json
+    ;;
+  ITERM*)
+    echo "Installing iTerm rules"
+    apply_rules iterm-rules.json
+    ;;
+  WARP*)
+    echo "Installing Warp rules"
+    apply_rules iterm-rules.json
+    ;;
+  *)
+    echo "Invalid choice. Shell change skipped."
+    return
+    ;;
+  esac
+
+  IJ_VER=$(< ~/Library/Application' 'Support/JetBrains/Toolbox/scripts/idea grep IntelliJ | cut -d/ -f11)
+  ij_config_dir=""
+
+  echo "Installing IntelliJ (ver. ${IJ_VER}) keymap ..."
+  IJ_CONFIGS=~/Library/Application' 'Support/JetBrains
+
+
+  for entry in ~/Library/Caches/Jetbrains/*; do
+
+      version=$(find "$entry" -type d -name "*IntelliJ*" -exec grep "app.build.number=" {}/.appinfo \; | sed 's/.*app.build.number=\([^&]*\).*/\1/')
+
+      if [ "$version" = "$IJ_VER" ]; then
+          ij_config_dir=$(echo "$entry" | cut -d/ -f7)
+          break
+      fi
+  done
+
+  # if ij_config_dir empty then exit
+
+  KEYMAPS_DIR=${IJ_CONFIGS}/${ij_config_dir}/keymaps
+
+  curl --silent -o "${KEYMAPS_DIR}/test.xml" https://raw.githubusercontent.com/raxigan/macos-pc-mode/main/keymaps/intellij-idea.xml
+
+  echo "Restart IntelliJ. Then choose XWin IntelliJ IDEA in Preferences > Keymaps > Xwin"
 
 }
 
