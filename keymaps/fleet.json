@@ -207,6 +207,14 @@
     {
       "key": "ctrl-shift-r",
       "trigger": "-run/run-at-caret"
+    },
+    {
+      "key": "shift-ctrl-f",
+      "trigger": "find-in-path"
+    },
+    {
+      "key": "cmd-shift-f",
+      "trigger": "-find-in-path"
     }
   ]
 }

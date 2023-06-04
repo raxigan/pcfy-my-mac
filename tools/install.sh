@@ -1,5 +1,9 @@
 #!/bin/zsh
 
+# TODO change
+#BRANCH_NAME="main"
+BRANCH_NAME="feature/installation_script"
+
 setup_color() {
 
   RED=$(printf '\033[31m')
@@ -89,8 +93,15 @@ KARABINER_CONFIG_DIR=~/.config/karabiner
 KARABINER_CONFIG=$KARABINER_CONFIG_DIR/karabiner.json
 
 apply_rules() {
+  echo "$2"
   jq --arg PROFILE_NAME "$PROFILE_NAME" '(.profiles[] | select(.name == $PROFILE_NAME) | .complex_modifications.rules) += $rules[].rules' \
     $KARABINER_CONFIG --slurpfile rules ../karabiner-elements/"$1" --indent 4 >INPUT.tmp && mv INPUT.tmp $KARABINER_CONFIG
+}
+
+prepare_for_mac_keyboard() {
+  echo "$1"
+  jq --arg PROFILE_NAME "$PROFILE_NAME" '.profiles |= map(if .name == $PROFILE_NAME then walk(if type == "object" and .conditions then del(.conditions[] | select(.identifiers[]?.is_built_in_keyboard)) else . end) else . end)' $KARABINER_CONFIG --indent 4 \
+    >INPUT.tmp && mv INPUT.tmp $KARABINER_CONFIG
 }
 
 install_karabiner() {
@@ -112,6 +123,38 @@ install_karabiner() {
       ;;
     esac
   fi
+}
+
+install_ide_keymap() {
+
+    IDE_NAME=$1
+    IDE_FULL_NAME=$2
+    IDE_LAUNCHER_SCRIPT=$3
+
+    IDE_VERSION=$(grep <~/Library/Application' 'Support/JetBrains/Toolbox/scripts/"$IDE_LAUNCHER_SCRIPT" "$IDE_NAME" | cut -d/ -f11)
+    IDE_CONFIG_DIR=""
+
+    echo "Installing $IDE_NAME (ver. ${IDE_VERSION}) keymap ..."
+    IJ_CONFIGS=~/Library/Application' 'Support/JetBrains
+
+    for entry in ~/Library/Caches/Jetbrains/*; do
+
+      version=$(find "$entry" -type d -name "*$IDE_NAME*" -exec grep "app.build.number=" {}/.appinfo \; | sed 's/.*app.build.number=\([^&]*\).*/\1/')
+
+      if [ "$version" = "$IDE_VERSION" ]; then
+        IDE_CONFIG_DIR=$(echo "$entry" | cut -d/ -f7)
+        break
+      fi
+    done
+
+    # if IDE_CONFIG_DIR empty then exit
+
+    KEYMAPS_DIR=${IJ_CONFIGS}/${IDE_CONFIG_DIR}/keymaps
+    KEYMAP_FILENAME=$(echo "${IDE_FULL_NAME:l}" | tr " " "-")
+
+    curl --silent -o "${KEYMAPS_DIR}/${KEYMAP_FILENAME}.xml" https://raw.githubusercontent.com/raxigan/macos-pc-mode/$BRANCH_NAME/keymaps/"${KEYMAP_FILENAME}".xml
+
+    echo "Restart IDE_FULL_NAME. Then choose XWin $IDE_FULL_NAME in Preferences > Keymaps > Xwin"
 }
 
 main() {
@@ -136,93 +179,69 @@ main() {
 
   # add rules to profile
   echo "add rules to profile"
-  jq --arg PROFILE_NAME "$PROFILE_NAME" '(.profiles[] | select(.name == $PROFILE_NAME) | .complex_modifications.rules) += $rules[].rules' \
-    $KARABINER_CONFIG --slurpfile rules ../karabiner-elements/main-rules.json --indent 4 >INPUT.tmp && mv INPUT.tmp $KARABINER_CONFIG
+
+  apply_rules main-rules.json
+  apply_rules finder-rules.json
 
   #echo "install Albert rule"
-  echo "Switch from Spotlight to Alfred? [Y/n]"
+  #  echo "Switch from Spotlight to Alfred? [Y/n]"
+
+  echo -e "Your app launcher:\n"
+
+  echo "(1) Spotlight"
+  echo "(2) Launchpad"
+  echo "(3) Alfred"
+
+  echo -e "\n(R) Restart  (Q) Quit"
+  echo -e "\nChoice [1|2|3|r|q]:"
 
   read -r opt
 
   case ${opt:u} in
-  N*)
-    echo "Installing spotlight rules"
-    apply_rules spotlight-rules.json
-    ;;
-  Y*)
-    echo "Installing alfred rules"
-    apply_rules alfred-rules.json
-    ;;
+  1*) apply_rules spotlight-rules.json "Installing spotlight rules" ;;
+  2*) apply_rules launchpad-rules.json "Installing launchpad rules" ;;
+  3*) apply_rules alfred-rules.json "Installing launchpad rules" ;;
   *)
     echo "Invalid choice. Shell change skipped."
     return
     ;;
   esac
 
-  echo "${RESET}Is your ${RESET}${BOLD}external${RESET} keyboard mac or PC? [Mac/PC]"
+  echo -e "${RESET}Your ${RESET}${BOLD}external${RESET} keyboard type\n"
+
+  echo "(1) PC"
+  echo -e "(2) Mac"
+  echo -e "\n(R) Restart  (Q) Quit"
+  echo -e "\nChoice [1|2|r|q]:"
 
   read -r opt
 
   case ${opt:u} in
-  MAC*)
-    echo "Preparing for Mac keyboard..."
-    jq --arg PROFILE_NAME "$PROFILE_NAME" '.profiles |= map(if .name == $PROFILE_NAME then walk(if type == "object" and .conditions then del(.conditions[] | select(.identifiers[]?.is_built_in_keyboard)) else . end) else . end)' $KARABINER_CONFIG --indent 4 \
-      >INPUT.tmp && mv INPUT.tmp $KARABINER_CONFIG
-    ;;
-  PC*) echo "Preparing for PC keyboard...";;
-  *)
-    echo "Invalid choice. Shell change skipped."
-    return
-    ;;
+  1*) prepare_for_mac_keyboard "Preparing for Mac keyboard...";;
+  2*) echo "Preparing for PC keyboard..." ;;
+  *) echo "Invalid choice. Shell change skipped."; return;;
   esac
 
-  echo "Do you use Terminal/iTerm/Warp? [Terminal/iTerm/Warp/none]"
+  echo -e "What is your terminal of choice:\n"
+
+  echo "(1) Apple Terminal"
+  echo "(2) iTerm"
+  echo "(3) Warp"
+
+  echo -e "\n(R) Restart  (Q) Quit"
+  echo -e "\nChoice [1|2|3|r|q]:"
 
   read -r opt
 
   case ${opt:u} in
-  TERMINAL*)
-    echo "Installing Terminal rules"
-    apply_rules terminal-rules.json
-    ;;
-  ITERM*)
-    echo "Installing iTerm rules"
-    apply_rules iterm-rules.json
-    ;;
-  WARP*)
-    echo "Installing Warp rules"
-    apply_rules iterm-rules.json
-    ;;
-  *)
-    echo "Invalid choice. Shell change skipped."
-    return
-    ;;
+  1*) apply_rules terminal-rules.json "Installing Terminal rules" ;;
+  2*) apply_rules iterm-rules.json "Installing iTerm rules" ;;
+  3*) apply_rules warp-rules.json "Installing Warp rules" ;;
+  *) echo "Invalid choice. Shell change skipped."; return;;
   esac
 
-  IJ_VER=$(< ~/Library/Application' 'Support/JetBrains/Toolbox/scripts/idea grep IntelliJ | cut -d/ -f11)
-  ij_config_dir=""
-
-  echo "Installing IntelliJ (ver. ${IJ_VER}) keymap ..."
-  IJ_CONFIGS=~/Library/Application' 'Support/JetBrains
-
-
-  for entry in ~/Library/Caches/Jetbrains/*; do
-
-      version=$(find "$entry" -type d -name "*IntelliJ*" -exec grep "app.build.number=" {}/.appinfo \; | sed 's/.*app.build.number=\([^&]*\).*/\1/')
-
-      if [ "$version" = "$IJ_VER" ]; then
-          ij_config_dir=$(echo "$entry" | cut -d/ -f7)
-          break
-      fi
-  done
-
-  # if ij_config_dir empty then exit
-
-  KEYMAPS_DIR=${IJ_CONFIGS}/${ij_config_dir}/keymaps
-
-  curl --silent -o "${KEYMAPS_DIR}/test.xml" https://raw.githubusercontent.com/raxigan/macos-pc-mode/main/keymaps/intellij-idea.xml
-
-  echo "Restart IntelliJ. Then choose XWin IntelliJ IDEA in Preferences > Keymaps > Xwin"
+  install_ide_keymap "IntelliJ" "IntelliJ IDEA" "idea"
+  install_ide_keymap "PyCharm" "PyCharm CE" "pycharm"
 
 }
 

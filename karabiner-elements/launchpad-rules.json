@@ -1,7 +1,7 @@
 {
   "rules": [
     {
-      "description": "Opt & Cmd swap - Alfred version (Mac keyboards only)",
+      "description": "Opt & Cmd swap - Launchpad version (Mac keyboards only)",
       "manipulators": [
         {
           "conditions": [
@@ -30,10 +30,7 @@
           ],
           "to_if_alone": [
             {
-              "key_code": "spacebar",
-              "modifiers": [
-                "option"
-              ]
+              "apple_vendor_keyboard_key_code": "launchpad"
             }
           ],
           "type": "basic"
@@ -92,10 +89,7 @@
           ],
           "to_if_alone": [
             {
-              "key_code": "spacebar",
-              "modifiers": [
-                "option"
-              ]
+              "apple_vendor_keyboard_key_code": "launchpad"
             }
           ],
           "type": "basic"
@@ -130,7 +124,7 @@
       ]
     },
     {
-      "description": "Win (Open Alfred if installed by clicking its default shortcut)",
+      "description": "Win (Open Launchpad)",
       "manipulators": [
         {
           "from": {
@@ -147,15 +141,13 @@
           ],
           "to_if_alone": [
             {
-              "key_code": "spacebar",
-              "modifiers": [
-                "option"
-              ]
+              "apple_vendor_keyboard_key_code": "launchpad"
             }
           ],
           "type": "basic"
         }
       ]
     }
-  ]
+  ],
+  "title": "Spotlight customs"
 }
