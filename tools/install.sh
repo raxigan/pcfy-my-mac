@@ -127,42 +127,156 @@ install_karabiner() {
 
 install_ide_keymap() {
 
-    IDE_NAME=$1
-    IDE_FULL_NAME=$2
-    IDE_LAUNCHER_SCRIPT=$3
+  IDE_NAME=$1
+  IDE_FULL_NAME=$2
+  IDE_LAUNCHER_SCRIPT=$3
 
-    IDE_VERSION=$(grep <~/Library/Application' 'Support/JetBrains/Toolbox/scripts/"$IDE_LAUNCHER_SCRIPT" "$IDE_NAME" | cut -d/ -f11)
-    IDE_CONFIG_DIR=""
+  IDE_VERSION=$(grep <~/Library/Application' 'Support/JetBrains/Toolbox/scripts/"$IDE_LAUNCHER_SCRIPT" "$IDE_NAME" | cut -d/ -f11)
+  IDE_CONFIG_DIR=""
 
-    echo "Installing $IDE_NAME (ver. ${IDE_VERSION}) keymap ..."
-    IJ_CONFIGS=~/Library/Application' 'Support/JetBrains
+  echo "Installing XWin plugin..."
 
-    for entry in ~/Library/Caches/Jetbrains/*; do
+  open -naj "$IDE_FULL_NAME" --args installPlugins com.intellij.plugins.xwinkeymap
 
-      version=$(find "$entry" -type d -name "*$IDE_NAME*" -exec grep "app.build.number=" {}/.appinfo \; | sed 's/.*app.build.number=\([^&]*\).*/\1/')
+  echo "Installing $IDE_NAME (ver. ${IDE_VERSION}) keymap ..."
+  IJ_CONFIGS=~/Library/Application' 'Support/JetBrains
 
-      if [ "$version" = "$IDE_VERSION" ]; then
-        IDE_CONFIG_DIR=$(echo "$entry" | cut -d/ -f7)
-        break
-      fi
-    done
+  for entry in ~/Library/Caches/Jetbrains/*; do
 
-    # if IDE_CONFIG_DIR empty then exit
+    version=$(find "$entry" -type d -name "*$IDE_NAME*" -exec grep "app.build.number=" {}/.appinfo \; | sed 's/.*app.build.number=\([^&]*\).*/\1/')
 
-    KEYMAPS_DIR=${IJ_CONFIGS}/${IDE_CONFIG_DIR}/keymaps
-    KEYMAP_FILENAME=$(echo "${IDE_FULL_NAME:l}" | tr " " "-")
+    if [ "$version" = "$IDE_VERSION" ]; then
+      IDE_CONFIG_DIR=$(echo "$entry" | cut -d/ -f7)
+      break
+    fi
+  done
 
-    curl --silent -o "${KEYMAPS_DIR}/${KEYMAP_FILENAME}.xml" https://raw.githubusercontent.com/raxigan/macos-pc-mode/$BRANCH_NAME/keymaps/"${KEYMAP_FILENAME}".xml
+  # if IDE_CONFIG_DIR empty then exit
 
-    echo "Restart IDE_FULL_NAME. Then choose XWin $IDE_FULL_NAME in Preferences > Keymaps > Xwin"
+  KEYMAPS_DIR=${IJ_CONFIGS}/${IDE_CONFIG_DIR}/keymaps
+  KEYMAP_FILENAME=$(echo "${IDE_FULL_NAME:l}" | tr " " "-")
+
+  curl --silent -o "${KEYMAPS_DIR}/${KEYMAP_FILENAME}.xml" https://raw.githubusercontent.com/raxigan/macos-pc-mode/$BRANCH_NAME/keymaps/"${KEYMAP_FILENAME}".xml
+
+  echo "Restart $IDE_FULL_NAME. Then choose XWin $IDE_FULL_NAME in Preferences > Keymaps > Xwin"
+}
+
+quit() {
+  echo "${BOLD}Quitting...${BOLD}"
+  exit 0
 }
 
 main() {
+
+  clear
 
   setup_color
   install_brew
   install_jq
   install_karabiner
+
+  #  APP_LAUNCHER="spotlight"
+  #  TERMINAL="warp"
+  #  KEYBOARD_TYPE="pc"
+
+  while (($#)); do
+
+    case "$1" in
+    --app-launcher)
+      shift
+      if (($#)); then APP_LAUNCHER="$1"; else echo "ERROR: '--app-launcher' requires an argument" exit 1 >&2; fi
+      ;;
+    --terminal)
+      shift
+      if (($#)); then TERMINAL="$1" else echo "ERROR: '--terminal' requires an argument" exit 1 >&2; fi
+      ;;
+    --keyboard-type)
+      shift
+      if (($#)); then KEYBOARD_TYPE="$1" else echo "ERROR: '--keyboard-type' requires an argument" exit 1 >&2; fi
+      ;;
+    *)
+      echo "ERROR: Unknown argument: $1" >&2
+      exit 1
+      ;;
+    esac
+    shift
+  done
+
+  if [ -z "$APP_LAUNCHER" ]; then
+
+    clear
+    echo -e "${RESET}Your app launcher:\n"
+
+    echo "(1) Spotlight"
+    echo "(2) Launchpad"
+    echo "(3) Alfred"
+    echo "${YELLOW}(Q) Quit${RESET}"
+
+    printf "\nChoice [1|2|3|q]: "
+    read -r opt
+
+    case ${opt:l} in
+    1*) APP_LAUNCHER="spotlight" ;;
+    2*) APP_LAUNCHER="launchpad" ;;
+    3*) APP_LAUNCHER="alfred" ;;
+    q*) quit;;
+    *)
+      echo "Invalid choice. Shell change skipped."
+      return
+      ;;
+    esac
+  fi
+
+  if [ -z "$KEYBOARD_TYPE" ]; then
+
+    clear
+    echo -e "${RESET}Your ${RESET}${BOLD}external${RESET} keyboard type\n"
+
+    echo "(1) PC"
+    echo "(2) Mac"
+    echo "${YELLOW}(Q) Quit${RESET}"
+
+    printf "\nChoice [1|2|q]: "
+    read -r opt
+
+    case ${opt:l} in
+    1*) KEYBOARD_TYPE="pc" ;;
+    2*) KEYBOARD_TYPE="mac" ;;
+    q*) quit;;
+    *)
+      echo "Invalid choice. Shell change skipped."
+      return
+      ;;
+    esac
+  fi
+
+  if [ -z "$TERMINAL" ]; then
+    clear
+    echo -e "${RESET}What is your terminal of choice:\n"
+
+    echo "(1) Apple Terminal"
+    echo "(2) iTerm"
+    echo "(3) Warp"
+    echo "${YELLOW}(Q) Quit${RESET}"
+
+    printf "\nChoice [1|2|3|q]: "
+    read -r opt
+
+    case ${opt:l} in
+    1*) TERMINAL="default-terminal" ;;
+    2*) TERMINAL="iterm" ;;
+    3*) TERMINAL="warp" ;;
+    q*) quit;;
+    *)
+      echo "Invalid choice. Shell change skipped."
+      return
+      ;;
+    esac
+
+    clear
+  fi
+
+  #  === HERE do all actions
 
   # do karabiner.json backup
   DATE=$(date +"%m-%d-%Y-%T")
@@ -183,66 +297,40 @@ main() {
   apply_rules main-rules.json
   apply_rules finder-rules.json
 
-  #echo "install Albert rule"
-  #  echo "Switch from Spotlight to Alfred? [Y/n]"
-
-  echo -e "Your app launcher:\n"
-
-  echo "(1) Spotlight"
-  echo "(2) Launchpad"
-  echo "(3) Alfred"
-
-  echo -e "\n(R) Restart  (Q) Quit"
-  echo -e "\nChoice [1|2|3|r|q]:"
-
-  read -r opt
-
-  case ${opt:u} in
-  1*) apply_rules spotlight-rules.json "Installing spotlight rules" ;;
-  2*) apply_rules launchpad-rules.json "Installing launchpad rules" ;;
-  3*) apply_rules alfred-rules.json "Installing launchpad rules" ;;
+  case ${APP_LAUNCHER:l} in
+  spotlight*) apply_rules spotlight-rules.json "Installing Spotlight rules" ;;
+  launchpad*) apply_rules launchpad-rules.json "Installing Launchpad rules" ;;
+  alfred*) apply_rules alfred-rules.json "Installing Alfred rules" ;;
   *)
     echo "Invalid choice. Shell change skipped."
     return
     ;;
   esac
 
-  echo -e "${RESET}Your ${RESET}${BOLD}external${RESET} keyboard type\n"
-
-  echo "(1) PC"
-  echo -e "(2) Mac"
-  echo -e "\n(R) Restart  (Q) Quit"
-  echo -e "\nChoice [1|2|r|q]:"
-
-  read -r opt
-
-  case ${opt:u} in
-  1*) prepare_for_mac_keyboard "Preparing for Mac keyboard...";;
-  2*) echo "Preparing for PC keyboard..." ;;
-  *) echo "Invalid choice. Shell change skipped."; return;;
+  case ${KEYBOARD_TYPE:l} in
+  pc*) echo "Preparing for PC keyboard..." ;;
+  mac*) prepare_for_mac_keyboard "Preparing for Mac keyboard..." ;;
+  *)
+    echo "Invalid choice. Shell change skipped."
+    return
+    ;;
   esac
 
-  echo -e "What is your terminal of choice:\n"
-
-  echo "(1) Apple Terminal"
-  echo "(2) iTerm"
-  echo "(3) Warp"
-
-  echo -e "\n(R) Restart  (Q) Quit"
-  echo -e "\nChoice [1|2|3|r|q]:"
-
-  read -r opt
-
-  case ${opt:u} in
-  1*) apply_rules terminal-rules.json "Installing Terminal rules" ;;
-  2*) apply_rules iterm-rules.json "Installing iTerm rules" ;;
-  3*) apply_rules warp-rules.json "Installing Warp rules" ;;
-  *) echo "Invalid choice. Shell change skipped."; return;;
+  case ${TERMINAL:l} in
+  default-terminal*) apply_rules terminal-rules.json "Installing Terminal rules" ;;
+  iterm*) apply_rules iterm-rules.json "Installing iTerm rules" ;;
+  warp*) apply_rules warp-rules.json "Installing Warp rules" ;;
+  *)
+    echo "Invalid choice. Shell change skipped."
+    return
+    ;;
   esac
 
-  install_ide_keymap "IntelliJ" "IntelliJ IDEA" "idea"
-  install_ide_keymap "PyCharm" "PyCharm CE" "pycharm"
+  install_ide_keymap "IntelliJ" "IntelliJ IDEA Ultimate" "idea"
+  install_ide_keymap "PyCharm" "PyCharm Community Edition" "pycharm"
 
+  echo "${GREEN}SUCCESS${GREEN}"
+  exit 0
 }
 
 main "$@"
