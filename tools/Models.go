@@ -18,7 +18,7 @@ const (
 type Terminal int
 
 const (
-	AppleTerminal Terminal = iota
+	Default Terminal = iota
 	iTerm
 	Warp
 )
@@ -32,7 +32,7 @@ func (me KeyboardType) String() string {
 }
 
 func (me Terminal) String() string {
-	return [...]string{"Apple Terminal", "iTerm", "Warp"}[me]
+	return [...]string{"Default", "iTerm", "Warp"}[me]
 }
 
 type MySurvey struct {

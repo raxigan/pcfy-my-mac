@@ -12,7 +12,6 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
-	"time"
 )
 
 func commandExists(cmd string) bool {
@@ -106,7 +105,7 @@ func main() {
 	flag.Parse()
 
 	validateFlagValue(*appLauncherParam, []string{Spotlight.String(), Launchpad.String(), Alfred.String()})
-	validateFlagValue(*terminalParam, []string{AppleTerminal.String(), iTerm.String(), Warp.String()})
+	validateFlagValue(*terminalParam, []string{Default.String(), iTerm.String(), Warp.String()})
 	validateFlagValue(*kbTypeParam, []string{PC.String(), Mac.String()})
 
 	appLauncherSurvey := MySurvey{
@@ -124,39 +123,30 @@ func main() {
 	terminalSurvey := MySurvey{
 		flagValue:   *terminalParam,
 		description: "What is your terminal of choice:",
-		options:     []string{AppleTerminal.String(), iTerm.String(), Warp.String()},
+		options:     []string{Default.String(), iTerm.String(), Warp.String()},
 	}
-
-	fmt.Println("siemson")
 
 	app := makeSurvey(appLauncherSurvey)
 	kbType := makeSurvey(kbTypeSurvey)
 	term := makeSurvey(terminalSurvey)
 
-	fmt.Println(app)
-	fmt.Println(kbType)
-	fmt.Println(term)
-
-	currentTime := time.Now().Format("02-01-2006-15:04:05")
-
-	fmt.Println(currentTime)
+	//currentTime := time.Now().Format("02-01-2006-15:04:05")
+	//fmt.Println(currentTime)
 
 	pwd, _ := os.Getwd()
-	homeDir, errrr := os.UserHomeDir()
-	//fmt.Println(pwd)
-	fmt.Println(errrr)
+	homeDir, _ := os.UserHomeDir()
 
 	// do karabiner.json backup
 	original := homeDir + "/" + KarabinerConfig
 	//dest := homeDir + "/" + KarabinerConfigDir + "/karabiner-" + currentTime + ".json"
 	dest := homeDir + "/" + KarabinerConfigDir + "/karabiner-new" + ".json"
 
-	fmt.Println(original)
-	fmt.Println(dest)
+	//fmt.Println(original)
+	//fmt.Println(dest)
 
 	script.Exec("cp " + original + " " + dest).Wait()
 
-	fmt.Println(pwd)
+	//fmt.Println(pwd)
 
 	// add karabiner profile
 
@@ -166,14 +156,12 @@ func main() {
 	oldProfileName := "PC mode"
 	delete := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" 'del(.profiles[] | select(.name == \"%s\"))' %s >%s/INPUT.tmp && mv %s/INPUT.tmp %s", oldProfileName, oldProfileName, dest, pwd, pwd, dest)
 	cmd1 := exec.Command("/bin/bash", "-c", delete)
-	err1 := cmd1.Run()
-	fmt.Println(err1)
+	cmd1.Run()
 
 	// add new karabiner profile
 	cmdStr := fmt.Sprintf("jq '.profiles += $profile' %s --slurpfile profile %s/karabiner-elements-profile.json --indent 4 >%s/INPUT.tmp && mv %s/INPUT.tmp %s", dest, pwd, pwd, pwd, dest)
 	cmd2 := exec.Command("/bin/bash", "-c", cmdStr)
-	err := cmd2.Run()
-	fmt.Println(err)
+	cmd2.Run()
 
 	switch app {
 	case "spotlight":
@@ -188,16 +176,44 @@ func main() {
 	default:
 		fmt.Println("Value is not A, B, or C")
 	}
+
+	switch kbType {
+	case "pc":
+		fmt.Println("Applying pc keyboard rules...")
+	case "mac":
+		fmt.Println("Applying mac keyboard rules...")
+		prepareForMacKeyboard(dest, pwd)
+	default:
+		fmt.Println("Value is not A, B, or C")
+	}
+
+	switch term {
+	case "default":
+		fmt.Println("Applying apple terminal rules...")
+		applyRules("terminal-rules.json", dest, pwd)
+	case "iterm":
+		fmt.Println("Applying iterm rules...")
+		applyRules("iterm-rules.json", dest, pwd)
+	case "warp":
+		fmt.Println("Applying warp rules...")
+		applyRules("warp-rules.json", dest, pwd)
+	default:
+		fmt.Println("Value is not A, B, or C")
+	}
 }
 
 func applyRules(file string, karabinerConfig string, pwd string) {
 	newProfile := "PC mode GOLANG"
 	jq := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" '(.profiles[] | select(.name == \"%s\") | .complex_modifications.rules) += $rules[].rules' %s --slurpfile rules %s/../karabiner-elements/%s --indent 4 >%s/INPUT.tmp && mv %s/INPUT.tmp %s", newProfile, newProfile, karabinerConfig, pwd, file, pwd, pwd, karabinerConfig)
-	fmt.Println("apply rules jq:")
-	fmt.Println(jq)
 	cmd1 := exec.Command("/bin/bash", "-c", jq)
-	err := cmd1.Run()
-	fmt.Println(err)
+	cmd1.Run()
+}
+
+func prepareForMacKeyboard(karabinerConfig string, pwd string) {
+	newProfile := "PC mode GOLANG"
+	jq := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" '.profiles |= map(if .name == \"%s\" then walk(if type == \"object\" and .conditions then del(.conditions[] | select(.identifiers[]?.is_built_in_keyboard)) else . end) else . end)' %s --indent 4 >%s/INPUT.tmp && mv %s/INPUT.tmp %s", newProfile, newProfile, karabinerConfig, pwd, pwd, karabinerConfig)
+	cmd1 := exec.Command("/bin/bash", "-c", jq)
+	cmd1.Run()
 }
 
 func validateFlagValue(value string, validValues []string) {
