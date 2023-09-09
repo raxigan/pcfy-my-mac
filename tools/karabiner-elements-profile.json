@@ -266,7 +266,7 @@
       ]
     }
   ],
-  "name": "PC mode",
+  "name": "PC mode GOLANG",
   "parameters": {
     "delay_milliseconds_before_open_device": 1000
   },

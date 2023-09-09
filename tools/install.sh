@@ -136,7 +136,7 @@ install_ide_keymap() {
 
   echo "Installing XWin plugin..."
 
-  open -naj "$IDE_FULL_NAME" --args installPlugins com.intellij.plugins.xwinkeymap
+  open -na "$IDE_FULL_NAME.app" --args installPlugins com.intellij.plugins.xwinkeymap
 
   echo "Installing $IDE_NAME (ver. ${IDE_VERSION}) keymap ..."
   IJ_CONFIGS=~/Library/Application' 'Support/JetBrains
