@@ -204,8 +204,41 @@ func main() {
 		fmt.Println("Value is not A, B, or C")
 	}
 
-	installIdeKeymap("idea", "IntelliJ IDEA Ultimates")
+	run("clear")
 
+	ideKeymaps := []string{}
+	prompt := &survey.MultiSelect{
+		Message: "IDE keymaps to install:",
+		Options: []string{"IntelliJ IDEA Ultimate", "PyCharm Community Edition"},
+	}
+	survey.AskOne(prompt, &ideKeymaps)
+
+	installIdeKeymap("idea", "IntelliJ IDEA Ultimate")
+
+	run("clear")
+	fmt.Println("Installing Rectangle...")
+	run("brew install rectangle")
+	run("killall Rectangle")
+
+	rectJson := "RectangleConfig.json"
+
+	c := "cp " + pwd + "/../rectangle/" + rectJson + " \"" + homeDir + "/Library/Application Support/Rectangle/RectangleConfig.json\""
+	cmdMkdir := "mkdir -p " + "\"" + homeDir + "/Library/Application Support/Rectangle\""
+	run(cmdMkdir)
+	run(c)
+
+	run("open -a Rectangle")
+
+}
+
+func run(cmd string) {
+	output, err := exec.Command("/bin/bash", "-c", cmd).Output()
+
+	if err != nil {
+		fmt.Println("Error executing command:", err)
+	}
+
+	fmt.Print(string(output))
 }
 
 func installIdeKeymap(scriptName string, ideFullName string) {
