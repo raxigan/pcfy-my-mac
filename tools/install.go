@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"os/user"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 )
@@ -37,6 +38,8 @@ func fileExists(filename string) bool {
 
 const KarabinerConfigDir = ".config/karabiner"
 const KarabinerConfig = KarabinerConfigDir + "/karabiner.json"
+
+const branchName = "feature/installation_script"
 
 func makeSurvey(s MySurvey) string {
 	if s.flagValue == "" {
@@ -200,6 +203,58 @@ func main() {
 	default:
 		fmt.Println("Value is not A, B, or C")
 	}
+
+	installIdeKeymap("idea", "IntelliJ IDEA Ultimates")
+
+}
+
+func installIdeKeymap(scriptName string, ideFullName string) {
+	homeDir, _ := os.UserHomeDir()
+	content, err := os.ReadFile(homeDir + "/Library/Application Support/JetBrains/Toolbox/scripts/" + scriptName)
+	if err != nil {
+		fmt.Println("Error reading file:", err)
+		return
+	}
+
+	r := regexp.MustCompile(`ch-0/(\d+\.\d+\.\d+)`)
+	matches := r.FindSubmatch(content)
+	if matches != nil {
+
+		version := string(matches[1])
+
+		fmt.Println("Installin XWin plugin for " + version + " " + ideFullName)
+
+		cmd := fmt.Sprintf("open -na \"%s.app\" --args installPlugins com.intellij.plugins.xwinkeymap", ideFullName)
+
+		exec.Command("/bin/bash", "-c", cmd)
+
+		configs := homeDir + "/Library/Application Support/JetBrains"
+
+		dirPath := homeDir + "/Library/Caches/Jetbrains"
+		intelliJDir, err := findIntelliJDir(dirPath, version)
+		if err != nil {
+			fmt.Printf("Error: %s\n", err)
+			return
+		}
+
+		if intelliJDir != "" {
+
+			fmt.Printf("Found directory: %s\n", intelliJDir)
+
+			keymapDir := configs + "/" + filepath.Base(intelliJDir)
+			keymapFileName := strings.ReplaceAll(strings.ToLower(ideFullName), " ", "-")
+
+			// if there is a local dir with keymaps, then take it from there
+			cmd := fmt.Sprintf("curl --silent -o \"%s/%s.xml\" https://raw.githubusercontent.com/raxigan/macos-pc-mode/%s/keymaps/\"%s\".xml", keymapDir, keymapFileName, branchName, keymapFileName)
+			cmd1 := exec.Command("/bin/bash", "-c", cmd)
+			cmd1.Run()
+		} else {
+			fmt.Println("No matching directory found.")
+		}
+
+	} else {
+		fmt.Println("Version not found.")
+	}
 }
 
 func applyRules(file string, karabinerConfig string, pwd string) {
@@ -231,4 +286,31 @@ func toLowerSlice(slice []string) []string {
 		slice[i] = strings.ToLower(s)
 	}
 	return slice
+}
+
+func findIntelliJDir(path string, version string) (string, error) {
+	var resultDir string
+
+	err := filepath.Walk(path, func(currentPath string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		// If it's a directory and contains the name "IntelliJ"
+		if info.IsDir() && strings.Contains(info.Name(), "IntelliJ") {
+			appInfoPath := filepath.Join(currentPath, ".appinfo")
+			content, err := os.ReadFile(appInfoPath)
+			if err == nil && strings.Contains(string(content), "app.build.number="+version) {
+				resultDir = currentPath
+				return fmt.Errorf("found")
+			}
+		}
+		return nil
+	})
+
+	if err != nil && err.Error() == "found" {
+		err = nil
+	}
+
+	return resultDir, err
 }
