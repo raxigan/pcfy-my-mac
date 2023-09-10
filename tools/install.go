@@ -1,14 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/bitfield/script"
 	"os"
 	"os/exec"
-	"os/user"
 	"path/filepath"
 	"regexp"
 	"slices"
@@ -18,17 +16,6 @@ import (
 func commandExists(cmd string) bool {
 	_, err := exec.LookPath(cmd)
 	return err == nil
-}
-
-func fileExistsInHome(filename string) bool {
-	usr, err := user.Current()
-	if err != nil {
-		return false
-	}
-
-	fullPath := filepath.Join(usr.HomeDir, filename)
-
-	return fileExists(fullPath)
 }
 
 func fileExists(filename string) bool {
@@ -74,161 +61,182 @@ func main() {
 		fmt.Println("brew not installed. Exiting...")
 	}
 
-	if commandExists("jq") {
-		fmt.Println("jq installed")
-	} else {
-		fmt.Println("jq not installed")
-		script.Exec("brew install jq").Stdout()
-	}
-
-	if fileExistsInHome(KarabinerConfig) {
-		fmt.Println("karabiner installed")
-	} else {
-		fmt.Println("Karabiner-Elements is not installed. Do you want to install karabiner-elements? [Y/n]")
-		reader := bufio.NewReader(os.Stdin)
-		input, _ := reader.ReadString('\n')
-		response := strings.TrimSpace(strings.ToLower(input))
-
-		switch response {
-		case "y", "yes":
-			fmt.Println("yes")
-			script.Exec("brew install --cask karabiner-elements")
-		case "n", "no":
-			fmt.Println("Karabiner-Elements required. Returning.")
-			os.Exit(1)
-		default:
-			fmt.Println("Invalid input")
-		}
-	}
-
-	appLauncherParam := flag.String("app-launcher", "", "Description for appLauncher")
-	terminalParam := flag.String("terminal", "", "Description for terminalParam")
-	kbTypeParam := flag.String("keyboard-type", "", "Description for terminalParam")
-
-	flag.Parse()
-
-	validateFlagValue(*appLauncherParam, []string{Spotlight.String(), Launchpad.String(), Alfred.String()})
-	validateFlagValue(*terminalParam, []string{Default.String(), iTerm.String(), Warp.String()})
-	validateFlagValue(*kbTypeParam, []string{PC.String(), Mac.String()})
-
-	appLauncherSurvey := MySurvey{
-		flagValue:   *appLauncherParam,
-		description: "App Launcher:",
-		options:     []string{Spotlight.String(), Launchpad.String(), Alfred.String()},
-	}
-
-	kbTypeSurvey := MySurvey{
-		flagValue:   *kbTypeParam,
-		description: "Your external keyboard type:",
-		options:     []string{PC.String(), Mac.String()},
-	}
-
-	terminalSurvey := MySurvey{
-		flagValue:   *terminalParam,
-		description: "What is your terminal of choice:",
-		options:     []string{Default.String(), iTerm.String(), Warp.String()},
-	}
-
-	app := makeSurvey(appLauncherSurvey)
-	kbType := makeSurvey(kbTypeSurvey)
-	term := makeSurvey(terminalSurvey)
-
-	//currentTime := time.Now().Format("02-01-2006-15:04:05")
-	//fmt.Println(currentTime)
-
 	pwd, _ := os.Getwd()
 	homeDir, _ := os.UserHomeDir()
 
-	// do karabiner.json backup
-	original := homeDir + "/" + KarabinerConfig
-	//dest := homeDir + "/" + KarabinerConfigDir + "/karabiner-" + currentTime + ".json"
-	dest := homeDir + "/" + KarabinerConfigDir + "/karabiner-new" + ".json"
+	if shouldBeInstalled("jq", "jq", true, true, false) {
 
-	//fmt.Println(original)
-	//fmt.Println(dest)
-
-	script.Exec("cp " + original + " " + dest).Wait()
-
-	//fmt.Println(pwd)
-
-	// add karabiner profile
-
-	//deleteProfileJq := "jq --arg PROFILE_NAME \"PC mode\" 'del(.profiles[] | select(.name == $PROFILE_NAME))' $KARABINER_CONFIG >INPUT.tmp && mv INPUT.tmp $KARABINER_CONFIG"
-
-	// delete existing profile
-	oldProfileName := "PC mode"
-	delete := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" 'del(.profiles[] | select(.name == \"%s\"))' %s >%s/INPUT.tmp && mv %s/INPUT.tmp %s", oldProfileName, oldProfileName, dest, pwd, pwd, dest)
-	cmd1 := exec.Command("/bin/bash", "-c", delete)
-	cmd1.Run()
-
-	// add new karabiner profile
-	cmdStr := fmt.Sprintf("jq '.profiles += $profile' %s --slurpfile profile %s/karabiner-elements-profile.json --indent 4 >%s/INPUT.tmp && mv %s/INPUT.tmp %s", dest, pwd, pwd, pwd, dest)
-	cmd2 := exec.Command("/bin/bash", "-c", cmdStr)
-	cmd2.Run()
-
-	switch app {
-	case "spotlight":
-		fmt.Println("Applying spotlight rules...")
-		applyRules("spotlight-rules.json", dest, pwd)
-	case "launchpad":
-		fmt.Println("Applying launchpad rules...")
-		applyRules("launchpad-rules.json", dest, pwd)
-	case "alfred":
-		fmt.Println("Applying alfred rules...")
-		applyRules("alfred-rules.json", dest, pwd)
-	default:
-		fmt.Println("Value is not A, B, or C")
 	}
 
-	switch kbType {
-	case "pc":
-		fmt.Println("Applying pc keyboard rules...")
-	case "mac":
-		fmt.Println("Applying mac keyboard rules...")
-		prepareForMacKeyboard(dest, pwd)
-	default:
-		fmt.Println("Value is not A, B, or C")
+	if shouldBeInstalled("Karabiner-Elements", "Karabiner-Elements", false, true, true) {
+
+		appLauncherParam := flag.String("app-launcher", "", "Description for appLauncher")
+		terminalParam := flag.String("terminal", "", "Description for terminalParam")
+		kbTypeParam := flag.String("keyboard-type", "", "Description for terminalParam")
+
+		flag.Parse()
+
+		validateFlagValue(*appLauncherParam, []string{Spotlight.String(), Launchpad.String(), Alfred.String()})
+		validateFlagValue(*terminalParam, []string{Default.String(), iTerm.String(), Warp.String()})
+		validateFlagValue(*kbTypeParam, []string{PC.String(), Mac.String()})
+
+		appLauncherSurvey := MySurvey{
+			flagValue:   *appLauncherParam,
+			description: "App Launcher:",
+			options:     []string{Spotlight.String(), Launchpad.String(), Alfred.String()},
+		}
+
+		kbTypeSurvey := MySurvey{
+			flagValue:   *kbTypeParam,
+			description: "Your external keyboard type:",
+			options:     []string{PC.String(), Mac.String()},
+		}
+
+		terminalSurvey := MySurvey{
+			flagValue:   *terminalParam,
+			description: "What is your terminal of choice:",
+			options:     []string{Default.String(), iTerm.String(), Warp.String()},
+		}
+
+		app := makeSurvey(appLauncherSurvey)
+		kbType := makeSurvey(kbTypeSurvey)
+		term := makeSurvey(terminalSurvey)
+
+		//currentTime := time.Now().Format("02-01-2006-15:04:05")
+		//fmt.Println(currentTime)
+
+		// do karabiner.json backup
+		original := homeDir + "/" + KarabinerConfig
+		//dest := homeDir + "/" + KarabinerConfigDir + "/karabiner-" + currentTime + ".json"
+		dest := homeDir + "/" + KarabinerConfigDir + "/karabiner-new" + ".json"
+
+		//fmt.Println(original)
+		//fmt.Println(dest)
+
+		script.Exec("cp " + original + " " + dest).Wait()
+
+		//fmt.Println(pwd)
+
+		// add karabiner profile
+
+		//deleteProfileJq := "jq --arg PROFILE_NAME \"PC mode\" 'del(.profiles[] | select(.installAltTab == $PROFILE_NAME))' $KARABINER_CONFIG >INPUT.tmp && mv INPUT.tmp $KARABINER_CONFIG"
+
+		// delete existing profile
+		oldProfileName := "PC mode"
+		delete := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" 'del(.profiles[] | select(.installAltTab == \"%s\"))' %s >%s/INPUT.tmp && mv %s/INPUT.tmp %s", oldProfileName, oldProfileName, dest, pwd, pwd, dest)
+		cmd1 := exec.Command("/bin/bash", "-c", delete)
+		cmd1.Run()
+
+		// add new karabiner profile
+		cmdStr := fmt.Sprintf("jq '.profiles += $profile' %s --slurpfile profile %s/karabiner-elements-profile.json --indent 4 >%s/INPUT.tmp && mv %s/INPUT.tmp %s", dest, pwd, pwd, pwd, dest)
+		cmd2 := exec.Command("/bin/bash", "-c", cmdStr)
+		cmd2.Run()
+
+		switch app {
+		case "spotlight":
+			fmt.Println("Applying spotlight rules...")
+			applyRules("spotlight-rules.json", dest, pwd)
+		case "launchpad":
+			fmt.Println("Applying launchpad rules...")
+			applyRules("launchpad-rules.json", dest, pwd)
+		case "alfred":
+			fmt.Println("Applying alfred rules...")
+			applyRules("alfred-rules.json", dest, pwd)
+		default:
+			fmt.Println("Value is not A, B, or C")
+		}
+
+		switch kbType {
+		case "pc":
+			fmt.Println("Applying pc keyboard rules...")
+		case "mac":
+			fmt.Println("Applying mac keyboard rules...")
+			prepareForMacKeyboard(dest, pwd)
+		default:
+			fmt.Println("Value is not A, B, or C")
+		}
+
+		switch term {
+		case "default":
+			fmt.Println("Applying apple terminal rules...")
+			applyRules("terminal-rules.json", dest, pwd)
+		case "iterm":
+			fmt.Println("Applying iterm rules...")
+			applyRules("iterm-rules.json", dest, pwd)
+		case "warp":
+			fmt.Println("Applying warp rules...")
+			applyRules("warp-rules.json", dest, pwd)
+		default:
+			fmt.Println("Value is not A, B, or C")
+		}
+
+		run("clear")
+
+		ideKeymaps := []string{}
+		prompt := &survey.MultiSelect{
+			Message: "IDE keymaps to install:",
+			Options: []string{"IntelliJ IDEA Ultimate", "PyCharm Community Edition"},
+		}
+		survey.AskOne(prompt, &ideKeymaps)
+
+		installIdeKeymap("idea", "IntelliJ IDEA Ultimate")
 	}
 
-	switch term {
-	case "default":
-		fmt.Println("Applying apple terminal rules...")
-		applyRules("terminal-rules.json", dest, pwd)
-	case "iterm":
-		fmt.Println("Applying iterm rules...")
-		applyRules("iterm-rules.json", dest, pwd)
-	case "warp":
-		fmt.Println("Applying warp rules...")
-		applyRules("warp-rules.json", dest, pwd)
-	default:
-		fmt.Println("Value is not A, B, or C")
+	if shouldBeInstalled("Rectangle", "Rectangle", false, false, true) {
+		run("killall Rectangle")
+
+		rectJson := "RectangleConfig.json"
+
+		c := "cp " + pwd + "/../rectangle/" + rectJson + " \"" + homeDir + "/Library/Application Support/Rectangle/RectangleConfig.json\""
+		cmdMkdir := "mkdir -p " + "\"" + homeDir + "/Library/Application Support/Rectangle\""
+		run(cmdMkdir)
+		run(c)
+
+		run("open -a Rectangle")
+	}
+
+	shouldBeInstalled("Alt-Tab", "AltTab", false, false, true)
+}
+
+func shouldBeInstalled(appName string, appFile string, isCommand bool, isRequired bool, isCask bool) bool {
+
+	exists := false
+
+	if isCommand {
+		exists = commandExists(appName)
+	} else {
+		exists = fileExists("/Applications/" + appFile + ".app")
+	}
+
+	if exists {
+		return true
 	}
 
 	run("clear")
-
-	ideKeymaps := []string{}
-	prompt := &survey.MultiSelect{
-		Message: "IDE keymaps to install:",
-		Options: []string{"IntelliJ IDEA Ultimate", "PyCharm Community Edition"},
+	installApp := false
+	prompt := &survey.Confirm{
+		Message: fmt.Sprintf("Do you want to install %s?", appName),
 	}
-	survey.AskOne(prompt, &ideKeymaps)
+	survey.AskOne(prompt, &installApp)
 
-	installIdeKeymap("idea", "IntelliJ IDEA Ultimate")
+	if installApp {
+		fmt.Println(fmt.Sprintf("Installing %s...", appName))
 
-	run("clear")
-	fmt.Println("Installing Rectangle...")
-	run("brew install rectangle")
-	run("killall Rectangle")
+		brewCommand := fmt.Sprintf("brew install %s", strings.ToLower(appName))
 
-	rectJson := "RectangleConfig.json"
+		if isCask {
+			brewCommand = fmt.Sprintf("brew install --cask %s", strings.ToLower(appName))
+		}
 
-	c := "cp " + pwd + "/../rectangle/" + rectJson + " \"" + homeDir + "/Library/Application Support/Rectangle/RectangleConfig.json\""
-	cmdMkdir := "mkdir -p " + "\"" + homeDir + "/Library/Application Support/Rectangle\""
-	run(cmdMkdir)
-	run(c)
+		script.Exec(brewCommand).Stdout()
+	} else {
+		if isRequired {
+			fmt.Println(fmt.Sprintf("%s is required to proceed. Quitting...", appName))
+			os.Exit(0)
+		}
+	}
 
-	run("open -a Rectangle")
-
+	return installApp
 }
 
 func run(cmd string) {
