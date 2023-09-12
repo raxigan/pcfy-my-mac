@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bufio"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/AlecAivazis/survey/v2"
@@ -195,7 +197,46 @@ func main() {
 		run("open -a Rectangle")
 	}
 
-	shouldBeInstalled("Alt-Tab", "AltTab", false, false, true)
+	if shouldBeInstalled("Alt-Tab", "AltTab", false, false, true) {
+		run("killall AltTab")
+
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Enter text: ")
+		text, _ := reader.ReadString('\n')
+		fmt.Println(text)
+
+		jsonName := "Settings.json"
+		jsonFile := pwd + "/../alt-tab/" + jsonName
+
+		fileContent, _ := os.ReadFile(jsonFile)
+
+		//var settings map[string]interface{}
+		var settings map[string]string
+
+		eee := json.Unmarshal(fileContent, &settings)
+
+		fmt.Println(eee)
+
+		for key, value := range settings {
+
+			sprintf := fmt.Sprintf("defaults write com.lwouis.alt-tab-macos '%s' '%s'", key, value)
+
+			if key == "blacklist" {
+				sprintf = fmt.Sprintf(`defaults write com.lwouis.alt-tab-macos %s "'%s'"`, key, strings.ReplaceAll(value, `"`, `\"`))
+			}
+
+			run(sprintf)
+		}
+
+		run("defaults read com.lwouis.alt-tab-macos")
+
+		reader1 := bufio.NewReader(os.Stdin)
+		fmt.Print("Enter text: ")
+		text1, _ := reader1.ReadString('\n')
+		fmt.Println(text1)
+
+		run("open -a AltTab")
+	}
 }
 
 func shouldBeInstalled(appName string, appFile string, isCommand bool, isRequired bool, isCask bool) bool {
