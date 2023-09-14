@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -64,23 +63,25 @@ func main() {
 	}
 
 	pwd, _ := os.Getwd()
-	homeDir, _ := os.UserHomeDir()
+	homeDirDefault, _ := os.UserHomeDir()
+
+	homeDirFlagValue := flag.String("homedir", homeDirDefault, "Home directory path")
+	appLauncherParam := flag.String("app-launcher", "", "Description for appLauncher")
+	terminalParam := flag.String("terminal", "", "Description for terminalParam")
+	kbTypeParam := flag.String("keyboard-type", "", "Description for terminalParam")
+
+	flag.Parse()
+	homeDir := *homeDirFlagValue
+
+	validateFlagValue(*appLauncherParam, []string{Spotlight.String(), Launchpad.String(), Alfred.String()})
+	validateFlagValue(*terminalParam, []string{Default.String(), iTerm.String(), Warp.String()})
+	validateFlagValue(*kbTypeParam, []string{PC.String(), Mac.String()})
 
 	if shouldBeInstalled("jq", "jq", true, true, false) {
 
 	}
 
 	if shouldBeInstalled("Karabiner-Elements", "Karabiner-Elements", false, true, true) {
-
-		appLauncherParam := flag.String("app-launcher", "", "Description for appLauncher")
-		terminalParam := flag.String("terminal", "", "Description for terminalParam")
-		kbTypeParam := flag.String("keyboard-type", "", "Description for terminalParam")
-
-		flag.Parse()
-
-		validateFlagValue(*appLauncherParam, []string{Spotlight.String(), Launchpad.String(), Alfred.String()})
-		validateFlagValue(*terminalParam, []string{Default.String(), iTerm.String(), Warp.String()})
-		validateFlagValue(*kbTypeParam, []string{PC.String(), Mac.String()})
 
 		appLauncherSurvey := MySurvey{
 			flagValue:   *appLauncherParam,
@@ -172,71 +173,79 @@ func main() {
 			fmt.Println("Value is not A, B, or C")
 		}
 
-		run("clear")
+		runWithOutput("clear")
 
-		ideKeymaps := []string{}
+		// add a flag for it
+		var ideKeymaps []string
 		prompt := &survey.MultiSelect{
 			Message: "IDE keymaps to install:",
 			Options: []string{"IntelliJ IDEA Ultimate", "PyCharm Community Edition"},
 		}
 		survey.AskOne(prompt, &ideKeymaps)
 
-		installIdeKeymap("idea", "IntelliJ IDEA Ultimate")
+		if contains(ideKeymaps, "IntelliJ IDEA Ultimate") {
+			installIdeKeymap("idea", "IntelliJ IDEA Ultimate")
+		}
 	}
 
 	if shouldBeInstalled("Rectangle", "Rectangle", false, false, true) {
-		run("killall Rectangle")
+		runWithOutput("killall Rectangle")
 
 		rectJson := "RectangleConfig.json"
 
 		c := "cp " + pwd + "/../rectangle/" + rectJson + " \"" + homeDir + "/Library/Application Support/Rectangle/RectangleConfig.json\""
 		cmdMkdir := "mkdir -p " + "\"" + homeDir + "/Library/Application Support/Rectangle\""
-		run(cmdMkdir)
-		run(c)
+		runWithOutput(cmdMkdir)
+		runWithOutput(c)
 
-		run("open -a Rectangle")
+		runWithOutput("open -a Rectangle")
 	}
 
 	if shouldBeInstalled("Alt-Tab", "AltTab", false, false, true) {
-		run("killall AltTab")
-
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Enter text: ")
-		text, _ := reader.ReadString('\n')
-		fmt.Println(text)
+		runWithOutput("killall AltTab")
 
 		jsonName := "Settings.json"
 		jsonFile := pwd + "/../alt-tab/" + jsonName
 
 		fileContent, _ := os.ReadFile(jsonFile)
 
-		//var settings map[string]interface{}
-		var settings map[string]string
+		var settings map[string]interface{}
 
 		eee := json.Unmarshal(fileContent, &settings)
 
-		fmt.Println(eee)
+		if eee != nil {
+			fmt.Println(eee)
+		}
+
+		altTabPlist := homeDir + "/Library/preferences/com.lwouis.alt-tab-macos.plist"
+		fmt.Println(altTabPlist)
 
 		for key, value := range settings {
 
-			sprintf := fmt.Sprintf("defaults write com.lwouis.alt-tab-macos '%s' '%s'", key, value)
+			str := fmt.Sprintf("%v", value)
+			sprintf := fmt.Sprintf("defaults write %s '%s' '%s'", altTabPlist, key, str)
 
 			if key == "blacklist" {
-				sprintf = fmt.Sprintf(`defaults write com.lwouis.alt-tab-macos %s "'%s'"`, key, strings.ReplaceAll(value, `"`, `\"`))
+				sprintf = fmt.Sprintf(`defaults write %s %s "'%s'"`, altTabPlist, key, strings.ReplaceAll(str, `"`, `\"`))
 			}
 
-			run(sprintf)
+			runWithOutput(sprintf)
 		}
 
-		run("defaults read com.lwouis.alt-tab-macos")
-
-		reader1 := bufio.NewReader(os.Stdin)
-		fmt.Print("Enter text: ")
-		text1, _ := reader1.ReadString('\n')
-		fmt.Println(text1)
-
-		run("open -a AltTab")
+		runWithOutput("defaults read com.lwouis.alt-tab-macos")
+		runWithOutput("open -a AltTab")
 	}
+
+	fmt.Println("SUCCESS")
+}
+
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
 
 func shouldBeInstalled(appName string, appFile string, isCommand bool, isRequired bool, isCask bool) bool {
@@ -253,7 +262,7 @@ func shouldBeInstalled(appName string, appFile string, isCommand bool, isRequire
 		return true
 	}
 
-	run("clear")
+	runWithOutput("clear")
 	installApp := false
 	prompt := &survey.Confirm{
 		Message: fmt.Sprintf("Do you want to install %s?", appName),
@@ -280,14 +289,31 @@ func shouldBeInstalled(appName string, appFile string, isCommand bool, isRequire
 	return installApp
 }
 
-func run(cmd string) {
-	output, err := exec.Command("/bin/bash", "-c", cmd).Output()
+func runWithOutput(cmd string) {
+	run(cmd, true)
+}
 
-	if err != nil {
-		fmt.Println("Error executing command:", err)
+func runNoOutput(cmd string) {
+	run(cmd, false)
+}
+
+func run(cmd string, out bool) {
+
+	fmt.Println("Running: " + cmd)
+
+	if out {
+		output, err := exec.Command("/bin/bash", "-c", cmd).Output()
+
+		if err != nil {
+			fmt.Println("Error executing command: "+cmd+"\n", err)
+		}
+
+		fmt.Print(string(output))
+
+	} else {
+		exec.Command("/bin/bash", "-c", cmd)
 	}
 
-	fmt.Print(string(output))
 }
 
 func installIdeKeymap(scriptName string, ideFullName string) {
@@ -378,7 +404,6 @@ func findIntelliJDir(path string, version string) (string, error) {
 			return err
 		}
 
-		// If it's a directory and contains the name "IntelliJ"
 		if info.IsDir() && strings.Contains(info.Name(), "IntelliJ") {
 			appInfoPath := filepath.Join(currentPath, ".appinfo")
 			content, err := os.ReadFile(appInfoPath)
