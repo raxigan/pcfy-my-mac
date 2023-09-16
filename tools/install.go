@@ -12,6 +12,7 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+	"time"
 )
 
 func commandExists(cmd string) bool {
@@ -24,8 +25,56 @@ func fileExists(filename string) bool {
 	return !os.IsNotExist(err)
 }
 
-const KarabinerConfigDir = ".config/karabiner"
-const KarabinerConfig = KarabinerConfigDir + "/karabiner.json"
+type Installation struct {
+	homeDir    string
+	currentDir string
+
+	appLauncher  string
+	terminal     string
+	keyboardType string
+
+	installationTime time.Time
+}
+
+func NewInstallation() *Installation {
+
+	pwd, _ := os.Getwd()
+	homeDirDefault, _ := os.UserHomeDir()
+
+	homeDirFlagValue := flag.String("homedir", homeDirDefault, "Home directory path")
+	appLauncherParam := flag.String("app-launcher", "", "Description for appLauncher")
+	terminalParam := flag.String("terminal", "", "Description for terminalParam")
+	kbTypeParam := flag.String("keyboard-type", "", "Description for terminalParam")
+
+	flag.Parse()
+	homeDir := *homeDirFlagValue
+
+	validateFlagValue(*appLauncherParam, []string{Spotlight.String(), Launchpad.String(), Alfred.String()})
+	validateFlagValue(*terminalParam, []string{Default.String(), iTerm.String(), Warp.String()})
+	validateFlagValue(*kbTypeParam, []string{PC.String(), Mac.String()})
+
+	return &Installation{
+		homeDir:          homeDir,
+		currentDir:       pwd,
+		appLauncher:      *appLauncherParam,
+		terminal:         *terminalParam,
+		keyboardType:     *kbTypeParam,
+		installationTime: time.Now(),
+	}
+}
+
+func (p Installation) karabinerConfigDir() string {
+	return p.homeDir + "/.config/karabiner"
+}
+
+func (p Installation) karabinerConfigFile() string {
+	return p.karabinerConfigDir() + "/karabiner.json"
+}
+
+func (p Installation) karabinerConfigBackupFile() string {
+	currentTime := p.installationTime.Format("02-01-2023-15:04:05")
+	return p.karabinerConfigDir() + "/karabiner-" + currentTime + ".json"
+}
 
 const branchName = "feature/installation_script"
 
@@ -57,25 +106,10 @@ func makeSurvey(s MySurvey) string {
 }
 
 func main() {
+	NewInstallation().install()
+}
 
-	if !commandExists("brew") {
-		fmt.Println("brew not installed. Exiting...")
-	}
-
-	pwd, _ := os.Getwd()
-	homeDirDefault, _ := os.UserHomeDir()
-
-	homeDirFlagValue := flag.String("homedir", homeDirDefault, "Home directory path")
-	appLauncherParam := flag.String("app-launcher", "", "Description for appLauncher")
-	terminalParam := flag.String("terminal", "", "Description for terminalParam")
-	kbTypeParam := flag.String("keyboard-type", "", "Description for terminalParam")
-
-	flag.Parse()
-	homeDir := *homeDirFlagValue
-
-	validateFlagValue(*appLauncherParam, []string{Spotlight.String(), Launchpad.String(), Alfred.String()})
-	validateFlagValue(*terminalParam, []string{Default.String(), iTerm.String(), Warp.String()})
-	validateFlagValue(*kbTypeParam, []string{PC.String(), Mac.String()})
+func (p Installation) install() {
 
 	if shouldBeInstalled("jq", "jq", true, true, false) {
 
@@ -84,19 +118,19 @@ func main() {
 	if shouldBeInstalled("Karabiner-Elements", "Karabiner-Elements", false, true, true) {
 
 		appLauncherSurvey := MySurvey{
-			flagValue:   *appLauncherParam,
+			flagValue:   p.appLauncher,
 			description: "App Launcher:",
 			options:     []string{Spotlight.String(), Launchpad.String(), Alfred.String()},
 		}
 
 		kbTypeSurvey := MySurvey{
-			flagValue:   *kbTypeParam,
+			flagValue:   p.keyboardType,
 			description: "Your external keyboard type:",
 			options:     []string{PC.String(), Mac.String()},
 		}
 
 		terminalSurvey := MySurvey{
-			flagValue:   *terminalParam,
+			flagValue:   p.terminal,
 			description: "What is your terminal of choice:",
 			options:     []string{Default.String(), iTerm.String(), Warp.String()},
 		}
@@ -105,46 +139,35 @@ func main() {
 		kbType := makeSurvey(kbTypeSurvey)
 		term := makeSurvey(terminalSurvey)
 
-		//currentTime := time.Now().Format("02-01-2006-15:04:05")
-		//fmt.Println(currentTime)
-
 		// do karabiner.json backup
-		original := homeDir + "/" + KarabinerConfig
-		//dest := homeDir + "/" + KarabinerConfigDir + "/karabiner-" + currentTime + ".json"
-		dest := homeDir + "/" + KarabinerConfigDir + "/karabiner-new" + ".json"
+		original := p.karabinerConfigFile()
+		backupDest := p.karabinerConfigBackupFile()
 
-		//fmt.Println(original)
-		//fmt.Println(dest)
-
-		script.Exec("cp " + original + " " + dest).Wait()
-
-		//fmt.Println(pwd)
-
-		// add karabiner profile
-
-		//deleteProfileJq := "jq --arg PROFILE_NAME \"PC mode\" 'del(.profiles[] | select(.installAltTab == $PROFILE_NAME))' $KARABINER_CONFIG >INPUT.tmp && mv INPUT.tmp $KARABINER_CONFIG"
+		script.Exec("cp " + original + " " + backupDest).Wait()
 
 		// delete existing profile
-		oldProfileName := "PC mode"
-		delete := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" 'del(.profiles[] | select(.installAltTab == \"%s\"))' %s >%s/INPUT.tmp && mv %s/INPUT.tmp %s", oldProfileName, oldProfileName, dest, pwd, pwd, dest)
-		cmd1 := exec.Command("/bin/bash", "-c", delete)
-		cmd1.Run()
+		profileName := "PC mode GOLANG"
+		deleteProfileJqCmd := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" 'del(.profiles[] | select(.name == \"%s\"))' %s >%s/INPUT.tmp && mv %s/INPUT.tmp %s", profileName, profileName, p.karabinerConfigFile(), p.currentDir, p.currentDir, p.karabinerConfigFile())
+		runWithOutput(deleteProfileJqCmd)
 
 		// add new karabiner profile
-		cmdStr := fmt.Sprintf("jq '.profiles += $profile' %s --slurpfile profile %s/karabiner-elements-profile.json --indent 4 >%s/INPUT.tmp && mv %s/INPUT.tmp %s", dest, pwd, pwd, pwd, dest)
-		cmd2 := exec.Command("/bin/bash", "-c", cmdStr)
-		cmd2.Run()
+		addProfileJqCmd := fmt.Sprintf("jq '.profiles += $profile' %s --slurpfile profile %s/karabiner-elements-profile.json --indent 4 >%s/INPUT.tmp && mv %s/INPUT.tmp %s", p.karabinerConfigFile(), p.currentDir, p.currentDir, p.currentDir, p.karabinerConfigFile())
+		runWithOutput(addProfileJqCmd)
+
+		// unselect other profiles
+		unselectJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name != \"%s\" then .selected = false else . end)' %s > INPUT.tmp && mv INPUT.tmp %s", profileName, p.karabinerConfigFile(), p.karabinerConfigFile())
+		runWithOutput(unselectJqCmd)
 
 		switch app {
 		case "spotlight":
 			fmt.Println("Applying spotlight rules...")
-			applyRules("spotlight-rules.json", dest, pwd)
+			applyRules("spotlight-rules.json", p.karabinerConfigFile(), p.currentDir)
 		case "launchpad":
 			fmt.Println("Applying launchpad rules...")
-			applyRules("launchpad-rules.json", dest, pwd)
+			applyRules("launchpad-rules.json", p.karabinerConfigFile(), p.currentDir)
 		case "alfred":
 			fmt.Println("Applying alfred rules...")
-			applyRules("alfred-rules.json", dest, pwd)
+			applyRules("alfred-rules.json", p.karabinerConfigFile(), p.currentDir)
 		default:
 			fmt.Println("Value is not A, B, or C")
 		}
@@ -154,7 +177,7 @@ func main() {
 			fmt.Println("Applying pc keyboard rules...")
 		case "mac":
 			fmt.Println("Applying mac keyboard rules...")
-			prepareForMacKeyboard(dest, pwd)
+			prepareForMacKeyboard(p.karabinerConfigFile(), p.currentDir)
 		default:
 			fmt.Println("Value is not A, B, or C")
 		}
@@ -162,13 +185,13 @@ func main() {
 		switch term {
 		case "default":
 			fmt.Println("Applying apple terminal rules...")
-			applyRules("terminal-rules.json", dest, pwd)
+			applyRules("terminal-rules.json", p.karabinerConfigFile(), p.currentDir)
 		case "iterm":
 			fmt.Println("Applying iterm rules...")
-			applyRules("iterm-rules.json", dest, pwd)
+			applyRules("iterm-rules.json", p.karabinerConfigFile(), p.currentDir)
 		case "warp":
 			fmt.Println("Applying warp rules...")
-			applyRules("warp-rules.json", dest, pwd)
+			applyRules("warp-rules.json", p.karabinerConfigFile(), p.currentDir)
 		default:
 			fmt.Println("Value is not A, B, or C")
 		}
@@ -193,8 +216,8 @@ func main() {
 
 		rectJson := "RectangleConfig.json"
 
-		c := "cp " + pwd + "/../rectangle/" + rectJson + " \"" + homeDir + "/Library/Application Support/Rectangle/RectangleConfig.json\""
-		cmdMkdir := "mkdir -p " + "\"" + homeDir + "/Library/Application Support/Rectangle\""
+		c := "cp " + p.currentDir + "/../rectangle/" + rectJson + " \"" + p.homeDir + "/Library/Application Support/Rectangle/RectangleConfig.json\""
+		cmdMkdir := "mkdir -p " + "\"" + p.homeDir + "/Library/Application Support/Rectangle\""
 		runWithOutput(cmdMkdir)
 		runWithOutput(c)
 
@@ -205,7 +228,7 @@ func main() {
 		runWithOutput("killall AltTab")
 
 		jsonName := "Settings.json"
-		jsonFile := pwd + "/../alt-tab/" + jsonName
+		jsonFile := p.currentDir + "/../alt-tab/" + jsonName
 
 		fileContent, _ := os.ReadFile(jsonFile)
 
@@ -217,7 +240,7 @@ func main() {
 			fmt.Println(eee)
 		}
 
-		altTabPlist := homeDir + "/Library/preferences/com.lwouis.alt-tab-macos.plist"
+		altTabPlist := p.homeDir + "/Library/preferences/com.lwouis.alt-tab-macos.plist"
 		fmt.Println(altTabPlist)
 
 		for key, value := range settings {
@@ -291,10 +314,6 @@ func shouldBeInstalled(appName string, appFile string, isCommand bool, isRequire
 
 func runWithOutput(cmd string) {
 	run(cmd, true)
-}
-
-func runNoOutput(cmd string) {
-	run(cmd, false)
 }
 
 func run(cmd string, out bool) {
