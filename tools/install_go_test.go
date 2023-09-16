@@ -9,24 +9,41 @@ import (
 	"testing"
 )
 
-func TestInstall(t *testing.T) {
+func TestInstallWarpAlfredPC(t *testing.T) {
 
 	pwd, _ := os.Getwd()
 	curr := pwd + "/homedir"
-	fmt.Println(pwd)
-	fmt.Println(curr)
 
-	os.Args = []string{"script_name", "--homedir=" + curr, "--terminal=warp", "--app-launcher=alfred", "--keyboard-type=mac"}
+	os.Args = []string{"script_name", "--homedir=" + curr, "--terminal=warp", "--app-launcher=alfred", "--keyboard-type=pc"}
 
-	i := NewInstallation()
-	i.install()
-
-	fmt.Println(i.karabinerConfigDir())
-	fmt.Println(i.karabinerConfigFile())
-	fmt.Println(i.currentDir)
+	i := NewInstallation().install()
 
 	actual := i.karabinerConfigFile()
-	expected := pwd + "/expected/karabiner-expected.json"
+	expected := pwd + "/expected/karabiner-expected-warp-alfred-pc.json"
+	if !compareJSONFiles(t, actual, expected) {
+		copyFile(i.karabinerConfigFile(), i.karabinerTestInvalidConfig())
+		copyFile(i.karabinerTestDefaultConfig(), i.karabinerConfigFile())
+		removeFile(i.karabinerConfigBackupFile())
+		t.Fatalf("JSON files %s and %s are not equal", actual, expected)
+	}
+
+	//restore karabiner initial config
+	removeFile(i.karabinerConfigBackupFile())
+	removeFile(i.karabinerTestInvalidConfig())
+	copyFile(i.karabinerTestDefaultConfig(), i.karabinerConfigFile())
+}
+
+func TestInstallItermSpotlightMac(t *testing.T) {
+
+	pwd, _ := os.Getwd()
+	curr := pwd + "/homedir"
+
+	os.Args = []string{"script_name", "--homedir=" + curr, "--terminal=iterm", "--app-launcher=spotlight", "--keyboard-type=mac"}
+
+	i := NewInstallation().install()
+
+	actual := i.karabinerConfigFile()
+	expected := pwd + "/expected/karabiner-expected-iterm-spotlight-mac.json"
 	if !compareJSONFiles(t, actual, expected) {
 		copyFile(i.karabinerConfigFile(), i.karabinerTestInvalidConfig())
 		copyFile(i.karabinerTestDefaultConfig(), i.karabinerConfigFile())

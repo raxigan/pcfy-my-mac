@@ -53,6 +53,8 @@ func NewInstallation() *Installation {
 	validateFlagValue(*terminalParam, []string{Default.String(), iTerm.String(), Warp.String()})
 	validateFlagValue(*kbTypeParam, []string{PC.String(), Mac.String()})
 
+	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+
 	return &Installation{
 		homeDir:          homeDir,
 		currentDir:       pwd,
@@ -109,7 +111,7 @@ func main() {
 	NewInstallation().install()
 }
 
-func (p Installation) install() {
+func (p Installation) install() Installation {
 
 	if shouldBeInstalled("jq", "jq", true, true, false) {
 
@@ -260,6 +262,8 @@ func (p Installation) install() {
 	}
 
 	fmt.Println("SUCCESS")
+
+	return p
 }
 
 func contains(s []string, e string) bool {
