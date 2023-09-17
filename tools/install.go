@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/AlecAivazis/survey/v2"
@@ -76,6 +75,10 @@ func (p Installation) karabinerConfigFile() string {
 func (p Installation) karabinerConfigBackupFile() string {
 	currentTime := p.installationTime.Format("02-01-2023-15:04:05")
 	return p.karabinerConfigDir() + "/karabiner-" + currentTime + ".json"
+}
+
+func (p Installation) preferencesDir() string {
+	return p.homeDir + "/Library/preferences"
 }
 
 const branchName = "feature/installation_script"
@@ -220,46 +223,24 @@ func (p Installation) install() Installation {
 	if shouldBeInstalled("Rectangle", "Rectangle", false, false, true) {
 		runWithOutput("killall Rectangle")
 
-		rectJson := "RectangleConfig.json"
+		xmlFile := p.currentDir + "/../rectangle/Settings.xml"
+		rectanglePlist := p.preferencesDir() + "/com.knollsoft.Rectangle.plist"
 
-		c := "cp " + p.currentDir + "/../rectangle/" + rectJson + " \"" + p.homeDir + "/Library/Application Support/Rectangle/RectangleConfig.json\""
-		cmdMkdir := "mkdir -p " + "\"" + p.homeDir + "/Library/Application Support/Rectangle\""
-		runWithOutput(cmdMkdir)
-		runWithOutput(c)
+		plutilCmd := fmt.Sprintf("plutil -convert binary1 -o %s %s", rectanglePlist, xmlFile)
+		runWithOutput(plutilCmd)
 
+		runWithOutput("defaults read com.knollsoft.Rectangle")
 		runWithOutput("open -a Rectangle")
 	}
 
 	if shouldBeInstalled("Alt-Tab", "AltTab", false, false, true) {
 		runWithOutput("killall AltTab")
 
-		jsonName := "Settings.json"
-		jsonFile := p.currentDir + "/../alt-tab/" + jsonName
+		xmlFile := p.currentDir + "/../alt-tab/Settings.xml"
+		altTabPlist := p.preferencesDir() + "/com.lwouis.alt-tab-macos.plist"
 
-		fileContent, _ := os.ReadFile(jsonFile)
-
-		var settings map[string]interface{}
-
-		eee := json.Unmarshal(fileContent, &settings)
-
-		if eee != nil {
-			fmt.Println(eee)
-		}
-
-		altTabPlist := p.homeDir + "/Library/preferences/com.lwouis.alt-tab-macos.plist"
-		fmt.Println(altTabPlist)
-
-		for key, value := range settings {
-
-			str := fmt.Sprintf("%v", value)
-			sprintf := fmt.Sprintf("defaults write %s '%s' '%s'", altTabPlist, key, str)
-
-			if key == "blacklist" {
-				sprintf = fmt.Sprintf(`defaults write %s %s "'%s'"`, altTabPlist, key, strings.ReplaceAll(str, `"`, `\"`))
-			}
-
-			runWithOutput(sprintf)
-		}
+		plutilCmd := fmt.Sprintf("plutil -convert binary1 -o %s %s", altTabPlist, xmlFile)
+		runWithOutput(plutilCmd)
 
 		runWithOutput("defaults read com.lwouis.alt-tab-macos")
 		runWithOutput("open -a AltTab")
@@ -357,7 +338,7 @@ func installIdeKeymap(scriptName string, ideFullName string) {
 
 		version := string(matches[1])
 
-		fmt.Println("Installin XWin plugin for " + version + " " + ideFullName)
+		fmt.Println("Installing XWin plugin for " + version + " " + ideFullName)
 
 		cmd := fmt.Sprintf("open -na \"%s.app\" --args installPlugins com.intellij.plugins.xwinkeymap", ideFullName)
 
