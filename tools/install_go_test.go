@@ -14,7 +14,7 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 	pwd, _ := os.Getwd()
 	curr := pwd + "/homedir"
 
-	os.Args = []string{"script_name", "--homedir=" + curr, "--terminal=warp", "--app-launcher=alfred", "--keyboard-type=pc"}
+	os.Args = []string{"script_name", "--homedir=" + curr, "--terminal=warp", "--app-launcher=alfred", "--keyboard-type=pc", "--ides=intellij"}
 
 	i := NewInstallation().install()
 
@@ -57,12 +57,12 @@ func TestInstallItermSpotlightMac(t *testing.T) {
 	copyFile(i.karabinerTestDefaultConfig(), i.karabinerConfigFile())
 }
 
-func (p Installation) karabinerTestDefaultConfig() string {
-	return p.karabinerConfigDir() + "/karabiner-default.json"
+func (i Installation) karabinerTestDefaultConfig() string {
+	return i.karabinerConfigDir() + "/karabiner-default.json"
 }
 
-func (p Installation) karabinerTestInvalidConfig(terminal, appLauncher, keyboardType string) string {
-	return p.karabinerConfigDir() + fmt.Sprintf("/karabiner-invalid-%s-%s-%s.json", terminal, appLauncher, keyboardType)
+func (i Installation) karabinerTestInvalidConfig(terminal, appLauncher, keyboardType string) string {
+	return i.karabinerConfigDir() + fmt.Sprintf("/karabiner-invalid-%s-%s-%s.json", terminal, appLauncher, keyboardType)
 }
 
 func removeFile(name string) {

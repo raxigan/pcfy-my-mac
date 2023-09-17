@@ -36,7 +36,48 @@ func (me Terminal) String() string {
 }
 
 type MySurvey struct {
-	flagValue   string
 	description string
 	options     []string
+}
+
+type IDE struct {
+	name              string
+	fullName          string
+	toolboxScriptName string
+	flag              string
+}
+
+func IntelliJ() IDE {
+	return IDE{
+		name:              "IntelliJ",
+		fullName:          "IntelliJ IDEA Ultimate",
+		toolboxScriptName: "idea",
+		flag:              "intellij",
+	}
+}
+
+func PyCharm() IDE {
+	return IDE{
+		name:              "PyCharm CE",
+		fullName:          "PyCharm Community Edition",
+		toolboxScriptName: "pycharm",
+		flag:              "pycharm-ce",
+	}
+}
+
+func GoLand() IDE {
+	return IDE{
+		name:              "GoLand",
+		fullName:          "GoLand",
+		toolboxScriptName: "goland",
+		flag:              "goland",
+	}
+}
+
+func Fleet() IDE {
+	return IDE{
+		name:              "Fleet",
+		fullName:          "Fleet",
+		toolboxScriptName: "fleet",
+	}
 }
