@@ -156,6 +156,10 @@ func (p Installation) install() Installation {
 		addProfileJqCmd := fmt.Sprintf("jq '.profiles += $profile' %s --slurpfile profile %s/karabiner-elements-profile.json --indent 4 >%s/INPUT.tmp && mv %s/INPUT.tmp %s", p.karabinerConfigFile(), p.currentDir, p.currentDir, p.currentDir, p.karabinerConfigFile())
 		runWithOutput(addProfileJqCmd)
 
+		// rename the profile
+		renameJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name == \"PROFILE_NAME\" then .name = \"%s\" else . end)' %s > INPUT.tmp && mv INPUT.tmp %s", profileName, p.karabinerConfigFile(), p.karabinerConfigFile())
+		runWithOutput(renameJqCmd)
+
 		// unselect other profiles
 		unselectJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name != \"%s\" then .selected = false else . end)' %s > INPUT.tmp && mv INPUT.tmp %s", profileName, p.karabinerConfigFile(), p.karabinerConfigFile())
 		runWithOutput(unselectJqCmd)

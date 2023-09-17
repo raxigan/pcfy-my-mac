@@ -21,7 +21,7 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 	actual := i.karabinerConfigFile()
 	expected := pwd + "/expected/karabiner-expected-warp-alfred-pc.json"
 	if !compareJSONFiles(t, actual, expected) {
-		copyFile(i.karabinerConfigFile(), i.karabinerTestInvalidConfig())
+		copyFile(i.karabinerConfigFile(), i.karabinerTestInvalidConfig("warp", "alfred", "pc"))
 		copyFile(i.karabinerTestDefaultConfig(), i.karabinerConfigFile())
 		removeFile(i.karabinerConfigBackupFile())
 		t.Fatalf("JSON files %s and %s are not equal", actual, expected)
@@ -29,7 +29,7 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 
 	//restore karabiner initial config
 	removeFile(i.karabinerConfigBackupFile())
-	removeFile(i.karabinerTestInvalidConfig())
+	removeFile(i.karabinerTestInvalidConfig("warp", "alfred", "pc"))
 	copyFile(i.karabinerTestDefaultConfig(), i.karabinerConfigFile())
 }
 
@@ -45,7 +45,7 @@ func TestInstallItermSpotlightMac(t *testing.T) {
 	actual := i.karabinerConfigFile()
 	expected := pwd + "/expected/karabiner-expected-iterm-spotlight-mac.json"
 	if !compareJSONFiles(t, actual, expected) {
-		copyFile(i.karabinerConfigFile(), i.karabinerTestInvalidConfig())
+		copyFile(i.karabinerConfigFile(), i.karabinerTestInvalidConfig("iterm", "spotlight", "mac"))
 		copyFile(i.karabinerTestDefaultConfig(), i.karabinerConfigFile())
 		removeFile(i.karabinerConfigBackupFile())
 		t.Fatalf("JSON files %s and %s are not equal", actual, expected)
@@ -53,7 +53,7 @@ func TestInstallItermSpotlightMac(t *testing.T) {
 
 	//restore karabiner initial config
 	removeFile(i.karabinerConfigBackupFile())
-	removeFile(i.karabinerTestInvalidConfig())
+	removeFile(i.karabinerTestInvalidConfig("iterm", "spotlight", "mac"))
 	copyFile(i.karabinerTestDefaultConfig(), i.karabinerConfigFile())
 }
 
@@ -61,8 +61,8 @@ func (p Installation) karabinerTestDefaultConfig() string {
 	return p.karabinerConfigDir() + "/karabiner-default.json"
 }
 
-func (p Installation) karabinerTestInvalidConfig() string {
-	return p.karabinerConfigDir() + "/karabiner-invalid.json"
+func (p Installation) karabinerTestInvalidConfig(terminal, appLauncher, keyboardType string) string {
+	return p.karabinerConfigDir() + fmt.Sprintf("/karabiner-invalid-%s-%s-%s.json", terminal, appLauncher, keyboardType)
 }
 
 func removeFile(name string) {
