@@ -33,6 +33,7 @@ type Installation struct {
 	keyboardType string
 	ides         []string
 
+	profileName      string
 	installationTime time.Time
 }
 
@@ -84,6 +85,7 @@ func NewInstallation() *Installation {
 		terminal:         *terminalParam,
 		keyboardType:     *kbTypeParam,
 		ides:             ides,
+		profileName:      "PC mode GOLANG",
 		installationTime: time.Now(),
 	}
 }
@@ -191,6 +193,8 @@ func (i Installation) install() Installation {
 			term = makeSurvey(terminalSurvey)
 		}
 
+		run("killall Karabiner-Elements")
+
 		// do karabiner.json backup
 		original := i.karabinerConfigFile()
 		backupDest := i.karabinerConfigBackupFile()
@@ -198,8 +202,7 @@ func (i Installation) install() Installation {
 		script.Exec("cp " + original + " " + backupDest).Wait()
 
 		// delete existing profile
-		profileName := "PC mode GOLANG"
-		deleteProfileJqCmd := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" 'del(.profiles[] | select(.name == \"%s\"))' %s >%s/INPUT.tmp && mv %s/INPUT.tmp %s", profileName, profileName, i.karabinerConfigFile(), i.currentDir, i.currentDir, i.karabinerConfigFile())
+		deleteProfileJqCmd := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" 'del(.profiles[] | select(.name == \"%s\"))' %s >%s/INPUT.tmp && mv %s/INPUT.tmp %s", i.profileName, i.profileName, i.karabinerConfigFile(), i.currentDir, i.currentDir, i.karabinerConfigFile())
 		run(deleteProfileJqCmd)
 
 		// add new karabiner profile
@@ -207,23 +210,26 @@ func (i Installation) install() Installation {
 		run(addProfileJqCmd)
 
 		// rename the profile
-		renameJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name == \"PROFILE_NAME\" then .name = \"%s\" else . end)' %s > INPUT.tmp && mv INPUT.tmp %s", profileName, i.karabinerConfigFile(), i.karabinerConfigFile())
+		renameJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name == \"PROFILE_NAME\" then .name = \"%s\" else . end)' %s > INPUT.tmp && mv INPUT.tmp %s", i.profileName, i.karabinerConfigFile(), i.karabinerConfigFile())
 		run(renameJqCmd)
 
 		// unselect other profiles
-		unselectJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name != \"%s\" then .selected = false else . end)' %s > INPUT.tmp && mv INPUT.tmp %s", profileName, i.karabinerConfigFile(), i.karabinerConfigFile())
+		unselectJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name != \"%s\" then .selected = false else . end)' %s > INPUT.tmp && mv INPUT.tmp %s", i.profileName, i.karabinerConfigFile(), i.karabinerConfigFile())
 		run(unselectJqCmd)
+
+		applyRules(i, "main-rules.json")
+		applyRules(i, "finder-rules.json")
 
 		switch app {
 		case "spotlight":
 			fmt.Println("Applying spotlight rules...")
-			applyRules("spotlight-rules.json", i.karabinerConfigFile(), i.currentDir)
+			applyRules(i, "spotlight-rules.json")
 		case "launchpad":
 			fmt.Println("Applying launchpad rules...")
-			applyRules("launchpad-rules.json", i.karabinerConfigFile(), i.currentDir)
+			applyRules(i, "launchpad-rules.json")
 		case "alfred":
 			fmt.Println("Applying alfred rules...")
-			applyRules("alfred-rules.json", i.karabinerConfigFile(), i.currentDir)
+			applyRules(i, "alfred-rules.json")
 		default:
 			fmt.Println("Value is not A, B, or C")
 		}
@@ -233,7 +239,7 @@ func (i Installation) install() Installation {
 			fmt.Println("Applying pc keyboard rules...")
 		case "mac":
 			fmt.Println("Applying mac keyboard rules...")
-			prepareForMacKeyboard(i.karabinerConfigFile(), i.currentDir)
+			prepareForMacKeyboard(i, i.karabinerConfigFile(), i.currentDir)
 		default:
 			fmt.Println("Value is not A, B, or C")
 		}
@@ -241,17 +247,18 @@ func (i Installation) install() Installation {
 		switch term {
 		case "default":
 			fmt.Println("Applying apple terminal rules...")
-			applyRules("terminal-rules.json", i.karabinerConfigFile(), i.currentDir)
+			applyRules(i, "terminal-rules.json")
 		case "iterm":
 			fmt.Println("Applying iterm rules...")
-			applyRules("iterm-rules.json", i.karabinerConfigFile(), i.currentDir)
+			applyRules(i, "iterm-rules.json")
 		case "warp":
 			fmt.Println("Applying warp rules...")
-			applyRules("warp-rules.json", i.karabinerConfigFile(), i.currentDir)
+			applyRules(i, "warp-rules.json")
 		default:
 			fmt.Println("Value is not A, B, or C")
 		}
 
+		run("open -a Karabiner-Elements")
 		run("clear")
 
 		var supportedIDEs map[string]IDE
@@ -391,7 +398,7 @@ func installIdeKeymap(ide IDE, installation Installation) {
 		configs := installation.homeDir + "/Library/Application Support/JetBrains"
 
 		dirPath := installation.homeDir + "/Library/Caches/Jetbrains"
-		intelliJDir, err := findIntelliJDir(dirPath, version)
+		intelliJDir, err := findIntelliJDir(dirPath, version, ide.name)
 		if err != nil {
 			fmt.Printf("Error: %s\n", err)
 			return
@@ -416,16 +423,14 @@ func installIdeKeymap(ide IDE, installation Installation) {
 	}
 }
 
-func applyRules(file string, karabinerConfig string, pwd string) {
-	newProfile := "PC mode GOLANG"
-	jq := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" '(.profiles[] | select(.name == \"%s\") | .complex_modifications.rules) += $rules[].rules' %s --slurpfile rules %s/../karabiner-elements/%s --indent 4 >%s/INPUT.tmp && mv %s/INPUT.tmp %s", newProfile, newProfile, karabinerConfig, pwd, file, pwd, pwd, karabinerConfig)
+func applyRules(i Installation, file string) {
+	jq := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" '(.profiles[] | select(.name == \"%s\") | .complex_modifications.rules) += $rules[].rules' %s --slurpfile rules %s/../karabiner-elements/%s --indent 4 >%s/INPUT.tmp && mv %s/INPUT.tmp %s", i.profileName, i.profileName, i.karabinerConfigFile(), i.currentDir, file, i.currentDir, i.currentDir, i.karabinerConfigFile())
 	cmd1 := exec.Command("/bin/bash", "-c", jq)
 	cmd1.Run()
 }
 
-func prepareForMacKeyboard(karabinerConfig string, pwd string) {
-	newProfile := "PC mode GOLANG"
-	jq := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" '.profiles |= map(if .name == \"%s\" then walk(if type == \"object\" and .conditions then del(.conditions[] | select(.identifiers[]?.is_built_in_keyboard)) else . end) else . end)' %s --indent 4 >%s/INPUT.tmp && mv %s/INPUT.tmp %s", newProfile, newProfile, karabinerConfig, pwd, pwd, karabinerConfig)
+func prepareForMacKeyboard(i Installation, karabinerConfig string, pwd string) {
+	jq := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" '.profiles |= map(if .name == \"%s\" then walk(if type == \"object\" and .conditions then del(.conditions[] | select(.identifiers[]?.is_built_in_keyboard)) else . end) else . end)' %s --indent 4 >%s/INPUT.tmp && mv %s/INPUT.tmp %s", i.profileName, i.profileName, karabinerConfig, pwd, pwd, karabinerConfig)
 	cmd1 := exec.Command("/bin/bash", "-c", jq)
 	cmd1.Run()
 }
@@ -449,7 +454,7 @@ func toLowerSlice(slice []string) []string {
 	return slice
 }
 
-func findIntelliJDir(path string, version string) (string, error) {
+func findIntelliJDir(path, version, ideName string) (string, error) {
 	var resultDir string
 
 	err := filepath.Walk(path, func(currentPath string, info os.FileInfo, err error) error {
@@ -457,7 +462,7 @@ func findIntelliJDir(path string, version string) (string, error) {
 			return err
 		}
 
-		if info.IsDir() && strings.Contains(info.Name(), "IntelliJ") {
+		if info.IsDir() && strings.Contains(strings.ToLower(info.Name()), strings.ToLower(ideName)) {
 			appInfoPath := filepath.Join(currentPath, ".appinfo")
 			content, err := os.ReadFile(appInfoPath)
 			if err == nil && strings.Contains(string(content), "app.build.number="+version) {
