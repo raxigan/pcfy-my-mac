@@ -41,7 +41,7 @@ type MySurvey struct {
 }
 
 type IDE struct {
-	name              string
+	directory         string
 	fullName          string
 	toolboxScriptName string
 	flag              string
@@ -49,7 +49,7 @@ type IDE struct {
 
 func IntelliJ() IDE {
 	return IDE{
-		name:              "IntelliJ",
+		directory:         "IntelliJIdea",
 		fullName:          "IntelliJ IDEA Ultimate",
 		toolboxScriptName: "idea",
 		flag:              "intellij",
@@ -58,7 +58,7 @@ func IntelliJ() IDE {
 
 func PyCharm() IDE {
 	return IDE{
-		name:              "PyCharm CE",
+		directory:         "PyCharmCE",
 		fullName:          "PyCharm Community Edition",
 		toolboxScriptName: "pycharm",
 		flag:              "pycharm-ce",
@@ -67,7 +67,7 @@ func PyCharm() IDE {
 
 func GoLand() IDE {
 	return IDE{
-		name:              "GoLand",
+		directory:         "GoLand",
 		fullName:          "GoLand",
 		toolboxScriptName: "goland",
 		flag:              "goland",
@@ -76,8 +76,9 @@ func GoLand() IDE {
 
 func Fleet() IDE {
 	return IDE{
-		name:              "Fleet",
+		directory:         "Fleet",
 		fullName:          "Fleet",
 		toolboxScriptName: "fleet",
+		flag:              "fleet",
 	}
 }

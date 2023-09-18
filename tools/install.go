@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/bitfield/script"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"slices"
 	"strings"
 	"time"
@@ -32,9 +32,25 @@ type Installation struct {
 	terminal     string
 	keyboardType string
 	ides         []string
+	askForIdes   bool
 
 	profileName      string
 	installationTime time.Time
+}
+
+type idesFlag struct {
+	provided bool
+	value    string
+}
+
+func (sf *idesFlag) String() string {
+	return sf.value
+}
+
+func (sf *idesFlag) Set(v string) error {
+	sf.value = v
+	sf.provided = true
+	return nil
 }
 
 func NewInstallation() *Installation {
@@ -46,15 +62,17 @@ func NewInstallation() *Installation {
 	appLauncherParam := flag.String("app-launcher", "", "Description for appLauncher")
 	terminalParam := flag.String("terminal", "", "Description for terminalParam")
 	kbTypeParam := flag.String("keyboard-type", "", "Description for kbTypeParam")
-	idesParam := flag.String("ides", "", "Description for ides")
+	var ids idesFlag
+	flag.Var(&ids, "ides", "Description for ides")
 
 	flag.Parse()
+
 	homeDir := *homeDirFlagValue
 
 	validateFlagValue("app-launcher", *appLauncherParam, []string{Spotlight.String(), Launchpad.String(), Alfred.String()})
 	validateFlagValue("terminal", *terminalParam, []string{Default.String(), iTerm.String(), Warp.String()})
 	validateFlagValue("keyboard-type", *kbTypeParam, []string{PC.String(), Mac.String()})
-	validateFlagValue("ides", *idesParam, []string{
+	validateFlagValue("ides", ids.value, []string{
 		strings.ToLower(IntelliJ().flag),
 		strings.ToLower(PyCharm().flag),
 		strings.ToLower(GoLand().flag),
@@ -64,18 +82,29 @@ func NewInstallation() *Installation {
 
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 
-	var supportedIDEs map[string]string
-	supportedIDEs = make(map[string]string)
-
-	supportedIDEs[IntelliJ().flag] = IntelliJ().fullName
-	supportedIDEs[PyCharm().flag] = PyCharm().fullName
-	supportedIDEs[GoLand().flag] = GoLand().fullName
-	supportedIDEs[Fleet().flag] = Fleet().fullName
-
 	var ides []string
 
-	for _, e := range strings.Split(*idesParam, ",") {
-		ides = append(ides, supportedIDEs[e])
+	askForIdes := true
+
+	if !ids.provided {
+		ides = []string{}
+	} else {
+
+		askForIdes = false
+
+		var supportedIDEs map[string]string
+		supportedIDEs = make(map[string]string)
+
+		supportedIDEs[IntelliJ().flag] = IntelliJ().fullName
+		supportedIDEs[PyCharm().flag] = PyCharm().fullName
+		supportedIDEs[GoLand().flag] = GoLand().fullName
+		supportedIDEs[Fleet().flag] = Fleet().fullName
+
+		for _, e := range strings.Split(ids.value, ",") {
+			if e != "" {
+				ides = append(ides, supportedIDEs[e])
+			}
+		}
 	}
 
 	return &Installation{
@@ -85,6 +114,7 @@ func NewInstallation() *Installation {
 		terminal:         *terminalParam,
 		keyboardType:     *kbTypeParam,
 		ides:             ides,
+		askForIdes:       askForIdes,
 		profileName:      "PC mode GOLANG",
 		installationTime: time.Now(),
 	}
@@ -103,12 +133,16 @@ func (i Installation) karabinerConfigBackupFile() string {
 	return i.karabinerConfigDir() + "/karabiner-" + currentTime + ".json"
 }
 
+func (i Installation) applicationSupportDir() string {
+	return i.homeDir + "/Library/Application Support"
+}
+
 func (i Installation) preferencesDir() string {
 	return i.homeDir + "/Library/preferences"
 }
 
 func (i Installation) toolboxScriptsDir() string {
-	return i.homeDir + "/Library/Application Support/JetBrains/Toolbox/scripts"
+	return i.applicationSupportDir() + "/JetBrains/Toolbox/scripts"
 }
 
 const branchName = "feature/installation_script"
@@ -228,8 +262,12 @@ func (i Installation) install() Installation {
 			fmt.Println("Applying launchpad rules...")
 			applyRules(i, "launchpad-rules.json")
 		case "alfred":
-			fmt.Println("Applying alfred rules...")
-			applyRules(i, "alfred-rules.json")
+			{
+				fmt.Println("Applying alfred rules...")
+				applyRules(i, "alfred-rules.json")
+				c1 := fmt.Sprintf("find '%s' -type d -name \"hotkey\" -exec cp %s {} \\;", i.applicationSupportDir()+"/Alfred/Alfred.alfredpreferences/preferences/local", i.currentDir+"/../alfred4/prefs.plist")
+				run(c1)
+			}
 		default:
 			fmt.Println("Value is not A, B, or C")
 		}
@@ -277,7 +315,7 @@ func (i Installation) install() Installation {
 
 		idesToInstall := i.ides
 
-		if len(idesToInstall) == 0 {
+		if i.askForIdes {
 			ideSurvey := MySurvey{
 				description: "IDE keymaps to install:",
 				options:     ideOptions,
@@ -377,49 +415,29 @@ func run(cmd string) {
 }
 
 func installIdeKeymap(ide IDE, installation Installation) {
-	content, err := os.ReadFile(installation.toolboxScriptsDir() + "/" + ide.toolboxScriptName)
-	if err != nil {
-		fmt.Println("Error reading file:", err)
-		return
-	}
 
-	r := regexp.MustCompile(`ch-0/(\d+\.\d+\.\d+)`)
-	matches := r.FindSubmatch(content)
-	if matches != nil {
+	sourceFile := installation.currentDir + "/../keymaps/" + strings.ReplaceAll(strings.ToLower(ide.fullName), " ", "-") + ".xml"
 
-		version := string(matches[1])
-
-		fmt.Println("Installing XWin plugin for " + version + " " + ide.fullName)
-
-		cmd := fmt.Sprintf("open -na \"%s.app\" --args installPlugins com.intellij.plugins.xwinkeymap", ide.fullName)
-
-		exec.Command("/bin/bash", "-c", cmd)
-
-		configs := installation.homeDir + "/Library/Application Support/JetBrains"
-
-		dirPath := installation.homeDir + "/Library/Caches/Jetbrains"
-		intelliJDir, err := findIntelliJDir(dirPath, version, ide.name)
+	err := filepath.Walk(installation.applicationSupportDir()+"/Jetbrains", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			fmt.Printf("Error: %s\n", err)
-			return
+			return err
 		}
 
-		if intelliJDir != "" {
-
-			fmt.Printf("Found directory: %s\n", intelliJDir)
-
-			keymapDir := configs + "/" + filepath.Base(intelliJDir) + "/keymaps"
-			keymapFileName := strings.ReplaceAll(strings.ToLower(ide.fullName), " ", "-")
-
-			// if there is a local dir with keymaps, then take it from there
-			cmd := fmt.Sprintf("curl --silent -o \"%s/%s.xml\" https://raw.githubusercontent.com/raxigan/macos-pc-mode/%s/keymaps/\"%s\".xml", keymapDir, keymapFileName, branchName, keymapFileName)
-			run(cmd)
-		} else {
-			fmt.Println("No matching directory found.")
+		if info.IsDir() && strings.HasPrefix(info.Name(), ide.directory) {
+			destDir := filepath.Join(path, "keymaps")
+			destFilePath := filepath.Join(destDir, filepath.Base(sourceFile))
+			err := copyFile(sourceFile, destFilePath)
+			if err != nil {
+				fmt.Printf("Error copying to %s: %v\n", destFilePath, err)
+			} else {
+				fmt.Printf("Successfully copied to %s\n", destFilePath)
+			}
 		}
+		return nil
+	})
 
-	} else {
-		fmt.Println("Version not found.")
+	if err != nil {
+		fmt.Printf("Error while walking the path: %v\n", err)
 	}
 }
 
@@ -454,28 +472,23 @@ func toLowerSlice(slice []string) []string {
 	return slice
 }
 
-func findIntelliJDir(path, version, ideName string) (string, error) {
-	var resultDir string
+func copyFile(src, dst string) error {
+	sourceFile, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer sourceFile.Close()
 
-	err := filepath.Walk(path, func(currentPath string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
+	destFile, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer destFile.Close()
 
-		if info.IsDir() && strings.Contains(strings.ToLower(info.Name()), strings.ToLower(ideName)) {
-			appInfoPath := filepath.Join(currentPath, ".appinfo")
-			content, err := os.ReadFile(appInfoPath)
-			if err == nil && strings.Contains(string(content), "app.build.number="+version) {
-				resultDir = currentPath
-				return fmt.Errorf("found")
-			}
-		}
-		return nil
-	})
-
-	if err != nil && err.Error() == "found" {
-		err = nil
+	_, err = io.Copy(destFile, sourceFile)
+	if err != nil {
+		return err
 	}
 
-	return resultDir, err
+	return nil
 }
