@@ -41,44 +41,64 @@ type MySurvey struct {
 }
 
 type IDE struct {
-	directory         string
+	parentDir         string // relative to homedir
+	dir               string // relative to parentDir
+	keymapsDir        string // relative to dir
 	fullName          string
 	toolboxScriptName string
 	flag              string
+	srcKeymapsFile    string
+	destKeymapsFile   string
+	requiresPlugin    bool
 }
 
 func IntelliJ() IDE {
 	return IDE{
-		directory:         "IntelliJIdea",
-		fullName:          "IntelliJ IDEA Ultimate",
-		toolboxScriptName: "idea",
-		flag:              "intellij",
+		parentDir:       "/Library/Application Support/JetBrains/",
+		dir:             "IntelliJ",
+		keymapsDir:      "/keymaps",
+		fullName:        "IntelliJ IDEA Ultimate",
+		flag:            "intellij",
+		srcKeymapsFile:  "intellij-idea-ultimate.xml",
+		destKeymapsFile: "intellij-idea-ultimate.xml",
+		requiresPlugin:  true,
 	}
 }
 
 func PyCharm() IDE {
 	return IDE{
-		directory:         "PyCharmCE",
-		fullName:          "PyCharm Community Edition",
-		toolboxScriptName: "pycharm",
-		flag:              "pycharm-ce",
+		parentDir:       "/Library/Application Support/JetBrains/",
+		dir:             "PyCharmCE",
+		keymapsDir:      "/keymaps",
+		fullName:        "PyCharm Community Edition",
+		flag:            "pycharm-ce",
+		srcKeymapsFile:  "pycharm-community-edition.xml",
+		destKeymapsFile: "pycharm-community-edition.xml",
+		requiresPlugin:  true,
 	}
 }
 
 func GoLand() IDE {
 	return IDE{
-		directory:         "GoLand",
-		fullName:          "GoLand",
-		toolboxScriptName: "goland",
-		flag:              "goland",
+		parentDir:       "/Library/Application Support/JetBrains/",
+		dir:             "GoLand",
+		keymapsDir:      "/keymaps",
+		fullName:        "GoLand",
+		flag:            "goland",
+		srcKeymapsFile:  "goland.xml",
+		destKeymapsFile: "goland.xml",
+		requiresPlugin:  true,
 	}
 }
 
 func Fleet() IDE {
 	return IDE{
-		directory:         "Fleet",
-		fullName:          "Fleet",
-		toolboxScriptName: "fleet",
-		flag:              "fleet",
+		parentDir:       "",
+		dir:             ".fleet",
+		keymapsDir:      "/keymap",
+		fullName:        "Fleet",
+		flag:            "fleet",
+		srcKeymapsFile:  "fleet.json",
+		destKeymapsFile: "user.json",
 	}
 }

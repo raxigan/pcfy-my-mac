@@ -416,16 +416,22 @@ func run(cmd string) {
 
 func installIdeKeymap(ide IDE, installation Installation) {
 
-	sourceFile := installation.currentDir + "/../keymaps/" + strings.ReplaceAll(strings.ToLower(ide.fullName), " ", "-") + ".xml"
+	if ide.requiresPlugin {
+		cmd := fmt.Sprintf("open -na \"%s.app\" --args installPlugins com.intellij.plugins.xwinkeymap", ide.fullName)
+		run(cmd)
+	}
 
-	err := filepath.Walk(installation.applicationSupportDir()+"/Jetbrains", func(path string, info os.FileInfo, err error) error {
+	sourceFile := installation.currentDir + "/../keymaps/" + ide.srcKeymapsFile
+
+	err := filepath.Walk(installation.homeDir+ide.parentDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 
-		if info.IsDir() && strings.HasPrefix(info.Name(), ide.directory) {
-			destDir := filepath.Join(path, "keymaps")
-			destFilePath := filepath.Join(destDir, filepath.Base(sourceFile))
+		if info.IsDir() && strings.HasPrefix(info.Name(), ide.dir) {
+			destDir := filepath.Join(path, ide.keymapsDir)
+			destFilePath := filepath.Join(destDir, ide.destKeymapsFile)
+			os.Mkdir(destDir, 0755)
 			err := copyFile(sourceFile, destFilePath)
 			if err != nil {
 				fmt.Printf("Error copying to %s: %v\n", destFilePath, err)

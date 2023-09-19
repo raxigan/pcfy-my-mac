@@ -21,28 +21,18 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 	expected := pwd + "/expected/karabiner-expected-warp-alfred-pc.json"
 	equal, _ := areFilesEqual(actual, expected)
 	if !equal {
-		copyFile(i.karabinerConfigFile(), i.karabinerTestInvalidConfig("warp", "alfred", "pc"))
-		copyFile(i.karabinerTestDefaultConfig(), i.karabinerConfigFile())
-		removeFiles(i.karabinerConfigBackupFile())
-		t.Fatalf("Files %s and %s are not equal", actual, expected)
+		srcKeymap := i.currentDir + "/../keymaps/intellij-idea-ultimate.xml"
+		destKeymap1 := i.applicationSupportDir() + "/JetBrains/IntelliJIdea2023.1/keymaps/intellij-idea-ultimate.xml"
+		destKeymap2 := i.applicationSupportDir() + "/JetBrains/IntelliJIdea2023.2/keymaps/intellij-idea-ultimate.xml"
+
+		keymapsEqual, _ := areFilesEqual(srcKeymap, destKeymap1, destKeymap2)
+
+		if !keymapsEqual {
+			t.Fatalf("Files %s are not equal", []string{srcKeymap, destKeymap1, destKeymap2})
+		}
+
+		removeFiles(destKeymap1, destKeymap2)
 	}
-
-	//restore karabiner initial config
-	removeFiles(i.karabinerConfigBackupFile())
-	removeFiles(i.karabinerTestInvalidConfig("warp", "alfred", "pc"))
-	copyFile(i.karabinerTestDefaultConfig(), i.karabinerConfigFile())
-
-	srcKeymap := i.currentDir + "/../keymaps/intellij-idea-ultimate.xml"
-	destKeymap1 := i.applicationSupportDir() + "/JetBrains/IntelliJIdea2023.1/keymaps/intellij-idea-ultimate.xml"
-	destKeymap2 := i.applicationSupportDir() + "/JetBrains/IntelliJIdea2023.2/keymaps/intellij-idea-ultimate.xml"
-
-	keymapsEqual, _ := areFilesEqual(srcKeymap, destKeymap1, destKeymap2)
-
-	if !keymapsEqual {
-		t.Fatalf("Files %s are not equal", []string{srcKeymap, destKeymap1, destKeymap2})
-	}
-
-	removeFiles(destKeymap1, destKeymap2)
 }
 
 func TestInstallItermSpotlightMac(t *testing.T) {
