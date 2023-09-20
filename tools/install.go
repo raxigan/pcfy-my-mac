@@ -128,8 +128,8 @@ func (i Installation) preferencesDir() string {
 	return i.homeDir + "/Library/preferences"
 }
 
-func (i Installation) toolboxScriptsDir() string {
-	return i.applicationSupportDir() + "/JetBrains/Toolbox/scripts"
+func (i Installation) sourceKeymap(ide IDE) string {
+	return i.currentDir + "/../keymaps/" + ide.srcKeymapsFile
 }
 
 func makeSurvey(s MySurvey) string {
@@ -212,8 +212,6 @@ func (i Installation) install() Installation {
 			term = makeSurvey(terminalSurvey)
 		}
 
-		run("killall Karabiner-Elements")
-
 		// do karabiner.json backup
 		original := i.karabinerConfigFile()
 		backupDest := i.karabinerConfigBackupFile()
@@ -282,7 +280,6 @@ func (i Installation) install() Installation {
 			fmt.Println("Value is not A, B, or C")
 		}
 
-		run("open -a -j Karabiner-Elements")
 		run("clear")
 
 		var idesToInstall []IDE
@@ -304,7 +301,7 @@ func (i Installation) install() Installation {
 		}
 
 		for _, ide := range idesToInstall {
-			installIdeKeymap(ide, i)
+			i.installIdeKeymap(ide)
 		}
 	}
 
@@ -393,16 +390,30 @@ func run(cmd string) {
 	fmt.Print(string(output))
 }
 
-func installIdeKeymap(ide IDE, installation Installation) {
+func (i Installation) installIdeKeymap(ide IDE) {
 
 	if ide.requiresPlugin {
 		cmd := fmt.Sprintf("open -na \"%s.app\" --args installPlugins com.intellij.plugins.xwinkeymap", ide.fullName)
 		run(cmd)
 	}
 
-	sourceFile := installation.currentDir + "/../keymaps/" + ide.srcKeymapsFile
+	destDirs := i.ideDirs(ide)
 
-	err := filepath.Walk(installation.homeDir+ide.parentDir, func(path string, info os.FileInfo, err error) error {
+	for _, d := range destDirs {
+		err := copyFile(i.sourceKeymap(ide), d)
+		if err != nil {
+			fmt.Printf("Error copying to %s: %v\n", d, err)
+		} else {
+			fmt.Printf("Successfully copied to %s\n", d)
+		}
+	}
+}
+
+func (i Installation) ideDirs(ide IDE) []string {
+
+	var result []string
+
+	filepath.Walk(i.homeDir+ide.parentDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -410,20 +421,15 @@ func installIdeKeymap(ide IDE, installation Installation) {
 		if info.IsDir() && strings.HasPrefix(info.Name(), ide.dir) {
 			destDir := filepath.Join(path, ide.keymapsDir)
 			destFilePath := filepath.Join(destDir, ide.destKeymapsFile)
-			os.Mkdir(destDir, 0755)
-			err := copyFile(sourceFile, destFilePath)
-			if err != nil {
-				fmt.Printf("Error copying to %s: %v\n", destFilePath, err)
-			} else {
-				fmt.Printf("Successfully copied to %s\n", destFilePath)
+
+			if strings.HasSuffix(destDir, ide.keymapsDir) {
+				result = append(result, destFilePath)
 			}
 		}
 		return nil
 	})
 
-	if err != nil {
-		fmt.Printf("Error while walking the path: %v\n", err)
-	}
+	return result
 }
 
 func applyRules(i Installation, file string) {
@@ -463,6 +469,11 @@ func copyFile(src, dst string) error {
 		return err
 	}
 	defer sourceFile.Close()
+
+	// FIXME do not create base (IntelliJ dir) here
+	if err := os.MkdirAll(filepath.Dir(dst), 0755); err != nil {
+		return err
+	}
 
 	destFile, err := os.Create(dst)
 	if err != nil {

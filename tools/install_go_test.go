@@ -13,7 +13,7 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 	pwd, _ := os.Getwd()
 	curr := pwd + "/homedir"
 
-	os.Args = []string{"script_name", "--homedir=" + curr, "--terminal=warp", "--app-launcher=alfred", "--keyboard-type=pc", "--ides=idea"}
+	os.Args = []string{"script_name", "--homedir=" + curr, "--terminal=warp", "--app-launcher=alfred", "--keyboard-type=pc"}
 
 	i := NewInstallation().install()
 
@@ -21,18 +21,14 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 	expected := pwd + "/expected/karabiner-expected-warp-alfred-pc.json"
 	equal, _ := areFilesEqual(actual, expected)
 	if !equal {
-		srcKeymap := i.currentDir + "/../keymaps/intellij-idea-ultimate.xml"
-		destKeymap1 := i.applicationSupportDir() + "/JetBrains/IntelliJIdea2023.1/keymaps/intellij-idea-ultimate.xml"
-		destKeymap2 := i.applicationSupportDir() + "/JetBrains/IntelliJIdea2023.2/keymaps/intellij-idea-ultimate.xml"
-
-		keymapsEqual, _ := areFilesEqual(srcKeymap, destKeymap1, destKeymap2)
-
-		if !keymapsEqual {
-			t.Fatalf("Files %s are not equal", []string{srcKeymap, destKeymap1, destKeymap2})
-		}
-
-		removeFiles(destKeymap1, destKeymap2)
+		copyFile(i.karabinerConfigFile(), i.karabinerTestInvalidConfig("warp", "alfred", "pc"))
+		copyFile(i.karabinerTestDefaultConfig(), i.karabinerConfigFile())
+		removeFiles(i.karabinerConfigBackupFile())
+		t.Fatalf("Files %s and %s are not equal", actual, expected)
 	}
+
+	removeFiles(i.karabinerConfigBackupFile())
+	removeFiles(i.karabinerTestInvalidConfig("warp", "alfred", "pc"))
 }
 
 func TestInstallItermSpotlightMac(t *testing.T) {
@@ -60,6 +56,30 @@ func TestInstallItermSpotlightMac(t *testing.T) {
 	copyFile(i.karabinerTestDefaultConfig(), i.karabinerConfigFile())
 }
 
+func TestInstallAllKeymaps(t *testing.T) {
+
+	pwd, _ := os.Getwd()
+	curr := pwd + "/homedir"
+	os.Args = []string{"script_name", "--homedir=" + curr, "--terminal=warp", "--app-launcher=alfred", "--keyboard-type=pc", "--ides=all"}
+	i := NewInstallation().install()
+
+	verifyKeymaps(t, i.sourceKeymap(IntelliJ()), i.ideDirs(IntelliJ())[0])
+	verifyKeymaps(t, i.sourceKeymap(PyCharm()), i.ideDirs(PyCharm())[0])
+	verifyKeymaps(t, i.sourceKeymap(GoLand()), i.ideDirs(GoLand())[0])
+	verifyKeymaps(t, i.sourceKeymap(Fleet()), i.ideDirs(Fleet())[0])
+}
+
+func verifyKeymaps(t *testing.T, srcKeymap, destKeymap string) {
+
+	keymapsEqual, _ := areFilesEqual(srcKeymap, destKeymap)
+
+	if !keymapsEqual {
+		t.Fatalf("Files %s are not equal", []string{srcKeymap, destKeymap})
+	}
+
+	removeFiles(destKeymap)
+}
+
 func (i Installation) karabinerTestDefaultConfig() string {
 	return i.karabinerConfigDir() + "/karabiner-default.json"
 }
@@ -76,25 +96,6 @@ func removeFiles(paths ...string) error {
 	}
 	return nil
 }
-
-//func readJSONFile(t *testing.T, path string) interface{} {
-//	data, err := os.ReadFile(path)
-//	if err != nil {
-//		t.Fatalf("Failed to read %s: %v", path, err)
-//	}
-//
-//	var parsed interface{}
-//	if err := json.Unmarshal(data, &parsed); err != nil {
-//		t.Fatalf("Failed to parse JSON from %s: %v", path, err)
-//	}
-//	return parsed
-//}
-//
-//func compareJSONFiles(t *testing.T, pathA, pathB string) bool {
-//	a := readJSONFile(t, pathA)
-//	b := readJSONFile(t, pathB)
-//	return reflect.DeepEqual(a, b)
-//}
 
 func areFilesEqual(paths ...string) (bool, error) {
 	if len(paths) < 2 {

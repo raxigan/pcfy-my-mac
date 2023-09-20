@@ -67,19 +67,6 @@ func IntelliJ() IDE {
 	}
 }
 
-func PyCharm() IDE {
-	return IDE{
-		parentDir:       "/Library/Application Support/JetBrains/",
-		dir:             "PyCharmCE",
-		keymapsDir:      "/keymaps",
-		fullName:        "PyCharm CE",
-		flag:            "pycharm-ce",
-		srcKeymapsFile:  "pycharm-community-edition.xml",
-		destKeymapsFile: "pycharm-community-edition.xml",
-		requiresPlugin:  true,
-	}
-}
-
 func IntelliJCE() IDE {
 	return IDE{
 		parentDir:       "/Library/Application Support/JetBrains/",
@@ -89,6 +76,19 @@ func IntelliJCE() IDE {
 		flag:            "idea-ce",
 		srcKeymapsFile:  "intellij-idea-community-edition.xml",
 		destKeymapsFile: "intellij-idea-community-edition.xml",
+		requiresPlugin:  true,
+	}
+}
+
+func PyCharm() IDE {
+	return IDE{
+		parentDir:       "/Library/Application Support/JetBrains/",
+		dir:             "PyCharmCE",
+		keymapsDir:      "/keymaps",
+		fullName:        "PyCharm CE",
+		flag:            "pycharm-ce",
+		srcKeymapsFile:  "pycharm-community-edition.xml",
+		destKeymapsFile: "pycharm-community-edition.xml",
 		requiresPlugin:  true,
 	}
 }
@@ -144,11 +144,7 @@ func IdeKeymapsFlags() []string {
 
 func IdeKeymapByFullName(fullName string) (IDE, error) {
 
-	var options []string
-
 	for _, e := range IDEKeymaps {
-		options = append(options, e.fullName)
-
 		if e.fullName == fullName {
 			return e, nil
 		}
@@ -159,12 +155,9 @@ func IdeKeymapByFullName(fullName string) (IDE, error) {
 
 func IdeKeymapByFlag(flag string) (IDE, error) {
 
-	var options []string
-
 	for _, e := range IDEKeymaps {
-		options = append(options, e.fullName)
 
-		if e.fullName == flag {
+		if e.flag == flag {
 			return e, nil
 		}
 	}
