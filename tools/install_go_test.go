@@ -13,7 +13,7 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 	pwd, _ := os.Getwd()
 	curr := pwd + "/homedir"
 
-	os.Args = []string{"script_name", "--homedir=" + curr, "--terminal=warp", "--app-launcher=alfred", "--keyboard-type=pc", "--ides=intellij"}
+	os.Args = []string{"script_name", "--homedir=" + curr, "--terminal=warp", "--app-launcher=alfred", "--keyboard-type=pc", "--ides=idea"}
 
 	i := NewInstallation().install()
 

@@ -31,8 +31,7 @@ type Installation struct {
 	appLauncher  string
 	terminal     string
 	keyboardType string
-	ides         []string
-	askForIdes   bool
+	ides         *[]IDE
 
 	profileName      string
 	installationTime time.Time
@@ -72,39 +71,28 @@ func NewInstallation() *Installation {
 	validateFlagValue("app-launcher", *appLauncherParam, []string{Spotlight.String(), Launchpad.String(), Alfred.String()})
 	validateFlagValue("terminal", *terminalParam, []string{Default.String(), iTerm.String(), Warp.String()})
 	validateFlagValue("keyboard-type", *kbTypeParam, []string{PC.String(), Mac.String()})
-	validateFlagValue("ides", ids.value, []string{
-		strings.ToLower(IntelliJ().flag),
-		strings.ToLower(PyCharm().flag),
-		strings.ToLower(GoLand().flag),
-		strings.ToLower(Fleet().flag),
-	},
-	)
+	validateFlagValue("ides", ids.value, append(IdeKeymapsFlags(), "all"))
 
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 
-	var ides []string
-
-	askForIdes := true
+	var ides *[]IDE
 
 	if !ids.provided {
-		ides = []string{}
+		ides = nil
+	} else if ids.value == "all" {
+		ides = &IDEKeymaps
 	} else {
 
-		askForIdes = false
-
-		var supportedIDEs map[string]string
-		supportedIDEs = make(map[string]string)
-
-		supportedIDEs[IntelliJ().flag] = IntelliJ().fullName
-		supportedIDEs[PyCharm().flag] = PyCharm().fullName
-		supportedIDEs[GoLand().flag] = GoLand().fullName
-		supportedIDEs[Fleet().flag] = Fleet().fullName
+		var idesFromFlags []IDE
 
 		for _, e := range strings.Split(ids.value, ",") {
 			if e != "" {
-				ides = append(ides, supportedIDEs[e])
+				byFlag, _ := IdeKeymapByFlag(e)
+				idesFromFlags = append(idesFromFlags, byFlag)
 			}
 		}
+
+		ides = &idesFromFlags
 	}
 
 	return &Installation{
@@ -114,7 +102,6 @@ func NewInstallation() *Installation {
 		terminal:         *terminalParam,
 		keyboardType:     *kbTypeParam,
 		ides:             ides,
-		askForIdes:       askForIdes,
 		profileName:      "PC mode GOLANG",
 		installationTime: time.Now(),
 	}
@@ -144,8 +131,6 @@ func (i Installation) preferencesDir() string {
 func (i Installation) toolboxScriptsDir() string {
 	return i.applicationSupportDir() + "/JetBrains/Toolbox/scripts"
 }
-
-const branchName = "feature/installation_script"
 
 func makeSurvey(s MySurvey) string {
 	script.Exec("clear").Stdout()
@@ -263,6 +248,7 @@ func (i Installation) install() Installation {
 			applyRules(i, "launchpad-rules.json")
 		case "alfred":
 			{
+				shouldBeInstalled("Alfred", "Alfred 5", false, false, true)
 				fmt.Println("Applying alfred rules...")
 				applyRules(i, "alfred-rules.json")
 				c1 := fmt.Sprintf("find '%s' -type d -name \"hotkey\" -exec cp %s {} \\;", i.applicationSupportDir()+"/Alfred/Alfred.alfredpreferences/preferences/local", i.currentDir+"/../alfred4/prefs.plist")
@@ -296,36 +282,29 @@ func (i Installation) install() Installation {
 			fmt.Println("Value is not A, B, or C")
 		}
 
-		run("open -a Karabiner-Elements")
+		run("open -a -j Karabiner-Elements")
 		run("clear")
 
-		var supportedIDEs map[string]IDE
-		supportedIDEs = make(map[string]IDE)
+		var idesToInstall []IDE
 
-		supportedIDEs[IntelliJ().fullName] = IntelliJ()
-		supportedIDEs[PyCharm().fullName] = PyCharm()
-		supportedIDEs[GoLand().fullName] = GoLand()
-		supportedIDEs[Fleet().fullName] = Fleet()
-
-		var ideOptions []string
-
-		for _, value := range supportedIDEs {
-			ideOptions = append(ideOptions, value.fullName)
-		}
-
-		idesToInstall := i.ides
-
-		if i.askForIdes {
+		if i.ides == nil {
 			ideSurvey := MySurvey{
 				description: "IDE keymaps to install:",
-				options:     ideOptions,
+				options:     IdeKeymapsSurveyOptions(),
 			}
 
-			idesToInstall = makeMultiSelect(ideSurvey)
+			fullNames := makeMultiSelect(ideSurvey)
+
+			for _, e := range fullNames {
+				name, _ := IdeKeymapByFullName(e)
+				idesToInstall = append(idesToInstall, name)
+			}
+		} else {
+			idesToInstall = *i.ides
 		}
 
-		for _, name := range idesToInstall {
-			installIdeKeymap(supportedIDEs[name], i)
+		for _, ide := range idesToInstall {
+			installIdeKeymap(ide, i)
 		}
 	}
 

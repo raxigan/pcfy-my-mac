@@ -1,5 +1,7 @@
 package main
 
+import "errors"
+
 type AppLauncher int
 
 const (
@@ -58,7 +60,7 @@ func IntelliJ() IDE {
 		dir:             "IntelliJ",
 		keymapsDir:      "/keymaps",
 		fullName:        "IntelliJ IDEA Ultimate",
-		flag:            "intellij",
+		flag:            "idea",
 		srcKeymapsFile:  "intellij-idea-ultimate.xml",
 		destKeymapsFile: "intellij-idea-ultimate.xml",
 		requiresPlugin:  true,
@@ -70,10 +72,23 @@ func PyCharm() IDE {
 		parentDir:       "/Library/Application Support/JetBrains/",
 		dir:             "PyCharmCE",
 		keymapsDir:      "/keymaps",
-		fullName:        "PyCharm Community Edition",
+		fullName:        "PyCharm CE",
 		flag:            "pycharm-ce",
 		srcKeymapsFile:  "pycharm-community-edition.xml",
 		destKeymapsFile: "pycharm-community-edition.xml",
+		requiresPlugin:  true,
+	}
+}
+
+func IntelliJCE() IDE {
+	return IDE{
+		parentDir:       "/Library/Application Support/JetBrains/",
+		dir:             "IdeaIC",
+		keymapsDir:      "/keymaps",
+		fullName:        "IntelliJ IDEA CE",
+		flag:            "idea-ce",
+		srcKeymapsFile:  "intellij-idea-community-edition.xml",
+		destKeymapsFile: "intellij-idea-community-edition.xml",
 		requiresPlugin:  true,
 	}
 }
@@ -101,4 +116,58 @@ func Fleet() IDE {
 		srcKeymapsFile:  "fleet.json",
 		destKeymapsFile: "user.json",
 	}
+}
+
+var IDEKeymaps = []IDE{IntelliJ(), IntelliJCE(), PyCharm(), GoLand(), Fleet()}
+
+func IdeKeymapsSurveyOptions() []string {
+
+	var options []string
+
+	for _, e := range IDEKeymaps {
+		options = append(options, e.fullName)
+	}
+
+	return options
+}
+
+func IdeKeymapsFlags() []string {
+
+	var options []string
+
+	for _, e := range IDEKeymaps {
+		options = append(options, e.flag)
+	}
+
+	return options
+}
+
+func IdeKeymapByFullName(fullName string) (IDE, error) {
+
+	var options []string
+
+	for _, e := range IDEKeymaps {
+		options = append(options, e.fullName)
+
+		if e.fullName == fullName {
+			return e, nil
+		}
+	}
+
+	return IDE{}, errors.New("No keymap found: " + fullName)
+}
+
+func IdeKeymapByFlag(flag string) (IDE, error) {
+
+	var options []string
+
+	for _, e := range IDEKeymaps {
+		options = append(options, e.fullName)
+
+		if e.fullName == flag {
+			return e, nil
+		}
+	}
+
+	return IDE{}, errors.New("No keymap found: " + flag)
 }
