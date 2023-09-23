@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"runtime"
 	"strings"
 )
 
@@ -51,29 +50,15 @@ func (c MockCommander) run(command string) {
 	cmd := strings.Fields(command)[0]
 
 	switch cmd {
-	case "jq", "clean":
+	case "jq", "clean", "plutil", "defaults":
 		BasicCommander{}.run(command)
 	case "killall", "open":
 		fmt.Println("Running: " + command)
-	case "plutil", "defaults":
-		switch system := runtime.GOOS; system {
-		case "darwin":
-			BasicCommander{}.run(command)
-		case "linux":
-			fmt.Println("Running: " + command)
-		default:
-			fmt.Printf("Cannot run on OS: %s\n", system)
-		}
 	}
 }
 
 func (c MockCommander) exists(command string) bool {
-	switch system := runtime.GOOS; system {
-	case "darwin":
-		return BasicCommander{}.exists(command)
-	default:
-		return true
-	}
+	return true
 }
 
 func fileExists(filename string) bool {
