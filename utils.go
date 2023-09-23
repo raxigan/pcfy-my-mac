@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -19,13 +20,18 @@ type BasicCommander struct {
 func (c BasicCommander) run(command string) {
 	fmt.Println("Running: " + command)
 
-	output, err := exec.Command("/bin/bash", "-c", command).Output()
+	out, err := exec.Command("/bin/bash", "-c", command).CombinedOutput()
 
 	if err != nil {
-		fmt.Println("Error executing command: "+command+"\n", err)
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) {
+			fmt.Printf("Command failed with error: %s\n", exitErr)
+			fmt.Printf("Stderr: %s", out)
+		}
+		return
 	}
 
-	fmt.Print(string(output))
+	fmt.Print(string(out))
 }
 
 func (c BasicCommander) exists(command string) bool {
