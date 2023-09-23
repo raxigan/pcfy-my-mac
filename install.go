@@ -49,6 +49,7 @@ type Installation struct {
 
 	profileName      string
 	installationTime time.Time
+	cmd              Commander
 }
 
 type idesFlag struct {
@@ -66,12 +67,10 @@ func (sf *idesFlag) Set(v string) error {
 	return nil
 }
 
-func NewInstallation() *Installation {
+func NewInstallation(homeDir string, commander Commander) *Installation {
 
 	pwd, _ := os.Getwd()
-	homeDirDefault, _ := os.UserHomeDir()
 
-	homeDirFlagValue := flag.String("homedir", homeDirDefault, "Home directory path")
 	appLauncherParam := flag.String("app-launcher", "", "Description for appLauncher")
 	terminalParam := flag.String("terminal", "", "Description for terminalParam")
 	kbTypeParam := flag.String("keyboard-type", "", "Description for kbTypeParam")
@@ -79,8 +78,6 @@ func NewInstallation() *Installation {
 	flag.Var(&ids, "ides", "Description for ides")
 
 	flag.Parse()
-
-	homeDir := *homeDirFlagValue
 
 	validateFlagValue("app-launcher", *appLauncherParam, []string{Spotlight.String(), Launchpad.String(), Alfred.String(), "none"})
 	validateFlagValue("terminal", *terminalParam, []string{Default.String(), iTerm.String(), Warp.String(), "none"})
@@ -120,6 +117,7 @@ func NewInstallation() *Installation {
 		},
 		profileName:      "PC mode GOLANG",
 		installationTime: time.Now(),
+		cmd:              commander,
 	}
 }
 
@@ -185,14 +183,15 @@ func makeMultiSelect(s survey.MultiSelect) []string {
 	return appLauncher
 }
 
-func runInstaller() Installation {
-	installation := NewInstallation()
+func runInstaller(homeDir string, commander Commander) Installation {
+	installation := NewInstallation(homeDir, commander)
 	params := installation.collectParams()
 	return installation.install(params)
 }
 
 func main() {
-	runInstaller()
+	homeDir, _ := os.UserHomeDir()
+	runInstaller(homeDir, BasicCommander{})
 }
 
 func (i Installation) collectParams() Params {
@@ -202,11 +201,11 @@ func (i Installation) collectParams() Params {
 	kbType := i.flagParams.keyboardType
 	var idesToInstall []IDE
 
-	if shouldBeInstalled("jq", "jq", true, true, false) {
+	if i.shouldBeInstalled("jq", "jq", true, true, false) {
 
 	}
 
-	if shouldBeInstalled("Karabiner-Elements", "Karabiner-Elements", false, true, true) {
+	if i.shouldBeInstalled("Karabiner-Elements", "Karabiner-Elements", false, true, true) {
 
 		appLauncherSurvey := MySurvey{
 			message: "App Launcher:",
@@ -234,7 +233,7 @@ func (i Installation) collectParams() Params {
 			term = makeSurvey(terminalSurvey)
 		}
 
-		run("clear")
+		i.run("clear")
 
 		if i.flagParams.ides == nil {
 
@@ -255,11 +254,11 @@ func (i Installation) collectParams() Params {
 		}
 	}
 
-	if shouldBeInstalled("Rectangle", "Rectangle", false, false, true) {
+	if i.shouldBeInstalled("Rectangle", "Rectangle", false, false, true) {
 		// TODO remember decision and pass to install()
 	}
 
-	if shouldBeInstalled("Alt-Tab", "AltTab", false, false, true) {
+	if i.shouldBeInstalled("Alt-Tab", "AltTab", false, false, true) {
 		// TODO remember decision and pass to install()
 	}
 
@@ -302,7 +301,7 @@ func (i Installation) collectParams() Params {
 
 func (i Installation) install(params Params) Installation {
 
-	run("killall Karabiner-Elements")
+	i.run("killall Karabiner-Elements")
 
 	// do karabiner.json backup
 	original := i.karabinerConfigFile()
@@ -312,20 +311,20 @@ func (i Installation) install(params Params) Installation {
 
 	// delete existing profile
 	deleteProfileJqCmd := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" 'del(.profiles[] | select(.name == \"%s\"))' %s >tmp && mv tmp %s", i.profileName, i.profileName, i.karabinerConfigFile(), i.karabinerConfigFile())
-	run(deleteProfileJqCmd)
+	i.run(deleteProfileJqCmd)
 
 	// add new karabiner profile
 	copyFileFromEmbedFS("configs/karabiner/karabiner-profile.json", "tmp")
 	addProfileJqCmd := fmt.Sprintf("jq '.profiles += $profile' %s --slurpfile profile tmp --indent 4 >INPUT.tmp && mv INPUT.tmp %s && rm tmp", i.karabinerConfigFile(), i.karabinerConfigFile())
-	run(addProfileJqCmd)
+	i.run(addProfileJqCmd)
 
 	// rename the profile
 	renameJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name == \"PROFILE_NAME\" then .name = \"%s\" else . end)' %s > tmp && mv tmp %s", i.profileName, i.karabinerConfigFile(), i.karabinerConfigFile())
-	run(renameJqCmd)
+	i.run(renameJqCmd)
 
 	// unselect other profiles
 	unselectJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name != \"%s\" then .selected = false else . end)' %s > tmp && mv tmp %s", i.profileName, i.karabinerConfigFile(), i.karabinerConfigFile())
-	run(unselectJqCmd)
+	i.run(unselectJqCmd)
 
 	applyRules(i, "main.json")
 	applyRules(i, "finder.json")
@@ -339,7 +338,7 @@ func (i Installation) install(params Params) Installation {
 		applyRules(i, "launchpad.json")
 	case "alfred":
 		{
-			shouldBeInstalled("Alfred", "Alfred 5", false, false, true)
+			i.shouldBeInstalled("Alfred", "Alfred 5", false, false, true)
 			fmt.Println("Applying alfred rules...")
 			applyRules(i, "alfred.json")
 
@@ -376,39 +375,39 @@ func (i Installation) install(params Params) Installation {
 	}
 
 	// reformat using 2 spaces indentation
-	run(fmt.Sprintf("jq '.' %s > tmp && mv tmp %s", i.karabinerConfigFile(), i.karabinerConfigFile()))
+	i.run(fmt.Sprintf("jq '.' %s > tmp && mv tmp %s", i.karabinerConfigFile(), i.karabinerConfigFile()))
 
-	run("open -a Karabiner-Elements")
+	i.run("open -a Karabiner-Elements")
 
 	for _, ide := range *params.ides {
 		i.installIdeKeymap(ide)
 	}
 
-	run("killall Rectangle")
+	i.run("killall Rectangle")
 
-	if shouldBeInstalled("Rectangle", "Rectangle", false, false, true) {
+	if i.shouldBeInstalled("Rectangle", "Rectangle", false, false, true) {
 
 		rectanglePlist := i.preferencesDir() + "/com.knollsoft.Rectangle.plist"
 		copyFileFromEmbedFS("configs/rectangle/Settings.xml", rectanglePlist)
 
 		plutilCmd := fmt.Sprintf("plutil -convert binary1 %s", rectanglePlist)
-		run(plutilCmd)
+		i.run(plutilCmd)
 
-		run("defaults read com.knollsoft.Rectangle")
-		run("open -a Rectangle")
+		i.run("defaults read com.knollsoft.Rectangle")
+		i.run("open -a Rectangle")
 	}
 
-	if shouldBeInstalled("Alt-Tab", "AltTab", false, false, true) {
-		run("killall AltTab")
+	if i.shouldBeInstalled("Alt-Tab", "AltTab", false, false, true) {
+		i.run("killall AltTab")
 
 		altTabPlist := i.preferencesDir() + "/com.lwouis.alt-tab-macos.plist"
 		copyFileFromEmbedFS("configs/alt-tab/Settings.xml", altTabPlist)
 
 		plutilCmd := fmt.Sprintf("plutil -convert binary1 %s", altTabPlist)
-		run(plutilCmd)
+		i.run(plutilCmd)
 
-		run("defaults read com.lwouis.alt-tab-macos")
-		run("open -a AltTab")
+		i.run("defaults read com.lwouis.alt-tab-macos")
+		i.run("open -a AltTab")
 	}
 
 	fmt.Println("SUCCESS")
@@ -416,7 +415,7 @@ func (i Installation) install(params Params) Installation {
 	return i
 }
 
-func shouldBeInstalled(appName string, appFile string, isCommand bool, isRequired bool, isCask bool) bool {
+func (i Installation) shouldBeInstalled(appName string, appFile string, isCommand bool, isRequired bool, isCask bool) bool {
 
 	exists := false
 
@@ -430,7 +429,7 @@ func shouldBeInstalled(appName string, appFile string, isCommand bool, isRequire
 		return true
 	}
 
-	run("clear")
+	i.run("clear")
 	installApp := false
 	prompt := &survey.Confirm{
 		Message: fmt.Sprintf("Do you want to install %s?", appName),
@@ -457,24 +456,15 @@ func shouldBeInstalled(appName string, appFile string, isCommand bool, isRequire
 	return installApp
 }
 
-func run(cmd string) {
-
-	fmt.Println("Running: " + cmd)
-
-	output, err := exec.Command("/bin/bash", "-c", cmd).Output()
-
-	if err != nil {
-		fmt.Println("Error executing command: "+cmd+"\n", err)
-	}
-
-	fmt.Print(string(output))
+func (i Installation) run(cmd string) {
+	i.cmd.run(cmd)
 }
 
 func (i Installation) installIdeKeymap(ide IDE) {
 
 	if ide.requiresPlugin {
 		cmd := fmt.Sprintf("open -na \"%s.app\" --args installPlugins com.intellij.plugins.xwinkeymap", ide.fullName)
-		run(cmd)
+		i.run(cmd)
 	}
 
 	destDirs := i.ideDirs(ide)
@@ -521,12 +511,12 @@ func (i Installation) ideDirs(ide IDE) []string {
 func applyRules(i Installation, file string) {
 	copyFileFromEmbedFS("configs/karabiner/"+file, i.karabinerComplexModificationsDir()+"/"+file)
 	jq := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" '(.profiles[] | select(.name == \"%s\") | .complex_modifications.rules) += $rules[].rules' %s --slurpfile rules %s/%s >tmp && mv tmp %s", i.profileName, i.profileName, i.karabinerConfigFile(), i.karabinerComplexModificationsDir(), file, i.karabinerConfigFile())
-	run(jq)
+	i.run(jq)
 }
 
 func prepareForExternalMacKeyboard(i Installation) {
 	jq := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" '.profiles |= map(if .name == \"%s\" then walk(if type == \"object\" and .conditions then del(.conditions[] | select(.identifiers[]?.is_built_in_keyboard)) else . end) else . end)' %s --indent 4 >tmp && mv tmp %s", i.profileName, i.profileName, i.karabinerConfigFile(), i.karabinerConfigFile())
-	run(jq)
+	i.run(jq)
 }
 
 func validateFlagValue(flag, value string, validValues []string) {

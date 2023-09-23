@@ -10,15 +10,11 @@ import (
 
 func TestInstallWarpAlfredPC(t *testing.T) {
 
-	pwd, _ := os.Getwd()
-	curr := pwd + "/homedir"
-
-	os.Args = []string{"script_name", "--homedir=" + curr, "--terminal=warp", "--app-launcher=alfred", "--keyboard-type=pc"}
-
-	i := runInstaller()
+	os.Args = []string{"script_name", "--terminal=warp", "--app-launcher=alfred", "--keyboard-type=pc"}
+	i := runInstaller("homedir", MockCommander{})
 
 	actual := i.karabinerConfigFile()
-	expected := pwd + "/expected/karabiner-expected-warp-alfred-pc.json"
+	expected := "expected/karabiner-expected-warp-alfred-pc.json"
 	equal, _ := areFilesEqual(actual, expected)
 	if !equal {
 		copyFile(i.karabinerConfigFile(), i.karabinerTestInvalidConfig("warp", "alfred", "pc"))
@@ -33,15 +29,11 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 
 func TestInstallItermSpotlightMac(t *testing.T) {
 
-	pwd, _ := os.Getwd()
-	curr := pwd + "/homedir"
-
-	os.Args = []string{"script_name", "--homedir=" + curr, "--terminal=iterm", "--app-launcher=spotlight", "--keyboard-type=mac"}
-
-	i := runInstaller()
+	os.Args = []string{"script_name", "--terminal=iterm", "--app-launcher=spotlight", "--keyboard-type=mac"}
+	i := runInstaller("homedir", MockCommander{})
 
 	actual := i.karabinerConfigFile()
-	expected := pwd + "/expected/karabiner-expected-iterm-spotlight-mac.json"
+	expected := "expected/karabiner-expected-iterm-spotlight-mac.json"
 	equal, _ := areFilesEqual(actual, expected)
 	if !equal {
 		copyFile(i.karabinerConfigFile(), i.karabinerTestInvalidConfig("iterm", "spotlight", "mac"))
@@ -58,10 +50,8 @@ func TestInstallItermSpotlightMac(t *testing.T) {
 
 func TestInstallAllKeymaps(t *testing.T) {
 
-	pwd, _ := os.Getwd()
-	curr := pwd + "/homedir"
-	os.Args = []string{"script_name", "--homedir=" + curr, "--terminal=warp", "--app-launcher=alfred", "--keyboard-type=pc", "--ides=all"}
-	i := runInstaller()
+	os.Args = []string{"script_name", "--terminal=warp", "--app-launcher=alfred", "--keyboard-type=pc", "--ides=all"}
+	i := runInstaller("homedir", MockCommander{})
 
 	verifyKeymaps(t, i.sourceKeymap(IntelliJ()), i.ideDirs(IntelliJ())[0])
 	verifyKeymaps(t, i.sourceKeymap(PyCharm()), i.ideDirs(PyCharm())[0])
