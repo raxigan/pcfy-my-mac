@@ -4,6 +4,7 @@
 pkg
 homedir/Library/**
 homedir/.config/**
+homedir/.fleet/**
 !homedir/.config/karabiner/karabiner.json
 !homedir/.config/karabiner/karabiner-default.json
 !.gitkeep

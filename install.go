@@ -20,7 +20,8 @@ var configs embed.FS
 
 func copyFileFromEmbedFS(src, dst string) error {
 	data, _ := fs.ReadFile(configs, src)
-	return os.WriteFile(dst, data, 0644)
+	os.MkdirAll(filepath.Dir(dst), 0755)
+	return os.WriteFile(dst, data, 0755)
 }
 
 type Params struct {
