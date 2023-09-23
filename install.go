@@ -441,20 +441,22 @@ func (i Installation) run(cmd string) {
 
 func (i Installation) installIdeKeymap(ide IDE) {
 
+	destDirs := i.ideDirs(ide)
+
+	if len(destDirs) == 0 {
+		printColored(YELLOW, fmt.Sprintf("%s not found. Skipping...", ide.fullName))
+		return
+	}
+
 	if ide.requiresPlugin {
 		cmd := fmt.Sprintf("open -na \"%s.app\" --args installPlugins com.intellij.plugins.xwinkeymap", ide.fullName)
 		i.run(cmd)
 	}
 
-	destDirs := i.ideDirs(ide)
-
 	for _, d := range destDirs {
-		//err := copyFile(i.sourceKeymap(ide), d)
 		err := copyFileFromEmbedFS(i.sourceKeymap(ide), d)
 		if err != nil {
 			fmt.Printf("Error copying to %s: %v\n", d, err)
-		} else {
-			fmt.Printf("Successfully copied to %s\n", d)
 		}
 	}
 }
@@ -469,10 +471,6 @@ func findMatchingDirs(basePath, namePrefix, subDir, fileName string) []string {
 		}
 
 		if path != basePath && info.IsDir() && fileExists(filepath.Join(basePath, info.Name())) && strings.HasPrefix(info.Name(), namePrefix) {
-
-			fmt.Println(info.Name())
-			fmt.Println(path)
-
 			destDir := filepath.Join(path, subDir)
 			destFilePath := filepath.Join(destDir, fileName)
 			result = append(result, destFilePath)
@@ -523,11 +521,6 @@ func copyFile(src, dst string) error {
 		return err
 	}
 	defer sourceFile.Close()
-
-	// FIXME do not create base (IntelliJ dir) here
-	if err := os.MkdirAll(filepath.Dir(dst), 0755); err != nil {
-		return err
-	}
 
 	destFile, err := os.Create(dst)
 	if err != nil {

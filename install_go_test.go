@@ -2,8 +2,11 @@ package main
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"testing"
 )
@@ -57,6 +60,8 @@ func TestInstallAllKeymaps(t *testing.T) {
 	i := runInstaller(wd+"/homedir", MockCommander{})
 
 	verifyKeymaps(t, i.sourceKeymap(IntelliJ()), i.ideDirs(IntelliJ())[0])
+	verifyKeymaps(t, i.sourceKeymap(IntelliJ()), i.ideDirs(IntelliJ())[1])
+	verifyKeymaps(t, i.sourceKeymap(IntelliJCE()), i.ideDirs(IntelliJCE())[0])
 	verifyKeymaps(t, i.sourceKeymap(PyCharm()), i.ideDirs(PyCharm())[0])
 	verifyKeymaps(t, i.sourceKeymap(GoLand()), i.ideDirs(GoLand())[0])
 	verifyKeymaps(t, i.sourceKeymap(Fleet()), i.ideDirs(Fleet())[0])
@@ -68,7 +73,7 @@ func TestInstallAllKeymaps(t *testing.T) {
 
 func verifyKeymaps(t *testing.T, srcKeymap, destKeymap string) {
 
-	keymapsEqual, _ := areFilesEqual(srcKeymap, destKeymap)
+	keymapsEqual, _ := compareFilesBySHASum(srcKeymap, destKeymap)
 
 	if !keymapsEqual {
 		t.Fatalf("Files %s are not equal", []string{srcKeymap, destKeymap})
@@ -115,4 +120,26 @@ func areFilesEqual(paths ...string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func computeSHA256(filepath string) (string, error) {
+	file, err := os.Open(filepath)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	hasher := sha256.New()
+	if _, err := io.Copy(hasher, file); err != nil {
+		return "", err
+	}
+
+	return hex.EncodeToString(hasher.Sum(nil)), nil
+}
+
+func compareFilesBySHASum(file1, file2 string) (bool, error) {
+	sha1, _ := computeSHA256(file1)
+	sha2, _ := computeSHA256(file2)
+
+	return sha1 == sha2, nil
 }

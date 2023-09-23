@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+const YELLOW = "\x1b[33m%s\x1b[0m"
+
 type Commander interface {
 	run(command string)
 	exists(command string) bool
@@ -21,7 +23,7 @@ func (c BasicCommander) run(command string) {
 
 	out, err := exec.Command("/bin/bash", "-c", command).CombinedOutput()
 
-	if err != nil {
+	if strings.Fields(command)[0] != "killall" && err != nil {
 		var exitErr *exec.ExitError
 		if errors.As(err, &exitErr) {
 			fmt.Printf("Command failed with error: %s\n", exitErr)
@@ -68,4 +70,8 @@ func (c MockCommander) exists(command string) bool {
 func fileExists(filename string) bool {
 	_, err := os.Stat(filename)
 	return !os.IsNotExist(err)
+}
+
+func printColored(color, msg string) {
+	fmt.Println(fmt.Sprintf(color, msg))
 }
