@@ -3,5 +3,6 @@
 .gitconfig
 pkg
 homedir/.config/karabiner/karabiner-*
-homedir/.config/karabiner/assets/complex_modifications
+homedir/.config/karabiner/assets/complex_modifications/*
 homedir/Library/**
+!.gitkeep
