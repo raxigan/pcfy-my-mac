@@ -383,7 +383,7 @@ func (i Installation) install(params Params) Installation {
 		plutilCmd := fmt.Sprintf("plutil -convert binary1 %s", rectanglePlist)
 		i.run(plutilCmd)
 
-		i.run("defaults read com.knollsoft.Rectangle")
+		i.run(fmt.Sprintf("defaults read %s", rectanglePlist))
 		i.run("open -a Rectangle")
 	}
 
@@ -396,7 +396,7 @@ func (i Installation) install(params Params) Installation {
 		plutilCmd := fmt.Sprintf("plutil -convert binary1 %s", altTabPlist)
 		i.run(plutilCmd)
 
-		i.run("defaults read com.lwouis.alt-tab-macos")
+		i.run(fmt.Sprintf("defaults read %s", altTabPlist))
 		i.run("open -a AltTab")
 	}
 

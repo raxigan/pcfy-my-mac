@@ -26,6 +26,7 @@ func (c BasicCommander) run(command string) {
 		if errors.As(err, &exitErr) {
 			fmt.Printf("Command failed with error: %s\n", exitErr)
 			fmt.Printf("Stderr: %s", out)
+			os.Exit(1)
 		}
 		return
 	}
@@ -54,6 +55,9 @@ func (c MockCommander) run(command string) {
 		BasicCommander{}.run(command)
 	case "killall", "open":
 		fmt.Println("Running: " + command)
+	default:
+		fmt.Println("Cannot execute command: " + command)
+		os.Exit(1)
 	}
 }
 
