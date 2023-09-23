@@ -51,9 +51,9 @@ func (c MockCommander) run(command string) {
 	cmd := strings.Fields(command)[0]
 
 	switch cmd {
-	case "jq", "clear", "plutil", "defaults":
+	case "jq", "plutil", "defaults":
 		BasicCommander{}.run(command)
-	case "killall", "open":
+	case "killall", "open", "clear":
 		fmt.Println("Running: " + command)
 	default:
 		fmt.Println("Cannot execute command: " + command)
