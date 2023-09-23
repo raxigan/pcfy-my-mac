@@ -2,7 +2,8 @@
 .idea
 .gitconfig
 pkg
-homedir/.config/karabiner/karabiner-*
-homedir/.config/karabiner/assets/complex_modifications/*
 homedir/Library/**
+homedir/.config/**
+!homedir/.config/karabiner/karabiner.json
+!homedir/.config/karabiner/karabiner-default.json
 !.gitkeep
