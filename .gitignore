@@ -1,3 +1,6 @@
 *.iml
 .idea
 .gitconfig
+pkg
+homedir/.config/karabiner/assets/complex_modifications
+homedir/Library/**
