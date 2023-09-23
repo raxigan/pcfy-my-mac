@@ -107,19 +107,6 @@ func GoLand() IDE {
 	}
 }
 
-func RustRover() IDE {
-	return IDE{
-		parentDir:       "/Library/Application Support/JetBrains/",
-		dir:             "RustRover",
-		keymapsDir:      "/keymaps",
-		fullName:        "RustRover",
-		flag:            "rustrover",
-		srcKeymapsFile:  "goland.xml",
-		destKeymapsFile: "goland.xml",
-		requiresPlugin:  true,
-	}
-}
-
 func Fleet() IDE {
 	return IDE{
 		parentDir:       "",
@@ -132,7 +119,7 @@ func Fleet() IDE {
 	}
 }
 
-var IDEKeymaps = []IDE{IntelliJ(), IntelliJCE(), PyCharm(), GoLand(), Fleet(), RustRover()}
+var IDEKeymaps = []IDE{IntelliJ(), IntelliJCE(), PyCharm(), GoLand(), Fleet()}
 
 func IdeKeymapsSurveyOptions() []string {
 

@@ -59,21 +59,24 @@ func TestInstallAllKeymaps(t *testing.T) {
 	wd, _ := os.Getwd()
 	i := runInstaller(wd+"/homedir", MockCommander{})
 
-	verifyKeymaps(t, i.sourceKeymap(IntelliJ()), i.ideDirs(IntelliJ())[0])
-	verifyKeymaps(t, i.sourceKeymap(IntelliJ()), i.ideDirs(IntelliJ())[1])
-	verifyKeymaps(t, i.sourceKeymap(IntelliJCE()), i.ideDirs(IntelliJCE())[0])
-	verifyKeymaps(t, i.sourceKeymap(PyCharm()), i.ideDirs(PyCharm())[0])
-	verifyKeymaps(t, i.sourceKeymap(GoLand()), i.ideDirs(GoLand())[0])
-	verifyKeymaps(t, i.sourceKeymap(Fleet()), i.ideDirs(Fleet())[0])
+	assertEqual(t, i.sourceKeymap(IntelliJ()), i.ideDirs(IntelliJ())[0])
+	assertEqual(t, i.sourceKeymap(IntelliJ()), i.ideDirs(IntelliJ())[1])
+	assertEqual(t, i.sourceKeymap(IntelliJCE()), i.ideDirs(IntelliJCE())[0])
+	assertEqual(t, i.sourceKeymap(GoLand()), i.ideDirs(GoLand())[0])
+	assertEqual(t, i.sourceKeymap(Fleet()), i.ideDirs(Fleet())[0])
 
 	removeFiles(i.karabinerConfigBackupFile())
 	removeFiles(i.karabinerTestInvalidConfig("iterm", "spotlight", "mac"))
 	copyFile(i.karabinerTestDefaultConfig(), i.karabinerConfigFile())
 }
 
-func verifyKeymaps(t *testing.T, srcKeymap, destKeymap string) {
+func assertEqual(t *testing.T, srcKeymap, destKeymap string) {
 
-	keymapsEqual, _ := compareFilesBySHASum(srcKeymap, destKeymap)
+	keymapsEqual, err := compareFilesBySHASum(srcKeymap, destKeymap)
+
+	if err != nil {
+		t.Errorf("Error: %s", err)
+	}
 
 	if !keymapsEqual {
 		t.Fatalf("Files %s are not equal", []string{srcKeymap, destKeymap})
@@ -138,8 +141,17 @@ func computeSHA256(filepath string) (string, error) {
 }
 
 func compareFilesBySHASum(file1, file2 string) (bool, error) {
-	sha1, _ := computeSHA256(file1)
-	sha2, _ := computeSHA256(file2)
+	sha1, err := computeSHA256(file1)
+
+	if err != nil {
+		return false, err
+	}
+
+	sha2, err := computeSHA256(file2)
+
+	if err != nil {
+		return false, err
+	}
 
 	return sha1 == sha2, nil
 }
