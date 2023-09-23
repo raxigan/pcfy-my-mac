@@ -11,7 +11,8 @@ import (
 func TestInstallWarpAlfredPC(t *testing.T) {
 
 	os.Args = []string{"script_name", "--terminal=warp", "--app-launcher=alfred", "--keyboard-type=pc"}
-	i := runInstaller("homedir", MockCommander{})
+	wd, _ := os.Getwd()
+	i := runInstaller(wd+"/homedir", MockCommander{})
 
 	actual := i.karabinerConfigFile()
 	expected := "expected/karabiner-expected-warp-alfred-pc.json"
@@ -30,7 +31,8 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 func TestInstallItermSpotlightMac(t *testing.T) {
 
 	os.Args = []string{"script_name", "--terminal=iterm", "--app-launcher=spotlight", "--keyboard-type=mac"}
-	i := runInstaller("homedir", MockCommander{})
+	wd, _ := os.Getwd()
+	i := runInstaller(wd+"/homedir", MockCommander{})
 
 	actual := i.karabinerConfigFile()
 	expected := "expected/karabiner-expected-iterm-spotlight-mac.json"
@@ -51,7 +53,8 @@ func TestInstallItermSpotlightMac(t *testing.T) {
 func TestInstallAllKeymaps(t *testing.T) {
 
 	os.Args = []string{"script_name", "--terminal=warp", "--app-launcher=alfred", "--keyboard-type=pc", "--ides=all"}
-	i := runInstaller("homedir", MockCommander{})
+	wd, _ := os.Getwd()
+	i := runInstaller(wd+"/homedir", MockCommander{})
 
 	verifyKeymaps(t, i.sourceKeymap(IntelliJ()), i.ideDirs(IntelliJ())[0])
 	verifyKeymaps(t, i.sourceKeymap(PyCharm()), i.ideDirs(PyCharm())[0])

@@ -33,8 +33,6 @@ type Params struct {
 
 type Installation struct {
 	homeDir    string
-	currentDir string
-
 	flagParams Params
 
 	profileName      string
@@ -58,8 +56,6 @@ func (sf *idesFlag) Set(v string) error {
 }
 
 func NewInstallation(homeDir string, commander Commander) *Installation {
-
-	pwd, _ := os.Getwd()
 
 	appLauncherParam := flag.String("app-launcher", "", "Description for appLauncher")
 	terminalParam := flag.String("terminal", "", "Description for terminalParam")
@@ -97,8 +93,7 @@ func NewInstallation(homeDir string, commander Commander) *Installation {
 	}
 
 	return &Installation{
-		homeDir:    homeDir,
-		currentDir: pwd,
+		homeDir: homeDir,
 		flagParams: Params{
 			appLauncher:  *appLauncherParam,
 			terminal:     *terminalParam,
