@@ -38,8 +38,9 @@ func (me Terminal) String() string {
 }
 
 type MySurvey struct {
-	description string
+	message     string
 	options     []string
+	description func(value string, index int) string
 }
 
 type IDE struct {

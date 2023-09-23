@@ -15,7 +15,7 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 
 	os.Args = []string{"script_name", "--homedir=" + curr, "--terminal=warp", "--app-launcher=alfred", "--keyboard-type=pc"}
 
-	i := NewInstallation().install()
+	i := runInstaller()
 
 	actual := i.karabinerConfigFile()
 	expected := pwd + "/expected/karabiner-expected-warp-alfred-pc.json"
@@ -38,7 +38,7 @@ func TestInstallItermSpotlightMac(t *testing.T) {
 
 	os.Args = []string{"script_name", "--homedir=" + curr, "--terminal=iterm", "--app-launcher=spotlight", "--keyboard-type=mac"}
 
-	i := NewInstallation().install()
+	i := runInstaller()
 
 	actual := i.karabinerConfigFile()
 	expected := pwd + "/expected/karabiner-expected-iterm-spotlight-mac.json"
@@ -61,12 +61,16 @@ func TestInstallAllKeymaps(t *testing.T) {
 	pwd, _ := os.Getwd()
 	curr := pwd + "/homedir"
 	os.Args = []string{"script_name", "--homedir=" + curr, "--terminal=warp", "--app-launcher=alfred", "--keyboard-type=pc", "--ides=all"}
-	i := NewInstallation().install()
+	i := runInstaller()
 
 	verifyKeymaps(t, i.sourceKeymap(IntelliJ()), i.ideDirs(IntelliJ())[0])
 	verifyKeymaps(t, i.sourceKeymap(PyCharm()), i.ideDirs(PyCharm())[0])
 	verifyKeymaps(t, i.sourceKeymap(GoLand()), i.ideDirs(GoLand())[0])
 	verifyKeymaps(t, i.sourceKeymap(Fleet()), i.ideDirs(Fleet())[0])
+
+	removeFiles(i.karabinerConfigBackupFile())
+	removeFiles(i.karabinerTestInvalidConfig("iterm", "spotlight", "mac"))
+	copyFile(i.karabinerTestDefaultConfig(), i.karabinerConfigFile())
 }
 
 func verifyKeymaps(t *testing.T, srcKeymap, destKeymap string) {
