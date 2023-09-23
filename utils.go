@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -9,6 +10,7 @@ import (
 
 type Commander interface {
 	run(command string)
+	exists(command string) bool
 }
 
 type BasicCommander struct {
@@ -26,6 +28,15 @@ func (c BasicCommander) run(command string) {
 	fmt.Print(string(output))
 }
 
+func (c BasicCommander) exists(command string) bool {
+	if strings.HasSuffix(command, ".app") {
+		return fileExists(command)
+	} else {
+		_, err := exec.LookPath(command)
+		return err == nil
+	}
+}
+
 type MockCommander struct {
 }
 
@@ -39,13 +50,27 @@ func (c MockCommander) run(command string) {
 	case "killall", "open":
 		fmt.Println("Running: " + command)
 	case "plutil", "defaults":
-		switch os := runtime.GOOS; os {
+		switch system := runtime.GOOS; system {
 		case "darwin":
 			BasicCommander{}.run(command)
 		case "linux":
 			fmt.Println("Running: " + command)
 		default:
-			fmt.Printf("Cannot run on OS: %s\n", os)
+			fmt.Printf("Cannot run on OS: %s\n", system)
 		}
 	}
+}
+
+func (c MockCommander) exists(command string) bool {
+	switch system := runtime.GOOS; system {
+	case "darwin":
+		return BasicCommander{}.exists(command)
+	default:
+		return true
+	}
+}
+
+func fileExists(filename string) bool {
+	_, err := os.Stat(filename)
+	return !os.IsNotExist(err)
 }

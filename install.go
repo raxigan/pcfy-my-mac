@@ -9,7 +9,6 @@ import (
 	"io"
 	"io/fs"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -22,16 +21,6 @@ var configs embed.FS
 func copyFileFromEmbedFS(src, dst string) error {
 	data, _ := fs.ReadFile(configs, src)
 	return os.WriteFile(dst, data, 0644)
-}
-
-func commandExists(cmd string) bool {
-	_, err := exec.LookPath(cmd)
-	return err == nil
-}
-
-func fileExists(filename string) bool {
-	_, err := os.Stat(filename)
-	return !os.IsNotExist(err)
 }
 
 type Params struct {
@@ -201,11 +190,11 @@ func (i Installation) collectParams() Params {
 	kbType := i.flagParams.keyboardType
 	var idesToInstall []IDE
 
-	if i.shouldBeInstalled("jq", "jq", true, true, false) {
+	if i.shouldBeInstalled("jq", "jq", true, false) {
 
 	}
 
-	if i.shouldBeInstalled("Karabiner-Elements", "Karabiner-Elements", false, true, true) {
+	if i.shouldBeInstalled("Karabiner-Elements", "/Applications/Karabiner-Elements.app", true, true) {
 
 		appLauncherSurvey := MySurvey{
 			message: "App Launcher:",
@@ -254,11 +243,11 @@ func (i Installation) collectParams() Params {
 		}
 	}
 
-	if i.shouldBeInstalled("Rectangle", "Rectangle", false, false, true) {
+	if i.shouldBeInstalled("Rectangle", "/Applications/Rectangle.app", false, true) {
 		// TODO remember decision and pass to install()
 	}
 
-	if i.shouldBeInstalled("Alt-Tab", "AltTab", false, false, true) {
+	if i.shouldBeInstalled("Alt-Tab", "/Applications/AltTab.app", false, true) {
 		// TODO remember decision and pass to install()
 	}
 
@@ -338,7 +327,7 @@ func (i Installation) install(params Params) Installation {
 		applyRules(i, "launchpad.json")
 	case "alfred":
 		{
-			i.shouldBeInstalled("Alfred", "Alfred 5", false, false, true)
+			i.shouldBeInstalled("Alfred", "/Applications/Alfred 5.app", false, true)
 			fmt.Println("Applying alfred rules...")
 			applyRules(i, "alfred.json")
 
@@ -385,7 +374,7 @@ func (i Installation) install(params Params) Installation {
 
 	i.run("killall Rectangle")
 
-	if i.shouldBeInstalled("Rectangle", "Rectangle", false, false, true) {
+	if i.shouldBeInstalled("Rectangle", "/Applications/Rectangle.app", false, true) {
 
 		rectanglePlist := i.preferencesDir() + "/com.knollsoft.Rectangle.plist"
 		copyFileFromEmbedFS("configs/rectangle/Settings.xml", rectanglePlist)
@@ -397,7 +386,7 @@ func (i Installation) install(params Params) Installation {
 		i.run("open -a Rectangle")
 	}
 
-	if i.shouldBeInstalled("Alt-Tab", "AltTab", false, false, true) {
+	if i.shouldBeInstalled("Alt-Tab", "/Applications/AltTab.app", false, true) {
 		i.run("killall AltTab")
 
 		altTabPlist := i.preferencesDir() + "/com.lwouis.alt-tab-macos.plist"
@@ -415,15 +404,9 @@ func (i Installation) install(params Params) Installation {
 	return i
 }
 
-func (i Installation) shouldBeInstalled(appName string, appFile string, isCommand bool, isRequired bool, isCask bool) bool {
+func (i Installation) shouldBeInstalled(appName string, appFile string, isRequired bool, isCask bool) bool {
 
-	exists := false
-
-	if isCommand {
-		exists = commandExists(appName)
-	} else {
-		exists = fileExists("/Applications/" + appFile + ".app")
-	}
+	exists := i.cmd.exists(appFile)
 
 	if exists {
 		return true
