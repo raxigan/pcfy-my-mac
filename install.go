@@ -327,23 +327,27 @@ func (i Installation) install(params Params) Installation {
 	unselectJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name != \"%s\" then .selected = false else . end)' %s > tmp && mv tmp %s", i.profileName, i.karabinerConfigFile(), i.karabinerConfigFile())
 	run(unselectJqCmd)
 
-	applyRules(i, "main-rules.json")
-	applyRules(i, "finder-rules.json")
+	applyRules(i, "main.json")
+	applyRules(i, "finder.json")
 
 	switch params.appLauncher {
 	case "spotlight":
 		fmt.Println("Applying spotlight rules...")
-		applyRules(i, "spotlight-rules.json")
+		applyRules(i, "spotlight.json")
 	case "launchpad":
 		fmt.Println("Applying launchpad rules...")
-		applyRules(i, "launchpad-rules.json")
+		applyRules(i, "launchpad.json")
 	case "alfred":
 		{
 			shouldBeInstalled("Alfred", "Alfred 5", false, false, true)
 			fmt.Println("Applying alfred rules...")
-			applyRules(i, "alfred-rules.json")
-			c1 := fmt.Sprintf("find '%s' -type d -name \"hotkey\" -exec cp %s {} \\;", i.applicationSupportDir()+"/Alfred/Alfred.alfredpreferences/preferences/local", i.currentDir+"/../alfred5/prefs.plist")
-			run(c1)
+			applyRules(i, "alfred.json")
+
+			dirs := findMatchingDirs(i.applicationSupportDir()+"/Alfred/Alfred.alfredpreferences/preferences/local", "", "hotkey", "prefs.plist")
+
+			for _, e := range dirs {
+				copyFileFromEmbedFS("configs/alfred5/prefs.plist", e)
+			}
 		}
 	default:
 		fmt.Println("Value is not A, B, or C")
@@ -361,13 +365,13 @@ func (i Installation) install(params Params) Installation {
 	switch params.terminal {
 	case "default":
 		fmt.Println("Applying apple terminal rules...")
-		applyRules(i, "terminal-rules.json")
+		applyRules(i, "apple-terminal.json")
 	case "iterm":
 		fmt.Println("Applying iterm rules...")
-		applyRules(i, "iterm-rules.json")
+		applyRules(i, "iterm.json")
 	case "warp":
 		fmt.Println("Applying warp rules...")
-		applyRules(i, "warp-rules.json")
+		applyRules(i, "warp.json")
 	default:
 	}
 
@@ -486,27 +490,32 @@ func (i Installation) installIdeKeymap(ide IDE) {
 	}
 }
 
-func (i Installation) ideDirs(ide IDE) []string {
+func findMatchingDirs(basePath, namePrefix, subDir, fileName string) []string {
 
 	var result []string
 
-	filepath.Walk(i.homeDir+ide.parentDir, func(path string, info os.FileInfo, err error) error {
+	filepath.Walk(basePath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 
-		if info.IsDir() && strings.HasPrefix(info.Name(), ide.dir) {
-			destDir := filepath.Join(path, ide.keymapsDir)
-			destFilePath := filepath.Join(destDir, ide.destKeymapsFile)
+		if path != basePath && info.IsDir() && fileExists(filepath.Join(basePath, info.Name())) && strings.HasPrefix(info.Name(), namePrefix) {
 
-			if strings.HasSuffix(destDir, ide.keymapsDir) {
-				result = append(result, destFilePath)
-			}
+			fmt.Println(info.Name())
+			fmt.Println(path)
+
+			destDir := filepath.Join(path, subDir)
+			destFilePath := filepath.Join(destDir, fileName)
+			result = append(result, destFilePath)
 		}
 		return nil
 	})
 
 	return result
+}
+
+func (i Installation) ideDirs(ide IDE) []string {
+	return findMatchingDirs(i.homeDir+ide.parentDir, ide.dir, ide.keymapsDir, ide.destKeymapsFile)
 }
 
 func applyRules(i Installation, file string) {
