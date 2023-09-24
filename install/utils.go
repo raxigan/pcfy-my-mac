@@ -84,7 +84,7 @@ func (fp FileParams) String() string {
 	parts = append(parts, fmt.Sprintf("KeyboardType: %s", fp.KeyboardType))
 
 	parts = join(fp.Ides, "Ides", parts)
-	parts = join(fp.Options, "Options", parts)
+	parts = join(fp.AdditionalOptions, "AdditionalOptions", parts)
 	parts = join(fp.Blacklist, "Blacklist", parts)
 
 	return "{" + strings.Join(parts, ", ") + "}"

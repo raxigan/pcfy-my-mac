@@ -29,12 +29,12 @@ func copyFileFromEmbedFS(src, dst string) error {
 }
 
 type Params struct {
-	appLauncher  string
-	terminal     string
-	keyboardType string
-	ides         *[]IDE
-	options      *[]string
-	blacklist    *[]string
+	appLauncher       string
+	terminal          string
+	keyboardType      string
+	ides              *[]IDE
+	additionalOptions *[]string
+	blacklist         *[]string
 }
 
 type Installation struct {
@@ -47,13 +47,13 @@ type Installation struct {
 }
 
 type FileParams struct {
-	AppLauncher  string `yaml:"app-launcher"`
-	Terminal     string
-	KeyboardType string `yaml:"keyboard-type"`
-	Ides         *[]string
-	Options      *[]string
-	Blacklist    *[]string
-	Extra        map[string]string `yaml:",inline"`
+	AppLauncher       string `yaml:"app-launcher"`
+	Terminal          string
+	KeyboardType      string `yaml:"keyboard-type"`
+	Ides              *[]string
+	AdditionalOptions *[]string `yaml:"additional-options"`
+	Blacklist         *[]string
+	Extra             map[string]string `yaml:",inline"`
 }
 
 func NewInstallation(homeDir string, commander Commander) *Installation {
@@ -87,7 +87,7 @@ func NewInstallation(homeDir string, commander Commander) *Installation {
 	validateParamValue("keyboard-type", fp.KeyboardType, []string{PC.String(), Mac.String(), "None"})
 	validateParamValues("ides", fp.Ides, append(IdeKeymapsFlags(), []string{"none", "all"}...))
 	// do not validate blacklist
-	validateParamValues("options", fp.Options, []string{})
+	validateParamValues("options", fp.AdditionalOptions, []string{})
 
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 
@@ -116,12 +116,12 @@ func NewInstallation(homeDir string, commander Commander) *Installation {
 	return &Installation{
 		homeDir: homeDir,
 		params: Params{
-			appLauncher:  fp.AppLauncher,
-			terminal:     fp.Terminal,
-			keyboardType: fp.KeyboardType,
-			ides:         ides,
-			options:      fp.Options,
-			blacklist:    fp.Blacklist,
+			appLauncher:       fp.AppLauncher,
+			terminal:          fp.Terminal,
+			keyboardType:      fp.KeyboardType,
+			ides:              ides,
+			additionalOptions: fp.AdditionalOptions,
+			blacklist:         fp.Blacklist,
 		},
 		profileName:      "PC mode GOLANG",
 		installationTime: time.Now(),
@@ -152,6 +152,10 @@ func (i Installation) applicationSupportDir() string {
 
 func (i Installation) preferencesDir() string {
 	return i.homeDir + "/Library/preferences"
+}
+
+func (i Installation) libraryDir() string {
+	return i.homeDir + "/Library"
 }
 
 func (i Installation) SourceKeymap(ide IDE) string {
@@ -267,27 +271,20 @@ func (i Installation) collectParams() Params {
 
 	var options []string
 
-	if i.params.options == nil {
+	if i.params.additionalOptions == nil {
 
 		ms := survey.MultiSelect{
 			Message: "Select additional options:",
 			Options: []string{
-				"Enable Home & End keys (recommended for PC keyboards)",
-				"Use F1, F2, etc. keys as standard keys (recommended)",
-				"Enable dock auto-hide - 2s delay (recommended)",
-				"Change the Dock minimize animation to \"scale\" (recommended)",
-				"Disable Spaces rearranging based on most recent use (recommended)",
-				"Disable switching to a Space with open windows for the application (recommended)",
-				"Enable displays having separated Spaces (recommended)",
-				"Put the Dock on the left of the screen",
+				"Enable Dock auto-hide (2s delay)",
+				`Change Dock minimize animation to "scale"`,
+				"Enable Home & End keys",
 				"Show hidden files in Finder",
-				"Show folders on top in Finder",
+				"Show directories on top in Finder",
 				"Show full POSIX path in Finder window title",
-				"Shorten windows maximize animation",
-				"Disable Mission Control",
 			},
 			Description: func(value string, index int) string {
-				if index < 5 {
+				if index < 2 {
 					return "Recommended"
 				}
 				return ""
@@ -300,12 +297,12 @@ func (i Installation) collectParams() Params {
 	}
 
 	return Params{
-		appLauncher:  app,
-		terminal:     term,
-		keyboardType: kbType,
-		ides:         &idesToInstall,
-		options:      &options,
-		blacklist:    i.params.blacklist,
+		appLauncher:       app,
+		terminal:          term,
+		keyboardType:      kbType,
+		ides:              &idesToInstall,
+		additionalOptions: &options,
+		blacklist:         i.params.blacklist,
 	}
 }
 
@@ -432,6 +429,28 @@ func (i Installation) install(params Params) Installation {
 
 		i.run("defaults read com.lwouis.alt-tab-macos.plist")
 		i.run("open -a AltTab")
+	}
+
+	optionsMap := make(map[string]bool)
+	for _, value := range *params.additionalOptions {
+		optionsMap[value] = true
+	}
+
+	switch {
+	case optionsMap["Enable Dock auto-hide (2s delay)"]:
+		i.run("defaults write com.apple.dock autohide -bool true")
+		i.run("defaults write com.apple.dock autohide-delay -float 2 && killall Dock")
+	case optionsMap[`Change Dock minimize animation to "scale"`]:
+		i.run(`defaults write com.apple.dock "mineffect" -string "scale" && killall Dock`)
+	case optionsMap["Enable Home & End keys"]:
+		fmt.Println("Enable Home & End keys...")
+		copyFileFromEmbedFS("system/DefaultKeyBinding.dict", i.libraryDir()+"/KeyBindings/DefaultKeyBinding.dict")
+	case optionsMap["Show hidden files in Finder"]:
+		i.run("defaults write com.apple.finder AppleShowAllFiles -bool true")
+	case optionsMap["Show directories on top in Finder"]:
+		i.run("defaults write com.apple.finder _FXSortFoldersFirst -bool true")
+	case optionsMap["Show full POSIX path in Finder window title"]:
+		i.run("defaults write com.apple.finder _FXShowPosixPathInTitle -bool true")
 	}
 
 	fmt.Println("SUCCESS")
