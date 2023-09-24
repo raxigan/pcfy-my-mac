@@ -2,8 +2,10 @@
 .idea
 .gitconfig
 pkg
-test/homedir/Library/**
-test/homedir/.config/**
+test/homedir/Library/**/keymaps/*
+test/homedir/Library/Preferences/*.plist
+test/homedir/.config/karabiner/karabiner-*.json
+test/homedir/.config/karabiner/assets/complex_modifications/*.json
 test/homedir/.fleet/**
 !test/homedir/.config/karabiner/karabiner.json
 !test/homedir/.config/karabiner/karabiner-default.json
