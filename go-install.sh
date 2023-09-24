@@ -41,7 +41,7 @@ main() {
   setup_color
   install_brew
 
-  if [ -f "install.go" ]; then
+  if [ -f "main.go" ]; then
     echo "Running local..."
     go build -ldflags "-w"
 

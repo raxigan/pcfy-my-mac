@@ -1,0 +1,6 @@
+app-launcher: spotlight
+terminal: iterm
+keyboard-type: mac
+ides: [ ]
+options: [ ]
+blacklist: [ ]

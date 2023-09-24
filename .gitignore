@@ -2,10 +2,10 @@
 .idea
 .gitconfig
 pkg
-homedir/Library/**
-homedir/.config/**
-homedir/.fleet/**
-!homedir/.config/karabiner/karabiner.json
-!homedir/.config/karabiner/karabiner-default.json
+test/homedir/Library/**
+test/homedir/.config/**
+test/homedir/.fleet/**
+!test/homedir/.config/karabiner/karabiner.json
+!test/homedir/.config/karabiner/karabiner-default.json
 !.gitkeep
 custom-params.yml

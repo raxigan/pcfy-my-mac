@@ -1,4 +1,4 @@
-package main
+package install
 
 import (
 	"errors"
@@ -15,10 +15,10 @@ type Commander interface {
 	exists(command string) bool
 }
 
-type BasicCommander struct {
+type DefaultCommander struct {
 }
 
-func (c BasicCommander) run(command string) {
+func (c DefaultCommander) run(command string) {
 	fmt.Println("Running: " + command)
 
 	out, err := exec.Command("/bin/bash", "-c", command).CombinedOutput()
@@ -36,7 +36,7 @@ func (c BasicCommander) run(command string) {
 	fmt.Print(string(out))
 }
 
-func (c BasicCommander) exists(command string) bool {
+func (c DefaultCommander) exists(command string) bool {
 	if strings.HasSuffix(command, ".app") {
 		return fileExists(command)
 	} else {
@@ -54,7 +54,7 @@ func (c MockCommander) run(command string) {
 
 	switch cmd {
 	case "jq", "plutil":
-		BasicCommander{}.run(command)
+		DefaultCommander{}.run(command)
 	case "killall", "open", "clear", "defaults":
 		fmt.Println("Running: " + command)
 	default:
