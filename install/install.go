@@ -56,16 +56,25 @@ type FileParams struct {
 	Extra             map[string]string `yaml:",inline"`
 }
 
-func NewInstallation(homeDir string, commander Commander) *Installation {
+func NewInstallation(homeDir string, commander Commander, yml *string) *Installation {
 
-	paramsFile := flag.String("params", "", "YAML file with installer parameters")
-	flag.Parse()
+	var data []byte
 
-	data, e := os.ReadFile(*paramsFile)
+	if yml != nil {
+		data = []byte(*yml)
+	} else {
 
-	if e != nil {
-		fmt.Println(e)
-		os.Exit(1)
+		paramsFile := flag.String("params", "", "YAML file with installer parameters")
+		flag.Parse()
+
+		d, e := os.ReadFile(*paramsFile)
+
+		if e != nil {
+			fmt.Println(e)
+			os.Exit(1)
+		}
+
+		data = d
 	}
 
 	fp := FileParams{}
@@ -193,8 +202,8 @@ func makeMultiSelect(s survey.MultiSelect) []string {
 	return appLauncher
 }
 
-func RunInstaller(homeDir string, commander Commander) Installation {
-	installation := NewInstallation(homeDir, commander)
+func RunInstaller(homeDir string, commander Commander, yaml *string) Installation {
+	installation := NewInstallation(homeDir, commander, yaml)
 	params := installation.collectParams()
 	return installation.install(params)
 }

@@ -9,14 +9,43 @@ import (
 	"github.com/raxigan/macos-pc-mode/install"
 	"io"
 	"os"
+	"strings"
 	"testing"
 )
 
-func TestInstallWarpAlfredPC(t *testing.T) {
+func TestInstallFromYamlFile(t *testing.T) {
 
 	os.Args = []string{"script_name", "--params=params/alfred-warp-pc.yml"}
 	wd, _ := os.Getwd()
-	i := install.RunInstaller(wd+"/homedir", install.MockCommander{})
+	i := install.RunInstaller(wd+"/homedir", install.MockCommander{}, nil)
+
+	actual := i.KarabinerConfigFile()
+	expected := "expected/karabiner-expected-warp-alfred-pc.json"
+	equal, _ := areFilesEqual(actual, expected)
+	if !equal {
+		copyFile(i.KarabinerConfigFile(), karabinerTestInvalidConfig(i, "warp", "alfred", "pc"))
+		copyFile(karabinerTestDefaultConfig(i), i.KarabinerConfigFile())
+		removeFiles(i.KarabinerConfigBackupFile())
+		t.Fatalf("Files %s and %s are not equal", actual, expected)
+	}
+
+	removeFiles(i.KarabinerConfigBackupFile())
+	removeFiles(karabinerTestInvalidConfig(i, "warp", "alfred", "pc"))
+}
+
+func TestInstallWarpAlfredPC(t *testing.T) {
+
+	wd, _ := os.Getwd()
+	yml := yaml(`
+		app-launcher: alfred
+		terminal: warp
+		keyboard-type: pc
+		ides: [ ]
+		additional-options: [ ]
+		blacklist: [ ]`,
+	)
+
+	i := install.RunInstaller(wd+"/homedir", install.MockCommander{}, &yml)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-warp-alfred-pc.json"
@@ -34,9 +63,17 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 
 func TestInstallItermSpotlightMac(t *testing.T) {
 
-	os.Args = []string{"script_name", "--params=params/spotlight-iterm-mac.yml"}
 	wd, _ := os.Getwd()
-	i := install.RunInstaller(wd+"/homedir", install.MockCommander{})
+	yml := yaml(`
+		app-launcher: spotlight
+		terminal: iterm
+		keyboard-type: mac
+		ides: [ ]
+		additional-options: [ ]
+		blacklist: [ ]`,
+	)
+
+	i := install.RunInstaller(wd+"/homedir", install.MockCommander{}, &yml)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-iterm-spotlight-mac.json"
@@ -56,9 +93,17 @@ func TestInstallItermSpotlightMac(t *testing.T) {
 
 func TestInstallAllKeymaps(t *testing.T) {
 
-	os.Args = []string{"script_name", "--params=params/all-ides.yml"}
 	wd, _ := os.Getwd()
-	i := install.RunInstaller(wd+"/homedir", install.MockCommander{})
+	yml := yaml(`
+		app-launcher: None
+		terminal: None
+		keyboard-type: None
+		ides: [ "all" ]
+		additional-options: [ ]
+		blacklist: [ ]`,
+	)
+
+	i := install.RunInstaller(wd+"/homedir", install.MockCommander{}, &yml)
 
 	assertEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJ()), i.IdeDirs(install.IntelliJ())[0])
 	assertEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJ()), i.IdeDirs(install.IntelliJ())[1])
@@ -176,4 +221,8 @@ func copyFile(src, dst string) error {
 	}
 
 	return nil
+}
+
+func yaml(yaml string) string {
+	return strings.TrimSpace(strings.ReplaceAll(yaml, "\t", ""))
 }
