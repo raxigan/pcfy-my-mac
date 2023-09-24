@@ -8,3 +8,4 @@ homedir/.fleet/**
 !homedir/.config/karabiner/karabiner.json
 !homedir/.config/karabiner/karabiner-default.json
 !.gitkeep
+custom-params.yml

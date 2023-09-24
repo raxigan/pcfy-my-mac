@@ -53,9 +53,9 @@ func (c MockCommander) run(command string) {
 	cmd := strings.Fields(command)[0]
 
 	switch cmd {
-	case "jq", "plutil", "defaults":
+	case "jq", "plutil":
 		BasicCommander{}.run(command)
-	case "killall", "open", "clear":
+	case "killall", "open", "clear", "defaults":
 		fmt.Println("Running: " + command)
 	default:
 		fmt.Println("Cannot execute command: " + command)
@@ -74,4 +74,43 @@ func fileExists(filename string) bool {
 
 func printColored(color, msg string) {
 	fmt.Println(fmt.Sprintf(color, msg))
+}
+
+func (fp FileParams) String() string {
+	var parts []string
+
+	parts = append(parts, fmt.Sprintf("AppLauncher: %s", fp.AppLauncher))
+	parts = append(parts, fmt.Sprintf("Terminal: %s", fp.Terminal))
+	parts = append(parts, fmt.Sprintf("KeyboardType: %s", fp.KeyboardType))
+
+	parts = join(fp.Ides, "Ides", parts)
+	parts = join(fp.Options, "Options", parts)
+	parts = join(fp.Blacklist, "Blacklist", parts)
+
+	return "{" + strings.Join(parts, ", ") + "}"
+}
+
+func join(value *[]string, label string, parts []string) []string {
+	if value != nil {
+		return append(parts, fmt.Sprintf("%s: [%s]", label, strings.Join(*value, ", ")))
+	} else {
+		return append(parts, "Options: nil")
+	}
+}
+
+func replaceWordInFile(path, oldWord, newWord string) error {
+
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+
+	modifiedContent := strings.ReplaceAll(string(content), oldWord, newWord)
+
+	err = os.WriteFile(path, []byte(modifiedContent), 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

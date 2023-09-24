@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/bitfield/script"
+	"gopkg.in/yaml.v3"
 	"io"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
 	"slices"
@@ -29,62 +31,77 @@ type Params struct {
 	terminal     string
 	keyboardType string
 	ides         *[]IDE
+	options      *[]string
+	blacklist    *[]string
 }
 
 type Installation struct {
-	homeDir    string
-	flagParams Params
+	homeDir string
+	params  Params
 
 	profileName      string
 	installationTime time.Time
 	cmd              Commander
 }
 
-type idesFlag struct {
-	provided bool
-	value    string
-}
-
-func (sf *idesFlag) String() string {
-	return sf.value
-}
-
-func (sf *idesFlag) Set(v string) error {
-	sf.value = v
-	sf.provided = true
-	return nil
+type FileParams struct {
+	AppLauncher  string `yaml:"app-launcher"`
+	Terminal     string
+	KeyboardType string `yaml:"keyboard-type"`
+	Ides         *[]string
+	Options      *[]string
+	Blacklist    *[]string
+	Extra        map[string]string `yaml:",inline"`
 }
 
 func NewInstallation(homeDir string, commander Commander) *Installation {
 
-	appLauncherParam := flag.String("app-launcher", "", "Description for appLauncher")
-	terminalParam := flag.String("terminal", "", "Description for terminalParam")
-	kbTypeParam := flag.String("keyboard-type", "", "Description for kbTypeParam")
-	var ids idesFlag
-	flag.Var(&ids, "ides", "Description for ides")
-
+	paramsFile := flag.String("params", "", "YAML file with installer parameters")
 	flag.Parse()
 
-	validateFlagValue("app-launcher", *appLauncherParam, []string{Spotlight.String(), Launchpad.String(), Alfred.String(), "none"})
-	validateFlagValue("terminal", *terminalParam, []string{Default.String(), iTerm.String(), Warp.String(), "none"})
-	validateFlagValue("keyboard-type", *kbTypeParam, []string{PC.String(), Mac.String(), "none"})
-	validateFlagValue("ides", ids.value, append(IdeKeymapsFlags(), []string{"none", "all"}...))
+	data, e := os.ReadFile(*paramsFile)
+
+	if e != nil {
+		fmt.Println(e)
+		os.Exit(1)
+	}
+
+	fp := FileParams{}
+
+	err := yaml.Unmarshal(data, &fp)
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+
+	if len(fp.Extra) > 0 {
+		for field := range fp.Extra {
+			fmt.Printf("Unknown parameter: %s\n", field)
+			os.Exit(1)
+		}
+	}
+
+	validateParamValue("app-launcher", fp.AppLauncher, []string{Spotlight.String(), Launchpad.String(), Alfred.String(), "None"})
+	validateParamValue("terminal", fp.Terminal, []string{Default.String(), iTerm.String(), Warp.String(), "None"})
+	validateParamValue("keyboard-type", fp.KeyboardType, []string{PC.String(), Mac.String(), "None"})
+	validateParamValues("ides", fp.Ides, append(IdeKeymapsFlags(), []string{"none", "all"}...))
+	// do not validate blacklist
+	validateParamValues("options", fp.Options, []string{})
 
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 
 	var ides *[]IDE
 
-	if !ids.provided {
+	if fp.Ides == nil {
 		ides = nil
-	} else if ids.value == "all" {
+	} else if (*fp.Ides)[0] == "all" {
 		ides = &IDEKeymaps
 	} else {
 
 		var idesFromFlags []IDE
 
-		for _, e := range strings.Split(ids.value, ",") {
+		for _, e := range *fp.Ides {
 			if e != "" {
-				byFlag, _ := IdeKeymapByFlag(e)
+				byFlag, _ := IdeKeymapByFullName(e)
 				idesFromFlags = append(idesFromFlags, byFlag)
 			}
 		}
@@ -94,11 +111,13 @@ func NewInstallation(homeDir string, commander Commander) *Installation {
 
 	return &Installation{
 		homeDir: homeDir,
-		flagParams: Params{
-			appLauncher:  *appLauncherParam,
-			terminal:     *terminalParam,
-			keyboardType: *kbTypeParam,
+		params: Params{
+			appLauncher:  fp.AppLauncher,
+			terminal:     fp.Terminal,
+			keyboardType: fp.KeyboardType,
 			ides:         ides,
+			options:      fp.Options,
+			blacklist:    fp.Blacklist,
 		},
 		profileName:      "PC mode GOLANG",
 		installationTime: time.Now(),
@@ -181,9 +200,9 @@ func main() {
 
 func (i Installation) collectParams() Params {
 
-	app := i.flagParams.appLauncher
-	term := i.flagParams.terminal
-	kbType := i.flagParams.keyboardType
+	app := i.params.appLauncher
+	term := i.params.terminal
+	kbType := i.params.keyboardType
 	var idesToInstall []IDE
 
 	if i.shouldBeInstalled("jq", "jq", true, false) {
@@ -220,7 +239,7 @@ func (i Installation) collectParams() Params {
 
 		i.run("clear")
 
-		if i.flagParams.ides == nil {
+		if i.params.ides == nil {
 
 			ideSurvey := survey.MultiSelect{
 				Message: "IDE keymaps to install:",
@@ -235,7 +254,7 @@ func (i Installation) collectParams() Params {
 				idesToInstall = append(idesToInstall, name)
 			}
 		} else {
-			idesToInstall = *i.flagParams.ides
+			idesToInstall = *i.params.ides
 		}
 	}
 
@@ -247,40 +266,47 @@ func (i Installation) collectParams() Params {
 		// TODO remember decision and pass to install()
 	}
 
-	defaults := survey.MultiSelect{
-		Message: "Select additional options:",
-		Options: []string{
-			"Enable Home & End keys (recommended for PC keyboards)",
-			"Use F1, F2, etc. keys as standard keys (recommended)",
-			"Enable dock auto-hide - 2s delay (recommended)",
-			"Change the Dock minimize animation to \"scale\" (recommended)",
-			"Disable Spaces rearranging based on most recent use (recommended)",
-			"Disable switching to a Space with open windows for the application (recommended)",
-			"Enable displays having separated Spaces (recommended)",
-			"Put the Dock on the left of the screen",
-			"Show hidden files in Finder",
-			"Show folders on top in Finder",
-			"Show full POSIX path in Finder window title",
-			"Shorten windows maximize animation",
-			"Disable Mission Control",
-		},
-		Description: func(value string, index int) string {
-			if index < 5 {
-				return "Recommended"
-			}
-			return ""
-		},
-		Help:     "help",
-		PageSize: 15,
-	}
+	var options []string
 
-	makeMultiSelect(defaults)
+	if i.params.options == nil {
+
+		ms := survey.MultiSelect{
+			Message: "Select additional options:",
+			Options: []string{
+				"Enable Home & End keys (recommended for PC keyboards)",
+				"Use F1, F2, etc. keys as standard keys (recommended)",
+				"Enable dock auto-hide - 2s delay (recommended)",
+				"Change the Dock minimize animation to \"scale\" (recommended)",
+				"Disable Spaces rearranging based on most recent use (recommended)",
+				"Disable switching to a Space with open windows for the application (recommended)",
+				"Enable displays having separated Spaces (recommended)",
+				"Put the Dock on the left of the screen",
+				"Show hidden files in Finder",
+				"Show folders on top in Finder",
+				"Show full POSIX path in Finder window title",
+				"Shorten windows maximize animation",
+				"Disable Mission Control",
+			},
+			Description: func(value string, index int) string {
+				if index < 5 {
+					return "Recommended"
+				}
+				return ""
+			},
+			Help:     "help",
+			PageSize: 15,
+		}
+
+		options = makeMultiSelect(ms)
+	}
 
 	return Params{
 		appLauncher:  app,
 		terminal:     term,
 		keyboardType: kbType,
 		ides:         &idesToInstall,
+		options:      &options,
+		blacklist:    i.params.blacklist,
 	}
 }
 
@@ -304,7 +330,7 @@ func (i Installation) install(params Params) Installation {
 	i.run(addProfileJqCmd)
 
 	// rename the profile
-	renameJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name == \"PROFILE_NAME\" then .name = \"%s\" else . end)' %s > tmp && mv tmp %s", i.profileName, i.karabinerConfigFile(), i.karabinerConfigFile())
+	renameJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name == \"_PROFILE_NAME_\" then .name = \"%s\" else . end)' %s > tmp && mv tmp %s", i.profileName, i.karabinerConfigFile(), i.karabinerConfigFile())
 	i.run(renameJqCmd)
 
 	// unselect other profiles
@@ -378,7 +404,7 @@ func (i Installation) install(params Params) Installation {
 		plutilCmd := fmt.Sprintf("plutil -convert binary1 %s", rectanglePlist)
 		i.run(plutilCmd)
 
-		i.run(fmt.Sprintf("defaults read %s", rectanglePlist))
+		i.run("defaults read com.knollsoft.Rectangle.plist")
 		i.run("open -a Rectangle")
 	}
 
@@ -388,10 +414,24 @@ func (i Installation) install(params Params) Installation {
 		altTabPlist := i.preferencesDir() + "/com.lwouis.alt-tab-macos.plist"
 		copyFileFromEmbedFS("configs/alt-tab/Settings.xml", altTabPlist)
 
+		// set up blacklist
+		bl := *params.blacklist
+
+		var mappedStrings []string
+		for _, s := range bl {
+			mappedStrings = append(mappedStrings, fmt.Sprintf(`{"ignore":"0","bundleIdentifier":"%s","hide":"1"}`, s))
+		}
+
+		result := "[" + strings.Join(mappedStrings, ",") + "]"
+
+		fmt.Println("Blacklist: " + result)
+
+		replaceWordInFile(altTabPlist, "_BLACKLIST_", result)
+
 		plutilCmd := fmt.Sprintf("plutil -convert binary1 %s", altTabPlist)
 		i.run(plutilCmd)
 
-		i.run(fmt.Sprintf("defaults read %s", altTabPlist))
+		i.run("defaults read com.lwouis.alt-tab-macos.plist")
 		i.run("open -a AltTab")
 	}
 
@@ -496,16 +536,20 @@ func prepareForExternalMacKeyboard(i Installation) {
 	i.run(jq)
 }
 
-func validateFlagValue(flag, value string, validValues []string) {
+func validateParamValue(flag, value string, validValues []string) {
 
 	if value != "" {
 		v := toLowerSlice(validValues)
 
 		if !slices.Contains(v, strings.ToLower(value)) {
-			fmt.Println("Invalid flag " + flag + " value: " + value + ", valid values: " + strings.Join(v, ", "))
+			fmt.Println("Invalid param '" + flag + "' value: '" + value + "', valid values: " + strings.Join(v, ", "))
 			os.Exit(1)
 		}
 	}
+}
+
+func validateParamValues(flag string, values *[]string, validValues []string) {
+
 }
 
 func toLowerSlice(slice []string) []string {
