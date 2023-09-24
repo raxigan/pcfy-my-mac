@@ -85,9 +85,9 @@ func NewInstallation(homeDir string, commander Commander) *Installation {
 	validateParamValue("app-launcher", fp.AppLauncher, []string{Spotlight.String(), Launchpad.String(), Alfred.String(), "None"})
 	validateParamValue("terminal", fp.Terminal, []string{Default.String(), iTerm.String(), Warp.String(), "None"})
 	validateParamValue("keyboard-type", fp.KeyboardType, []string{PC.String(), Mac.String(), "None"})
-	validateParamValues("ides", fp.Ides, append(IdeKeymapsFlags(), []string{"none", "all"}...))
+	validateParamValues("ides", fp.Ides, append(IdeKeymapOptions(), []string{"all"}...))
 	// do not validate blacklist
-	validateParamValues("options", fp.AdditionalOptions, []string{})
+	validateParamValues("additional-options", fp.AdditionalOptions, AdditionalOptions)
 
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 
@@ -95,9 +95,7 @@ func NewInstallation(homeDir string, commander Commander) *Installation {
 
 	if fp.Ides == nil {
 		ides = nil
-	} else if len(*fp.Ides) == 0 {
-		ides = &[]IDE{}
-	} else if (*fp.Ides)[0] == "all" {
+	} else if slices.Contains(*fp.Ides, "all") {
 		ides = &IDEKeymaps
 	} else {
 
@@ -281,7 +279,7 @@ func (i Installation) collectParams() Params {
 				"Enable Home & End keys",
 				"Show hidden files in Finder",
 				"Show directories on top in Finder",
-				"Show full POSIX path in Finder window title",
+				"Show full POSIX paths in Finder",
 			},
 			Description: func(value string, index int) string {
 				if index < 2 {
@@ -294,6 +292,8 @@ func (i Installation) collectParams() Params {
 		}
 
 		options = makeMultiSelect(ms)
+	} else {
+		options = *i.params.additionalOptions
 	}
 
 	return Params{
@@ -449,7 +449,7 @@ func (i Installation) install(params Params) Installation {
 		i.run("defaults write com.apple.finder AppleShowAllFiles -bool true")
 	case optionsMap["Show directories on top in Finder"]:
 		i.run("defaults write com.apple.finder _FXSortFoldersFirst -bool true")
-	case optionsMap["Show full POSIX path in Finder window title"]:
+	case optionsMap["Show full POSIX paths in Finder"]:
 		i.run("defaults write com.apple.finder _FXShowPosixPathInTitle -bool true")
 	}
 
@@ -554,20 +554,40 @@ func prepareForExternalMacKeyboard(i Installation) {
 	i.run(jq)
 }
 
-func validateParamValue(flag, value string, validValues []string) {
+func validateParamValue(param, value string, validValues []string) {
 
 	if value != "" {
 		v := toLowerSlice(validValues)
 
 		if !slices.Contains(v, strings.ToLower(value)) {
-			fmt.Println("Invalid param '" + flag + "' value: '" + value + "', valid values: " + strings.Join(v, ", "))
+			fmt.Println("Invalid param '" + param + "' value '" + value + "', valid values:\n" + strings.Join(v, "\n"))
 			os.Exit(1)
 		}
 	}
 }
 
-func validateParamValues(flag string, values *[]string, validValues []string) {
+func validateParamValues(param string, values *[]string, validValues []string) {
 
+	if values != nil && len(*values) != 0 {
+
+		validMap := make(map[string]bool)
+		for _, v := range validValues {
+			validMap[v] = true
+		}
+
+		var invalidValues []string
+		for _, val := range *values {
+			if !validMap[val] {
+				invalidValues = append(invalidValues, val)
+			}
+		}
+
+		if len(invalidValues) != 0 {
+			joined := strings.Join(invalidValues, ", ")
+			fmt.Println("Invalid param '" + param + "' values '" + joined + "', valid values:\n" + strings.Join(validValues, "\n"))
+			os.Exit(1)
+		}
+	}
 }
 
 func toLowerSlice(slice []string) []string {

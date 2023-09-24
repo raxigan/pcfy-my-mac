@@ -49,7 +49,6 @@ type IDE struct {
 	keymapsDir        string // relative to dir
 	fullName          string
 	toolboxScriptName string
-	flag              string
 	srcKeymapsFile    string
 	destKeymapsFile   string
 	requiresPlugin    bool
@@ -61,7 +60,6 @@ func IntelliJ() IDE {
 		dir:             "IntelliJ",
 		keymapsDir:      "/keymaps",
 		fullName:        "IntelliJ IDEA Ultimate",
-		flag:            "idea",
 		srcKeymapsFile:  "intellij-idea-ultimate.xml",
 		destKeymapsFile: "intellij-idea-ultimate.xml",
 		requiresPlugin:  true,
@@ -74,7 +72,6 @@ func IntelliJCE() IDE {
 		dir:             "IdeaIC",
 		keymapsDir:      "/keymaps",
 		fullName:        "IntelliJ IDEA CE",
-		flag:            "idea-ce",
 		srcKeymapsFile:  "intellij-idea-community-edition.xml",
 		destKeymapsFile: "intellij-idea-community-edition.xml",
 		requiresPlugin:  true,
@@ -87,7 +84,6 @@ func PyCharm() IDE {
 		dir:             "PyCharmCE",
 		keymapsDir:      "/keymaps",
 		fullName:        "PyCharm CE",
-		flag:            "pycharm-ce",
 		srcKeymapsFile:  "pycharm-community-edition.xml",
 		destKeymapsFile: "pycharm-community-edition.xml",
 		requiresPlugin:  true,
@@ -100,7 +96,6 @@ func GoLand() IDE {
 		dir:             "GoLand",
 		keymapsDir:      "/keymaps",
 		fullName:        "GoLand",
-		flag:            "goland",
 		srcKeymapsFile:  "goland.xml",
 		destKeymapsFile: "goland.xml",
 		requiresPlugin:  true,
@@ -113,13 +108,20 @@ func Fleet() IDE {
 		dir:             ".fleet",
 		keymapsDir:      "/keymap",
 		fullName:        "Fleet",
-		flag:            "fleet",
 		srcKeymapsFile:  "fleet.json",
 		destKeymapsFile: "user.json",
 	}
 }
 
 var IDEKeymaps = []IDE{IntelliJ(), IntelliJCE(), PyCharm(), GoLand(), Fleet()}
+var AdditionalOptions = []string{
+	"Enable Dock auto-hide (2s delay)",
+	`Change Dock minimize animation to "scale"`,
+	"Enable Home & End keys",
+	"Show hidden files in Finder",
+	"Show directories on top in Finder",
+	"Show full POSIX paths in Finder",
+}
 
 func IdeKeymapsSurveyOptions() []string {
 
@@ -132,12 +134,12 @@ func IdeKeymapsSurveyOptions() []string {
 	return options
 }
 
-func IdeKeymapsFlags() []string {
+func IdeKeymapOptions() []string {
 
 	var options []string
 
 	for _, e := range IDEKeymaps {
-		options = append(options, e.flag)
+		options = append(options, e.fullName)
 	}
 
 	return options
@@ -152,16 +154,4 @@ func IdeKeymapByFullName(fullName string) (IDE, error) {
 	}
 
 	return IDE{}, errors.New("No keymap found: " + fullName)
-}
-
-func IdeKeymapByFlag(flag string) (IDE, error) {
-
-	for _, e := range IDEKeymaps {
-
-		if e.flag == flag {
-			return e, nil
-		}
-	}
-
-	return IDE{}, errors.New("No keymap found: " + flag)
 }
