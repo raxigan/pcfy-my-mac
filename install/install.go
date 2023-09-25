@@ -515,11 +515,6 @@ func (i Installation) installIdeKeymap(ide IDE) {
 		return
 	}
 
-	if ide.requiresPlugin {
-		cmd := fmt.Sprintf("open -na \"%s.app\" --args installPlugins com.intellij.plugins.xwinkeymap", ide.fullName)
-		i.run(cmd)
-	}
-
 	for _, d := range destDirs {
 		err := copyFileFromEmbedFS(i.SourceKeymap(ide), d)
 		if err != nil {

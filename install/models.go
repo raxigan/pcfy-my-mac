@@ -60,7 +60,7 @@ func IntelliJ() IDE {
 		dir:             "IntelliJ",
 		keymapsDir:      "/keymaps",
 		fullName:        "IntelliJ IDEA Ultimate",
-		srcKeymapsFile:  "intellij-idea-ultimate.xml",
+		srcKeymapsFile:  "idea.xml",
 		destKeymapsFile: "intellij-idea-ultimate.xml",
 		requiresPlugin:  true,
 	}
@@ -72,7 +72,7 @@ func IntelliJCE() IDE {
 		dir:             "IdeaIC",
 		keymapsDir:      "/keymaps",
 		fullName:        "IntelliJ IDEA CE",
-		srcKeymapsFile:  "intellij-idea-community-edition.xml",
+		srcKeymapsFile:  "idea.xml",
 		destKeymapsFile: "intellij-idea-community-edition.xml",
 		requiresPlugin:  true,
 	}
@@ -84,7 +84,7 @@ func PyCharm() IDE {
 		dir:             "PyCharmCE",
 		keymapsDir:      "/keymaps",
 		fullName:        "PyCharm CE",
-		srcKeymapsFile:  "pycharm-community-edition.xml",
+		srcKeymapsFile:  "idea.xml",
 		destKeymapsFile: "pycharm-community-edition.xml",
 		requiresPlugin:  true,
 	}
@@ -96,7 +96,7 @@ func GoLand() IDE {
 		dir:             "GoLand",
 		keymapsDir:      "/keymaps",
 		fullName:        "GoLand",
-		srcKeymapsFile:  "goland.xml",
+		srcKeymapsFile:  "idea.xml",
 		destKeymapsFile: "goland.xml",
 		requiresPlugin:  true,
 	}
