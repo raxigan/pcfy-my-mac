@@ -21,7 +21,7 @@ func copyFileFromEmbedFS(src, dst string) error {
 	data, err := fs.ReadFile(configs, src)
 
 	if err != nil {
-		log.Fatalf("error: %s", err)
+		fail(err)
 	}
 
 	os.MkdirAll(filepath.Dir(dst), 0755)
@@ -69,22 +69,14 @@ func NewInstallation(homeDir string, commander Commander, yml *string) *Installa
 		flag.Parse()
 
 		if *paramsFile != "" {
-
 			d, e := os.ReadFile(*paramsFile)
-
-			if e != nil {
-				fmt.Println(e)
-				os.Exit(1)
-			}
-
+			checkError(e)
 			data = d
 		}
 	}
 
 	err := yaml.Unmarshal(data, &fp)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
+	checkError(err)
 
 	if len(fp.Extra) > 0 {
 		for field := range fp.Extra {
@@ -551,9 +543,7 @@ func (i Installation) installIdeKeymap(ide IDE) {
 
 	for _, d := range destDirs {
 		err := copyFileFromEmbedFS(i.SourceKeymap(ide), d)
-		if err != nil {
-			fmt.Printf("Error copying to %s: %v\n", d, err)
-		}
+		checkError(err)
 	}
 }
 
@@ -564,9 +554,7 @@ func findMatchingDirs(basePath, namePrefix, subDir, fileName string) []string {
 	filepath.Walk(basePath, func(path string, info os.FileInfo, err error) error {
 
 		if path != basePath && strings.HasPrefix(info.Name(), namePrefix) {
-			if err != nil {
-				log.Fatalf("Error: %s", err)
-			}
+			checkError(err)
 
 			if fileExists(filepath.Join(basePath, info.Name())) {
 				destDir := filepath.Join(path, subDir)
@@ -653,4 +641,14 @@ func toLowerSlice(slice []string) []string {
 		slice[i] = strings.ToLower(s)
 	}
 	return slice
+}
+
+func checkError(err error) {
+	if err != nil {
+		fail(err)
+	}
+}
+
+func fail(err error) {
+	log.Fatalf("Error: %s", err)
 }
