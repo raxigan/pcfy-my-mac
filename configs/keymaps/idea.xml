@@ -895,9 +895,7 @@
   <action id="EditorRight">
     <keyboard-shortcut first-keystroke="RIGHT"/>
   </action>
-  <action id="ContextHelp">
-    <keyboard-shortcut first-keystroke="F1"/>
-  </action>
+  <action id="ContextHelp"/>
   <action id="Forward">
     <keyboard-shortcut first-keystroke="control alt RIGHT"/>
     <mouse-shortcut keystroke="button5"/>
