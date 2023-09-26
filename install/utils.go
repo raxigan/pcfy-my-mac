@@ -46,9 +46,10 @@ func (c DefaultCommander) exists(command string) bool {
 }
 
 type MockCommander struct {
+	CommandsLog []string
 }
 
-func (c MockCommander) run(command string) {
+func (c *MockCommander) run(command string) {
 
 	cmd := strings.Fields(command)[0]
 
@@ -57,13 +58,14 @@ func (c MockCommander) run(command string) {
 		DefaultCommander{}.run(command)
 	case "killall", "open", "clear", "defaults":
 		fmt.Println("Running: " + command)
+		c.CommandsLog = append(c.CommandsLog, command)
 	default:
 		fmt.Println("Cannot execute command: " + command)
 		os.Exit(1)
 	}
 }
 
-func (c MockCommander) exists(command string) bool {
+func (c *MockCommander) exists(command string) bool {
 	return true
 }
 

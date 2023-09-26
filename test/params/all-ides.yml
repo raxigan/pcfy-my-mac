@@ -1,6 +1,0 @@
-app-launcher: None
-terminal: None
-keyboard-type: None
-ides: [ "all" ]
-additional-options: [ ]
-blacklist: [ ]

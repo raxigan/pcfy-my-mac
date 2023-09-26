@@ -582,7 +582,23 @@ func findMatchingDirs(basePath, namePrefix, subDir, fileName string) []string {
 }
 
 func (i Installation) IdeKeymapPaths(ide IDE) []string {
-	return findMatchingDirs(i.homeDir+ide.parentDir, ide.dir, ide.keymapsDir, ide.destKeymapsFile)
+	return i.IdesKeymapPaths([]IDE{ide})
+}
+
+func (i Installation) IdesKeymapPaths(ide []IDE) []string {
+
+	var result []string
+
+	for _, e := range ide {
+
+		dirs := findMatchingDirs(i.homeDir+e.parentDir, e.dir, e.keymapsDir, e.destKeymapsFile)
+
+		for _, e1 := range dirs {
+			result = append(result, e1)
+		}
+	}
+
+	return result
 }
 
 func applyRules(i Installation, file string) {
