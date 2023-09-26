@@ -44,14 +44,13 @@ type MySurvey struct {
 }
 
 type IDE struct {
-	parentDir         string // relative to homedir
-	dir               string // relative to parentDir
-	keymapsDir        string // relative to dir
-	fullName          string
-	toolboxScriptName string
-	srcKeymapsFile    string
-	destKeymapsFile   string
-	requiresPlugin    bool
+	parentDir       string // relative to homedir
+	dir             string // relative to parentDir
+	keymapsDir      string // relative to dir
+	fullName        string
+	srcKeymapsFile  string
+	destKeymapsFile string
+	multipleDirs    bool
 }
 
 func IntelliJ() IDE {
@@ -62,7 +61,7 @@ func IntelliJ() IDE {
 		fullName:        "IntelliJ IDEA Ultimate",
 		srcKeymapsFile:  "idea.xml",
 		destKeymapsFile: "intellij-idea-ultimate.xml",
-		requiresPlugin:  true,
+		multipleDirs:    true,
 	}
 }
 
@@ -74,7 +73,7 @@ func IntelliJCE() IDE {
 		fullName:        "IntelliJ IDEA CE",
 		srcKeymapsFile:  "idea.xml",
 		destKeymapsFile: "intellij-idea-community-edition.xml",
-		requiresPlugin:  true,
+		multipleDirs:    true,
 	}
 }
 
@@ -86,7 +85,7 @@ func PyCharm() IDE {
 		fullName:        "PyCharm CE",
 		srcKeymapsFile:  "idea.xml",
 		destKeymapsFile: "pycharm-community-edition.xml",
-		requiresPlugin:  true,
+		multipleDirs:    true,
 	}
 }
 
@@ -98,7 +97,7 @@ func GoLand() IDE {
 		fullName:        "GoLand",
 		srcKeymapsFile:  "idea.xml",
 		destKeymapsFile: "goland.xml",
-		requiresPlugin:  true,
+		multipleDirs:    true,
 	}
 }
 

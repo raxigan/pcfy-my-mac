@@ -49,7 +49,7 @@
     <keyboard-shortcut first-keystroke="alt F8"/>
   </action>
   <action id="QuickEvaluateExpression">
-    <keyboard-shortcut first-keystroke="control alt 8"/>
+    <keyboard-shortcut first-keystroke="control alt F8"/>
     <mouse-shortcut keystroke="alt button1"/>
   </action>
   <action id="ShowExecutionPoint">
@@ -988,10 +988,10 @@
     <keyboard-shortcut first-keystroke="control DIVIDE"/>
   </action>
   <action id="RunToCursor">
-    <keyboard-shortcut first-keystroke="shift alt 9"/>
+    <keyboard-shortcut first-keystroke="alt F9"/>
   </action>
   <action id="ForceRunToCursor">
-    <keyboard-shortcut first-keystroke="control alt 9"/>
+    <keyboard-shortcut first-keystroke="control alt F9"/>
   </action>
   <action id="RenameElement">
     <keyboard-shortcut first-keystroke="shift F6"/>
@@ -1068,7 +1068,7 @@
     <keyboard-shortcut first-keystroke="BACK_SPACE"/>
   </action>
   <action id="FileChooser.GoToRoot">
-    <keyboard-shortcut first-keystroke="control SLASH"/>
+    <keyboard-shortcut first-keystroke="control BACK_SLASH"/>
   </action>
   <action id="FileChooser.GotoHome">
     <keyboard-shortcut first-keystroke="control 1"/>
@@ -1110,9 +1110,6 @@
   <action id="Vcs.QuickListPopupAction">
     <keyboard-shortcut first-keystroke="alt BACK_QUOTE"/>
     <keyboard-shortcut first-keystroke="alt #10000a7" />
-  </action>
-  <action id="Vcs.UpdateProject">
-    <keyboard-shortcut first-keystroke="ctrl t" />
   </action>
   <action id="VcsHistory.ShowAllAffected">
     <keyboard-shortcut first-keystroke="alt shift A" />

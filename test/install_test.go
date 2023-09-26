@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/raxigan/macos-pc-mode/install"
+	"github.com/raxigan/pcfy-my-mac/install"
 	"io"
 	"os"
 	"strings"
@@ -105,11 +105,11 @@ func TestInstallAllKeymaps(t *testing.T) {
 
 	i := install.RunInstaller(wd+"/homedir", install.MockCommander{}, &yml)
 
-	assertEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJ()), i.IdeDirs(install.IntelliJ())[0])
-	assertEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJ()), i.IdeDirs(install.IntelliJ())[1])
-	assertEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJCE()), i.IdeDirs(install.IntelliJCE())[0])
-	assertEqual(t, "../configs/"+i.SourceKeymap(install.GoLand()), i.IdeDirs(install.GoLand())[0])
-	assertEqual(t, "../configs/"+i.SourceKeymap(install.Fleet()), i.IdeDirs(install.Fleet())[0])
+	assertEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJ()), i.IdeKeymapPaths(install.IntelliJ())[0])
+	assertEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJ()), i.IdeKeymapPaths(install.IntelliJ())[1])
+	assertEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJCE()), i.IdeKeymapPaths(install.IntelliJCE())[0])
+	assertEqual(t, "../configs/"+i.SourceKeymap(install.GoLand()), i.IdeKeymapPaths(install.GoLand())[0])
+	assertEqual(t, "../configs/"+i.SourceKeymap(install.Fleet()), i.IdeKeymapPaths(install.Fleet())[0])
 
 	removeFiles(i.KarabinerConfigBackupFile())
 	removeFiles(karabinerTestInvalidConfig(i, "iterm", "spotlight", "mac"))

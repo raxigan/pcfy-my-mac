@@ -50,7 +50,7 @@ main() {
       exit 1
     fi
 
-    ./macos-pc-mode "$@"
+    ./pcfy-my-mac "$@"
   else
     echo "Running from remote package..."
 #     get it from releases packages instead

@@ -11,3 +11,4 @@ test/homedir/.fleet/**
 !test/homedir/.config/karabiner/karabiner-default.json
 !.gitkeep
 custom-params.yml
+/pcfy-my-mac

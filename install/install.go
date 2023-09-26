@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/bitfield/script"
-	"github.com/raxigan/macos-pc-mode/configs"
+	"github.com/raxigan/pcfy-my-mac/configs"
 	"gopkg.in/yaml.v3"
 	"io/fs"
 	"log"
@@ -59,6 +59,7 @@ type FileParams struct {
 func NewInstallation(homeDir string, commander Commander, yml *string) *Installation {
 
 	var data []byte
+	fp := FileParams{}
 
 	if yml != nil {
 		data = []byte(*yml)
@@ -67,17 +68,18 @@ func NewInstallation(homeDir string, commander Commander, yml *string) *Installa
 		paramsFile := flag.String("params", "", "YAML file with installer parameters")
 		flag.Parse()
 
-		d, e := os.ReadFile(*paramsFile)
+		if *paramsFile != "" {
 
-		if e != nil {
-			fmt.Println(e)
-			os.Exit(1)
+			d, e := os.ReadFile(*paramsFile)
+
+			if e != nil {
+				fmt.Println(e)
+				os.Exit(1)
+			}
+
+			data = d
 		}
-
-		data = d
 	}
-
-	fp := FileParams{}
 
 	err := yaml.Unmarshal(data, &fp)
 	if err != nil {
@@ -97,8 +99,6 @@ func NewInstallation(homeDir string, commander Commander, yml *string) *Installa
 	validateParamValues("ides", fp.Ides, append(IdeKeymapOptions(), []string{"all"}...))
 	// do not validate blacklist
 	validateParamValues("additional-options", fp.AdditionalOptions, AdditionalOptions)
-
-	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 
 	var ides *[]IDE
 
@@ -145,7 +145,7 @@ func (i Installation) KarabinerConfigFile() string {
 }
 
 func (i Installation) KarabinerConfigBackupFile() string {
-	currentTime := i.installationTime.Format("02-01-2023-15:04:05")
+	currentTime := i.installationTime.Format("02-01-2006_15:04:05")
 	return i.KarabinerConfigDir() + "/karabiner-" + currentTime + ".json"
 }
 
@@ -214,6 +214,7 @@ func (i Installation) collectParams() Params {
 	term := i.params.terminal
 	kbType := i.params.keyboardType
 	var idesToInstall []IDE
+	var blacklist []string
 
 	if i.shouldBeInstalled("jq", "jq", true, false) {
 
@@ -239,12 +240,13 @@ func (i Installation) collectParams() Params {
 		if app == "" {
 			app = makeSurvey(appLauncherSurvey)
 		}
+
 		if term == "" {
-			kbType = makeSurvey(kbTypeSurvey)
+			term = makeSurvey(terminalSurvey)
 		}
 
 		if kbType == "" {
-			term = makeSurvey(terminalSurvey)
+			kbType = makeSurvey(kbTypeSurvey)
 		}
 
 		i.run("clear")
@@ -273,7 +275,31 @@ func (i Installation) collectParams() Params {
 	}
 
 	if i.shouldBeInstalled("Alt-Tab", "/Applications/AltTab.app", false, true) {
-		// TODO remember decision and pass to install()
+		msBlacklist := survey.MultiSelect{
+			Message: "Select additional options:",
+			Options: []string{
+				"Enable Dock auto-hide (2s delay)",
+				`Change Dock minimize animation to "scale"`,
+				"Enable Home & End keys",
+				"Show hidden files in Finder",
+				"Show directories on top in Finder",
+				"Show full POSIX paths in Finder",
+			},
+			Description: func(value string, index int) string {
+				if index < 2 {
+					return "Recommended"
+				}
+				return ""
+			},
+			Help:     "help",
+			PageSize: 15,
+		}
+
+		if i.params.blacklist == nil {
+			blacklist = makeMultiSelect(msBlacklist)
+		} else {
+			blacklist = *i.params.blacklist
+		}
 	}
 
 	var options []string
@@ -311,7 +337,7 @@ func (i Installation) collectParams() Params {
 		keyboardType:      kbType,
 		ides:              &idesToInstall,
 		additionalOptions: &options,
-		blacklist:         i.params.blacklist,
+		blacklist:         &blacklist,
 	}
 }
 
@@ -508,7 +534,15 @@ func (i Installation) run(cmd string) {
 
 func (i Installation) installIdeKeymap(ide IDE) {
 
-	destDirs := i.IdeDirs(ide)
+	var destDirs []string
+
+	if ide.multipleDirs {
+		destDirs = i.IdeKeymapPaths(ide)
+	} else {
+		destDirs = []string{
+			i.homeDir + "/" + ide.parentDir + "/" + ide.dir + "/" + ide.keymapsDir + "/" + ide.destKeymapsFile,
+		}
+	}
 
 	if len(destDirs) == 0 {
 		printColored(YELLOW, fmt.Sprintf("%s not found. Skipping...", ide.fullName))
@@ -528,22 +562,26 @@ func findMatchingDirs(basePath, namePrefix, subDir, fileName string) []string {
 	var result []string
 
 	filepath.Walk(basePath, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
+
+		if path != basePath && strings.HasPrefix(info.Name(), namePrefix) {
+			if err != nil {
+				log.Fatalf("Error: %s", err)
+			}
+
+			if fileExists(filepath.Join(basePath, info.Name())) {
+				destDir := filepath.Join(path, subDir)
+				destFilePath := filepath.Join(destDir, fileName)
+				result = append(result, destFilePath)
+			}
 		}
 
-		if path != basePath && info.IsDir() && fileExists(filepath.Join(basePath, info.Name())) && strings.HasPrefix(info.Name(), namePrefix) {
-			destDir := filepath.Join(path, subDir)
-			destFilePath := filepath.Join(destDir, fileName)
-			result = append(result, destFilePath)
-		}
 		return nil
 	})
 
 	return result
 }
 
-func (i Installation) IdeDirs(ide IDE) []string {
+func (i Installation) IdeKeymapPaths(ide IDE) []string {
 	return findMatchingDirs(i.homeDir+ide.parentDir, ide.dir, ide.keymapsDir, ide.destKeymapsFile)
 }
 

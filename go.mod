@@ -1,4 +1,4 @@
-module github.com/raxigan/macos-pc-mode
+module github.com/raxigan/pcfy-my-mac
 
 go 1.21.0
 

@@ -1,7 +1,7 @@
 package main
 
 import "os"
-import "github.com/raxigan/macos-pc-mode/install"
+import "github.com/raxigan/pcfy-my-mac/install"
 
 func main() {
 	homeDir, _ := os.UserHomeDir()
