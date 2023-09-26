@@ -27,7 +27,7 @@ func AssertSlicesEqual(t *testing.T, slice1, slice2 []string) bool {
 	if len(slice1) != len(slice2) {
 		join1 := strings.Join(slice1, "\n")
 		join2 := strings.Join(slice2, "\n")
-		t.Fatalf("Slices not equal: %s and %s", join1, join2)
+		t.Fatalf("Slices not equal: \n\n=== ACTUAL:\n%s  \n\n=== EXPECTED:\n%s", join1, join2)
 	}
 
 	for i := range slice1 {
@@ -39,6 +39,16 @@ func AssertSlicesEqual(t *testing.T, slice1, slice2 []string) bool {
 	}
 
 	return true
+}
+
+func AssertErrorContains(t *testing.T, err error, expected string) {
+	if err == nil {
+		t.Fatalf("")
+	}
+
+	if !strings.Contains(err.Error(), expected) {
+		t.Fatalf(`EXPECTED: "%s" ACTUAL: %s`, err, expected)
+	}
 }
 
 func computeSHA256(filepath string) (string, error) {

@@ -1,6 +1,7 @@
 package install
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/AlecAivazis/survey/v2"
@@ -56,7 +57,7 @@ type FileParams struct {
 	Extra             map[string]string `yaml:",inline"`
 }
 
-func NewInstallation(homeDir string, commander Commander, yml *string) *Installation {
+func NewInstallation(homeDir string, commander Commander, yml *string) (*Installation, error) {
 
 	var data []byte
 	fp := FileParams{}
@@ -70,18 +71,23 @@ func NewInstallation(homeDir string, commander Commander, yml *string) *Installa
 
 		if *paramsFile != "" {
 			d, e := os.ReadFile(*paramsFile)
-			checkError(e)
+
+			if e != nil {
+				return nil, e
+			}
+
 			data = d
 		}
 	}
 
 	err := yaml.Unmarshal(data, &fp)
-	checkError(err)
+	if err != nil {
+		return nil, err
+	}
 
 	if len(fp.Extra) > 0 {
 		for field := range fp.Extra {
-			fmt.Printf("Unknown parameter: %s\n", field)
-			os.Exit(1)
+			return nil, errors.New("Unknown parameter: " + field)
 		}
 	}
 
@@ -125,7 +131,7 @@ func NewInstallation(homeDir string, commander Commander, yml *string) *Installa
 		profileName:      "PC mode GOLANG",
 		installationTime: time.Now(),
 		cmd:              commander,
-	}
+	}, nil
 }
 
 func (i Installation) KarabinerConfigDir() string {
@@ -194,8 +200,13 @@ func makeMultiSelect(s survey.MultiSelect) []string {
 	return appLauncher
 }
 
-func RunInstaller(homeDir string, commander Commander, yaml *string) Installation {
-	installation := NewInstallation(homeDir, commander, yaml)
+func RunInstaller(homeDir string, commander Commander, yaml *string) (Installation, error) {
+	installation, err := NewInstallation(homeDir, commander, yaml)
+
+	if err != nil {
+		return Installation{}, err
+	}
+
 	params := installation.collectParams()
 	return installation.install(params)
 }
@@ -333,7 +344,7 @@ func (i Installation) collectParams() Params {
 	}
 }
 
-func (i Installation) install(params Params) Installation {
+func (i Installation) install(params Params) (Installation, error) {
 
 	i.run("killall Karabiner-Elements")
 
@@ -482,7 +493,7 @@ func (i Installation) install(params Params) Installation {
 
 	fmt.Println("SUCCESS")
 
-	return i
+	return i, nil
 }
 
 func (i Installation) shouldBeInstalled(appName string, appFile string, isRequired bool, isCask bool) bool {
