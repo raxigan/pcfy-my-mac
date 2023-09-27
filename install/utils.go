@@ -53,12 +53,16 @@ func (c *MockCommander) run(command string) {
 
 	cmd := strings.Fields(command)[0]
 
+	fmt.Println("Running: " + command)
+
 	switch cmd {
-	case "jq", "plutil":
+	case "jq":
 		DefaultCommander{}.run(command)
 	case "killall", "open", "clear", "defaults":
-		fmt.Println("Running: " + command)
 		c.CommandsLog = append(c.CommandsLog, command)
+	case "plutil":
+		pwd, _ := os.Getwd()
+		c.CommandsLog = append(c.CommandsLog, strings.ReplaceAll(command, pwd, ""))
 	default:
 		fmt.Println("Cannot execute command: " + command)
 		os.Exit(1)
