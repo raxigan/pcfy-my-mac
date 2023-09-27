@@ -1,4 +1,5 @@
 {
+  "title": "Launchpad rules",
   "rules": [
     {
       "description": "Opt & Cmd swap - Launchpad version (Mac keyboards only)",
@@ -148,6 +149,5 @@
         }
       ]
     }
-  ],
-  "title": "Spotlight customs"
+  ]
 }

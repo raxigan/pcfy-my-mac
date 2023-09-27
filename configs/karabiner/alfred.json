@@ -1,4 +1,5 @@
 {
+  "title": "Alfred rules",
   "rules": [
     {
       "description": "Opt & Cmd swap - Alfred version (Mac keyboards only)",
@@ -157,6 +158,5 @@
         }
       ]
     }
-  ],
-  "title": "Alfred rules"
+  ]
 }

@@ -78,28 +78,6 @@ func printColored(color, msg string) {
 	fmt.Println(fmt.Sprintf(color, msg))
 }
 
-func (fp FileParams) String() string {
-	var parts []string
-
-	parts = append(parts, fmt.Sprintf("AppLauncher: %s", fp.AppLauncher))
-	parts = append(parts, fmt.Sprintf("Terminal: %s", fp.Terminal))
-	parts = append(parts, fmt.Sprintf("KeyboardType: %s", fp.KeyboardType))
-
-	parts = join(fp.Ides, "Ides", parts)
-	parts = join(fp.AdditionalOptions, "AdditionalOptions", parts)
-	parts = join(fp.Blacklist, "Blacklist", parts)
-
-	return "{" + strings.Join(parts, ", ") + "}"
-}
-
-func join(value *[]string, label string, parts []string) []string {
-	if value != nil {
-		return append(parts, fmt.Sprintf("%s: [%s]", label, strings.Join(*value, ", ")))
-	} else {
-		return append(parts, "Options: nil")
-	}
-}
-
 func replaceWordInFile(path, oldWord, newWord string) error {
 
 	content, err := os.ReadFile(path)

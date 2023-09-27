@@ -10,10 +10,10 @@ const (
 	Alfred
 )
 
-type KeyboardType int
+type KeyboardLayout int
 
 const (
-	PC KeyboardType = iota
+	PC KeyboardLayout = iota
 	Mac
 )
 
@@ -29,7 +29,7 @@ func (me AppLauncher) String() string {
 	return [...]string{"Spotlight", "Launchpad", "Alfred"}[me]
 }
 
-func (me KeyboardType) String() string {
+func (me KeyboardLayout) String() string {
 	return [...]string{"PC", "Mac"}[me]
 }
 
@@ -38,9 +38,9 @@ func (me Terminal) String() string {
 }
 
 type MySurvey struct {
-	message     string
-	options     []string
-	description func(value string, index int) string
+	Message     string
+	Options     []string
+	Description func(value string, index int) string
 }
 
 type IDE struct {
@@ -119,7 +119,7 @@ var AdditionalOptions = []string{
 	"Enable Home & End keys",
 	"Show hidden files in Finder",
 	"Show directories on top in Finder",
-	"Show full POSIX paths in Finder",
+	"Show full POSIX paths in Finder window title",
 }
 
 func IdeKeymapsSurveyOptions() []string {

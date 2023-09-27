@@ -46,8 +46,8 @@ func AssertErrorContains(t *testing.T, err error, expected string) {
 		t.Fatalf("")
 	}
 
-	if !strings.Contains(err.Error(), expected) {
-		t.Fatalf(`EXPECTED: "%s" ACTUAL: %s`, err, expected)
+	if !strings.Contains(err.Error(), yaml(expected)) {
+		t.Fatalf(`EXPECTED: "%s" ACTUAL: "%s"`, err, expected)
 	}
 }
 

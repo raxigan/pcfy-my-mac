@@ -1,6 +1,7 @@
 app-launcher: alfred
 terminal: warp
-keyboard-type: pc
-ides: [ ]
+keyboard-layout: pc
+ides:
+  - Fleet
 additional-options: [ ]
 blacklist: [ ]

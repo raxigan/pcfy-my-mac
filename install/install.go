@@ -9,7 +9,6 @@ import (
 	"github.com/raxigan/pcfy-my-mac/configs"
 	"gopkg.in/yaml.v3"
 	"io/fs"
-	"log"
 	"os"
 	"path/filepath"
 	"slices"
@@ -19,12 +18,7 @@ import (
 
 func copyFileFromEmbedFS(src, dst string) error {
 	configs := &configs.Configs
-	data, err := fs.ReadFile(configs, src)
-
-	if err != nil {
-		fail(err)
-	}
-
+	data, _ := fs.ReadFile(configs, src)
 	os.MkdirAll(filepath.Dir(dst), 0755)
 	return os.WriteFile(dst, data, 0755)
 }
@@ -32,15 +26,15 @@ func copyFileFromEmbedFS(src, dst string) error {
 type Params struct {
 	appLauncher       string
 	terminal          string
-	keyboardType      string
-	ides              *[]IDE
-	additionalOptions *[]string
-	blacklist         *[]string
+	keyboardLayout    string
+	ides              []IDE
+	additionalOptions []string
+	blacklist         []string
 }
 
 type Installation struct {
 	homeDir string
-	params  Params
+	params  FileParams
 
 	profileName      string
 	installationTime time.Time
@@ -48,9 +42,9 @@ type Installation struct {
 }
 
 type FileParams struct {
-	AppLauncher       string `yaml:"app-launcher"`
-	Terminal          string
-	KeyboardType      string `yaml:"keyboard-type"`
+	AppLauncher       *string `yaml:"app-launcher"`
+	Terminal          *string
+	KeyboardLayout    *string `yaml:"keyboard-layout"`
 	Ides              *[]string
 	AdditionalOptions *[]string `yaml:"additional-options"`
 	Blacklist         *[]string
@@ -91,42 +85,49 @@ func NewInstallation(homeDir string, commander Commander, yml *string) (*Install
 		}
 	}
 
-	validateParamValue("app-launcher", fp.AppLauncher, []string{Spotlight.String(), Launchpad.String(), Alfred.String(), "None"})
-	validateParamValue("terminal", fp.Terminal, []string{Default.String(), iTerm.String(), Warp.String(), "None"})
-	validateParamValue("keyboard-type", fp.KeyboardType, []string{PC.String(), Mac.String(), "None"})
-	validateParamValues("ides", fp.Ides, append(IdeKeymapOptions(), []string{"all"}...))
-	// do not validate blacklist
-	validateParamValues("additional-options", fp.AdditionalOptions, AdditionalOptions)
-
-	var ides *[]IDE
-
-	if fp.Ides == nil {
-		ides = nil
-	} else if slices.Contains(*fp.Ides, "all") {
-		ides = &IDEKeymaps
-	} else {
-
-		var idesFromFlags []IDE
-
-		for _, e := range *fp.Ides {
-			if e != "" {
-				byFlag, _ := IdeKeymapByFullName(e)
-				idesFromFlags = append(idesFromFlags, byFlag)
+	validationErr := validateAll(
+		func() error {
+			if fp.AppLauncher != nil {
+				return validateParamValues("app-launcher", &[]string{*fp.AppLauncher}, []string{Spotlight.String(), Launchpad.String(), Alfred.String(), "None"})
 			}
-		}
 
-		ides = &idesFromFlags
+			return nil
+		},
+		func() error {
+			if fp.Terminal != nil {
+				return validateParamValues("terminal", &[]string{*fp.Terminal}, []string{Default.String(), iTerm.String(), Warp.String(), "None"})
+			}
+
+			return nil
+		},
+		func() error {
+			if fp.KeyboardLayout != nil {
+				return validateParamValues("keyboard-layout", &[]string{*fp.KeyboardLayout}, []string{PC.String(), Mac.String(), "None"})
+			}
+
+			return nil
+		},
+		func() error {
+			return validateParamValues("ides", fp.Ides, append(IdeKeymapOptions(), []string{"all"}...))
+		},
+		func() error {
+			return validateParamValues("additional-options", fp.AdditionalOptions, AdditionalOptions)
+		},
+	)
+
+	if validationErr != nil {
+		return nil, validationErr
 	}
 
 	return &Installation{
 		homeDir: homeDir,
-		params: Params{
-			appLauncher:       fp.AppLauncher,
-			terminal:          fp.Terminal,
-			keyboardType:      fp.KeyboardType,
-			ides:              ides,
-			additionalOptions: fp.AdditionalOptions,
-			blacklist:         fp.Blacklist,
+		params: FileParams{
+			AppLauncher:       fp.AppLauncher,
+			Terminal:          fp.Terminal,
+			KeyboardLayout:    fp.KeyboardLayout,
+			Ides:              fp.Ides,
+			AdditionalOptions: fp.AdditionalOptions,
+			Blacklist:         fp.Blacklist,
 		},
 		profileName:      "PC mode GOLANG",
 		installationTime: time.Now(),
@@ -139,7 +140,7 @@ func (i Installation) KarabinerConfigDir() string {
 }
 
 func (i Installation) KarabinerConfigFile() string {
-	return i.KarabinerConfigDir() + "/karabiner.json"
+	return filepath.Join(i.KarabinerConfigDir(), "/karabiner.json")
 }
 
 func (i Installation) KarabinerConfigBackupFile() string {
@@ -159,7 +160,7 @@ func (i Installation) preferencesDir() string {
 	return i.homeDir + "/Library/preferences"
 }
 
-func (i Installation) libraryDir() string {
+func (i Installation) LibraryDir() string {
 	return i.homeDir + "/Library"
 }
 
@@ -173,18 +174,13 @@ func makeSurvey(s MySurvey) string {
 	appLauncher := ""
 
 	prompt := &survey.Select{
-		Message: s.message,
-		Options: append(s.options, "None"),
+		Message: s.Message,
+		Options: append(s.Options, "None"),
 	}
 
 	appLauncher = strings.TrimSpace(appLauncher)
 
 	survey.AskOne(prompt, &appLauncher, survey.WithValidator(survey.Required))
-
-	if appLauncher == "Quit" {
-		fmt.Println("Quitting...")
-		os.Exit(0)
-	}
 
 	return strings.ToLower(strings.TrimSpace(appLauncher))
 }
@@ -213,9 +209,9 @@ func RunInstaller(homeDir string, commander Commander, yaml *string) (Installati
 
 func (i Installation) collectParams() Params {
 
-	app := i.params.appLauncher
-	term := i.params.terminal
-	kbType := i.params.keyboardType
+	var app string
+	var term string
+	var kbType string
 	var idesToInstall []IDE
 	var blacklist []string
 
@@ -226,35 +222,41 @@ func (i Installation) collectParams() Params {
 	if i.shouldBeInstalled("Karabiner-Elements", "/Applications/Karabiner-Elements.app", true, true) {
 
 		appLauncherSurvey := MySurvey{
-			message: "App Launcher:",
-			options: []string{Spotlight.String(), Launchpad.String(), Alfred.String()},
-		}
-
-		kbTypeSurvey := MySurvey{
-			message: "Your external keyboard layout:",
-			options: []string{PC.String(), Mac.String()},
+			Message: "App Launcher (will be available with Win(⊞)/Opt(⌥) key):",
+			Options: []string{Spotlight.String(), Launchpad.String(), Alfred.String()},
 		}
 
 		terminalSurvey := MySurvey{
-			message: "What is your terminal of choice:",
-			options: []string{Default.String(), iTerm.String(), Warp.String()},
+			Message: "What is your terminal of choice (will be available with Ctrl+Alt+T/Ctrl+Cmd+T shortcut):",
+			Options: []string{Default.String(), iTerm.String(), Warp.String()},
 		}
 
-		if app == "" {
+		kbTypeSurvey := MySurvey{
+			Message: "Your external keyboard layout:",
+			Options: []string{PC.String(), Mac.String()},
+		}
+
+		if i.params.AppLauncher == nil {
 			app = makeSurvey(appLauncherSurvey)
+		} else {
+			app = *i.params.AppLauncher
 		}
 
-		if term == "" {
+		if i.params.Terminal == nil {
 			term = makeSurvey(terminalSurvey)
+		} else {
+			term = *i.params.Terminal
 		}
 
-		if kbType == "" {
+		if i.params.KeyboardLayout == nil {
 			kbType = makeSurvey(kbTypeSurvey)
+		} else {
+			kbType = *i.params.KeyboardLayout
 		}
 
 		i.run("clear")
 
-		if i.params.ides == nil {
+		if i.params.Ides == nil {
 
 			ideSurvey := survey.MultiSelect{
 				Message: "IDE keymaps to install:",
@@ -269,7 +271,22 @@ func (i Installation) collectParams() Params {
 				idesToInstall = append(idesToInstall, name)
 			}
 		} else {
-			idesToInstall = *i.params.ides
+
+			if slices.Contains(*i.params.Ides, "all") {
+				idesToInstall = IDEKeymaps
+			} else {
+
+				var idesFromFlags []IDE
+
+				for _, e := range *i.params.Ides {
+					if e != "" {
+						byFlag, _ := IdeKeymapByFullName(e)
+						idesFromFlags = append(idesFromFlags, byFlag)
+					}
+				}
+
+				idesToInstall = idesFromFlags
+			}
 		}
 	}
 
@@ -298,16 +315,16 @@ func (i Installation) collectParams() Params {
 			PageSize: 15,
 		}
 
-		if i.params.blacklist == nil {
+		if i.params.Blacklist == nil {
 			blacklist = makeMultiSelect(msBlacklist)
 		} else {
-			blacklist = *i.params.blacklist
+			blacklist = *i.params.Blacklist
 		}
 	}
 
 	var options []string
 
-	if i.params.additionalOptions == nil {
+	if i.params.AdditionalOptions == nil {
 
 		ms := survey.MultiSelect{
 			Message: "Select additional options:",
@@ -331,16 +348,16 @@ func (i Installation) collectParams() Params {
 
 		options = makeMultiSelect(ms)
 	} else {
-		options = *i.params.additionalOptions
+		options = *i.params.AdditionalOptions
 	}
 
 	return Params{
 		appLauncher:       app,
 		terminal:          term,
-		keyboardType:      kbType,
-		ides:              &idesToInstall,
-		additionalOptions: &options,
-		blacklist:         &blacklist,
+		keyboardLayout:    kbType,
+		ides:              idesToInstall,
+		additionalOptions: options,
+		blacklist:         blacklist,
 	}
 }
 
@@ -374,7 +391,7 @@ func (i Installation) install(params Params) (Installation, error) {
 	applyRules(i, "main.json")
 	applyRules(i, "finder.json")
 
-	switch params.appLauncher {
+	switch strings.ToLower(params.appLauncher) {
 	case "spotlight":
 		fmt.Println("Applying spotlight rules...")
 		applyRules(i, "spotlight.json")
@@ -387,26 +404,27 @@ func (i Installation) install(params Params) (Installation, error) {
 			fmt.Println("Applying alfred rules...")
 			applyRules(i, "alfred.json")
 
-			dirs := findMatchingDirs(i.applicationSupportDir()+"/Alfred/Alfred.alfredpreferences/preferences/local", "", "hotkey", "prefs.plist")
+			dirs, err := findMatchingDirs(i.applicationSupportDir()+"/Alfred/Alfred.alfredpreferences/preferences/local", "", "hotkey", "prefs.plist")
+
+			if err != nil {
+				return Installation{}, err
+			}
 
 			for _, e := range dirs {
 				copyFileFromEmbedFS("alfred5/prefs.plist", e)
 			}
 		}
-	default:
-		fmt.Println("Value is not A, B, or C")
 	}
 
-	switch params.keyboardType {
+	switch strings.ToLower(params.keyboardLayout) {
 	case "pc":
 		fmt.Println("Applying pc keyboard rules...")
 	case "mac":
 		fmt.Println("Applying mac keyboard rules...")
 		prepareForExternalMacKeyboard(i)
-	default:
 	}
 
-	switch params.terminal {
+	switch strings.ToLower(params.terminal) {
 	case "default":
 		fmt.Println("Applying apple terminal rules...")
 		applyRules(i, "apple-terminal.json")
@@ -416,7 +434,6 @@ func (i Installation) install(params Params) (Installation, error) {
 	case "warp":
 		fmt.Println("Applying warp rules...")
 		applyRules(i, "warp.json")
-	default:
 	}
 
 	// reformat using 2 spaces indentation
@@ -424,7 +441,7 @@ func (i Installation) install(params Params) (Installation, error) {
 
 	i.run("open -a Karabiner-Elements")
 
-	for _, ide := range *params.ides {
+	for _, ide := range params.ides {
 		i.installIdeKeymap(ide)
 	}
 
@@ -449,10 +466,9 @@ func (i Installation) install(params Params) (Installation, error) {
 		copyFileFromEmbedFS("alt-tab/Settings.xml", altTabPlist)
 
 		// set up blacklist
-		bl := *params.blacklist
 
 		var mappedStrings []string
-		for _, s := range bl {
+		for _, s := range params.blacklist {
 			mappedStrings = append(mappedStrings, fmt.Sprintf(`{"ignore":"0","bundleIdentifier":"%s","hide":"1"}`, s))
 		}
 
@@ -470,24 +486,31 @@ func (i Installation) install(params Params) (Installation, error) {
 	}
 
 	optionsMap := make(map[string]bool)
-	for _, value := range *params.additionalOptions {
-		optionsMap[value] = true
+	for _, value := range params.additionalOptions {
+		optionsMap[strings.ToLower(value)] = true
 	}
 
-	switch {
-	case optionsMap["Enable Dock auto-hide (2s delay)"]:
+	fmt.Println("")
+
+	if optionsMap["enable dock auto-hide (2s delay)"] {
 		i.run("defaults write com.apple.dock autohide -bool true")
 		i.run("defaults write com.apple.dock autohide-delay -float 2 && killall Dock")
-	case optionsMap[`Change Dock minimize animation to "scale"`]:
+	}
+	if optionsMap[`change dock minimize animation to "scale"`] {
 		i.run(`defaults write com.apple.dock "mineffect" -string "scale" && killall Dock`)
-	case optionsMap["Enable Home & End keys"]:
+	}
+	if optionsMap["enable home & end keys"] {
 		fmt.Println("Enable Home & End keys...")
-		copyFileFromEmbedFS("system/DefaultKeyBinding.dict", i.libraryDir()+"/KeyBindings/DefaultKeyBinding.dict")
-	case optionsMap["Show hidden files in Finder"]:
+		copyFileFromEmbedFS("system/DefaultKeyBinding.dict", i.LibraryDir()+"/KeyBindings/DefaultKeyBinding.dict")
+	}
+	if optionsMap["show hidden files in finder"] {
 		i.run("defaults write com.apple.finder AppleShowAllFiles -bool true")
-	case optionsMap["Show directories on top in Finder"]:
+	}
+	if optionsMap["show directories on top in finder"] {
 		i.run("defaults write com.apple.finder _FXSortFoldersFirst -bool true")
-	case optionsMap["Show full POSIX paths in Finder"]:
+	}
+	if optionsMap["show full posix paths in finder window title"] {
+
 		i.run("defaults write com.apple.finder _FXShowPosixPathInTitle -bool true")
 	}
 
@@ -535,12 +558,14 @@ func (i Installation) run(cmd string) {
 	i.cmd.run(cmd)
 }
 
-func (i Installation) installIdeKeymap(ide IDE) {
+func (i Installation) installIdeKeymap(ide IDE) error {
 
 	var destDirs []string
 
 	if ide.multipleDirs {
-		destDirs = i.IdeKeymapPaths(ide)
+		a := i.IdeKeymapPaths(ide)
+
+		destDirs = a
 	} else {
 		destDirs = []string{
 			i.homeDir + "/" + ide.parentDir + "/" + ide.dir + "/" + ide.keymapsDir + "/" + ide.destKeymapsFile,
@@ -549,23 +574,30 @@ func (i Installation) installIdeKeymap(ide IDE) {
 
 	if len(destDirs) == 0 {
 		printColored(YELLOW, fmt.Sprintf("%s not found. Skipping...", ide.fullName))
-		return
+		return nil
 	}
 
 	for _, d := range destDirs {
 		err := copyFileFromEmbedFS(i.SourceKeymap(ide), d)
-		checkError(err)
+
+		if err != nil {
+			return err
+		}
 	}
+
+	return nil
 }
 
-func findMatchingDirs(basePath, namePrefix, subDir, fileName string) []string {
+func findMatchingDirs(basePath, namePrefix, subDir, fileName string) ([]string, error) {
 
 	var result []string
 
-	filepath.Walk(basePath, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(basePath, func(path string, info os.FileInfo, err error) error {
 
 		if path != basePath && strings.HasPrefix(info.Name(), namePrefix) {
-			checkError(err)
+			if err != nil {
+				return err
+			}
 
 			if fileExists(filepath.Join(basePath, info.Name())) {
 				destDir := filepath.Join(path, subDir)
@@ -577,7 +609,7 @@ func findMatchingDirs(basePath, namePrefix, subDir, fileName string) []string {
 		return nil
 	})
 
-	return result
+	return result, err
 }
 
 func (i Installation) IdeKeymapPaths(ide IDE) []string {
@@ -590,7 +622,7 @@ func (i Installation) IdesKeymapPaths(ide []IDE) []string {
 
 	for _, e := range ide {
 
-		dirs := findMatchingDirs(i.homeDir+e.parentDir, e.dir, e.keymapsDir, e.destKeymapsFile)
+		dirs, _ := findMatchingDirs(i.homeDir+e.parentDir, e.dir, e.keymapsDir, e.destKeymapsFile)
 
 		for _, e1 := range dirs {
 			result = append(result, e1)
@@ -611,29 +643,20 @@ func prepareForExternalMacKeyboard(i Installation) {
 	i.run(jq)
 }
 
-func validateParamValue(param, value string, validValues []string) {
-
-	if value != "" {
-		v := toLowerSlice(validValues)
-
-		if !slices.Contains(v, strings.ToLower(value)) {
-			fmt.Println("Invalid param '" + param + "' value '" + value + "', valid values:\n" + strings.Join(v, "\n"))
-			os.Exit(1)
-		}
-	}
-}
-
-func validateParamValues(param string, values *[]string, validValues []string) {
+func validateParamValues(param string, values *[]string, validValues []string) error {
 
 	if values != nil && len(*values) != 0 {
 
+		vals := toLowerSlice(*values)
+		valids := toLowerSlice(validValues)
+
 		validMap := make(map[string]bool)
-		for _, v := range validValues {
+		for _, v := range valids {
 			validMap[v] = true
 		}
 
 		var invalidValues []string
-		for _, val := range *values {
+		for _, val := range vals {
 			if !validMap[val] {
 				invalidValues = append(invalidValues, val)
 			}
@@ -641,10 +664,11 @@ func validateParamValues(param string, values *[]string, validValues []string) {
 
 		if len(invalidValues) != 0 {
 			joined := strings.Join(invalidValues, ", ")
-			fmt.Println("Invalid param '" + param + "' values '" + joined + "', valid values:\n" + strings.Join(validValues, "\n"))
-			os.Exit(1)
+			return errors.New("Invalid param '" + param + "' value/s '" + joined + "', valid values:\n" + strings.Join(validValues, "\n"))
 		}
 	}
+
+	return nil
 }
 
 func toLowerSlice(slice []string) []string {
@@ -654,12 +678,11 @@ func toLowerSlice(slice []string) []string {
 	return slice
 }
 
-func checkError(err error) {
-	if err != nil {
-		fail(err)
+func validateAll(params ...func() error) error {
+	for _, paramFunc := range params {
+		if err := paramFunc(); err != nil {
+			return err
+		}
 	}
-}
-
-func fail(err error) {
-	log.Fatalf("Error: %s", err)
+	return nil
 }

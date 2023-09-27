@@ -1,4 +1,5 @@
 {
+  "title": "Warp rules",
   "rules": [
     {
       "description": "Ctrl + Alt + T (Open Warp)",

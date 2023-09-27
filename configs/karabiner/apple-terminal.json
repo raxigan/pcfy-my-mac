@@ -1,7 +1,8 @@
 {
+  "title": "Apple Terminal rules",
   "rules": [
     {
-      "description": "Ctrl + Alt + T (Open Terminal)",
+      "description": "Ctrl + Alt + T (Open Apple Terminal)",
       "manipulators": [
         {
           "from": {

@@ -1,4 +1,5 @@
 {
+  "title": "iTerm rules",
   "rules": [
     {
       "description": "Ctrl + Alt + T (Open iTerm)",

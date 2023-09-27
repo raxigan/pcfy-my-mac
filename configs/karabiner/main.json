@@ -1,4 +1,5 @@
 {
+  "title": "Main rules",
   "rules": [
     {
       "description": "Ctrl + Left Arrow",
@@ -428,30 +429,6 @@
               "modifiers": [
                 "command"
               ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl + Alt + T (Open Warp)",
-      "manipulators": [
-        {
-          "from": {
-            "key_code": "t",
-            "modifiers": {
-              "mandatory": [
-                "control",
-                "option"
-              ],
-              "optional": [
-              ]
-            }
-          },
-          "to": [
-            {
-              "shell_command": "open -a Warp"
             }
           ],
           "type": "basic"
@@ -1111,6 +1088,5 @@
         }
       ]
     }
-  ],
-  "title": "Main rules"
+  ]
 }

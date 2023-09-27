@@ -1,4 +1,5 @@
 {
+  "title": "Spotlight rules",
   "rules": [
     {
       "description": "Opt & Cmd swap - Spotlight version (Mac keyboards only)",
@@ -148,6 +149,5 @@
         }
       ]
     }
-  ],
-  "title": "Spotlight customs"
+  ]
 }

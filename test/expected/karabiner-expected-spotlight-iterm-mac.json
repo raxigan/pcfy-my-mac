@@ -648,29 +648,6 @@
             ]
           },
           {
-            "description": "Ctrl + Alt + T (Open Warp)",
-            "manipulators": [
-              {
-                "from": {
-                  "key_code": "t",
-                  "modifiers": {
-                    "mandatory": [
-                      "control",
-                      "option"
-                    ],
-                    "optional": []
-                  }
-                },
-                "to": [
-                  {
-                    "shell_command": "open -a Warp"
-                  }
-                ],
-                "type": "basic"
-              }
-            ]
-          },
-          {
             "description": "Ctrl + T",
             "manipulators": [
               {
@@ -1517,20 +1494,10 @@
             ]
           },
           {
-            "description": "Opt & Cmd swap - Alfred version (Mac keyboards only)",
+            "description": "Opt & Cmd swap - Spotlight version (Mac keyboards only)",
             "manipulators": [
               {
-                "conditions": [
-                  {
-                    "type": "device_if",
-                    "identifiers": [
-                      {
-                        "is_built_in_keyboard": true,
-                        "description": "MacBook built-in keyboard"
-                      }
-                    ]
-                  }
-                ],
+                "conditions": [],
                 "from": {
                   "key_code": "left_option",
                   "modifiers": {
@@ -1546,26 +1513,13 @@
                 ],
                 "to_if_alone": [
                   {
-                    "key_code": "spacebar",
-                    "modifiers": [
-                      "option"
-                    ]
+                    "apple_vendor_keyboard_key_code": "spotlight"
                   }
                 ],
                 "type": "basic"
               },
               {
-                "conditions": [
-                  {
-                    "type": "device_if",
-                    "identifiers": [
-                      {
-                        "is_built_in_keyboard": true,
-                        "description": "MacBook built-in keyboard"
-                      }
-                    ]
-                  }
-                ],
+                "conditions": [],
                 "from": {
                   "key_code": "left_command",
                   "modifiers": {
@@ -1582,17 +1536,7 @@
                 "type": "basic"
               },
               {
-                "conditions": [
-                  {
-                    "type": "device_if",
-                    "identifiers": [
-                      {
-                        "is_built_in_keyboard": true,
-                        "description": "MacBook built-in keyboard"
-                      }
-                    ]
-                  }
-                ],
+                "conditions": [],
                 "from": {
                   "key_code": "right_option",
                   "modifiers": {
@@ -1608,26 +1552,13 @@
                 ],
                 "to_if_alone": [
                   {
-                    "key_code": "spacebar",
-                    "modifiers": [
-                      "option"
-                    ]
+                    "apple_vendor_keyboard_key_code": "spotlight"
                   }
                 ],
                 "type": "basic"
               },
               {
-                "conditions": [
-                  {
-                    "type": "device_if",
-                    "identifiers": [
-                      {
-                        "is_built_in_keyboard": true,
-                        "description": "MacBook built-in keyboard"
-                      }
-                    ]
-                  }
-                ],
+                "conditions": [],
                 "from": {
                   "key_code": "right_command",
                   "modifiers": {
@@ -1646,7 +1577,7 @@
             ]
           },
           {
-            "description": "Win (Open Alfred)",
+            "description": "Win (Open Spotlight)",
             "manipulators": [
               {
                 "from": {
@@ -1662,10 +1593,7 @@
                 ],
                 "to_if_alone": [
                   {
-                    "key_code": "spacebar",
-                    "modifiers": [
-                      "option"
-                    ]
+                    "apple_vendor_keyboard_key_code": "spotlight"
                   }
                 ],
                 "type": "basic"
@@ -1673,7 +1601,7 @@
             ]
           },
           {
-            "description": "Ctrl + Alt + T (Open Warp)",
+            "description": "Ctrl + Alt + T (Open iTerm)",
             "manipulators": [
               {
                 "from": {
@@ -1688,7 +1616,7 @@
                 },
                 "to": [
                   {
-                    "shell_command": "open -a Warp"
+                    "shell_command": "open -a iTerm"
                   }
                 ],
                 "type": "basic"
