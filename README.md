@@ -1,3 +1,3 @@
 # PC-fy my mac
 
-https://github.com/raxigan/macos-pc-mode/actions/workflows/go.yml/badge.svg
+![Badge_Name](https://github.com/raxigan/macos-pc-mode/actions/workflows/go.yml/badge.svg?branch=feature/installation_script)
