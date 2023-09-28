@@ -1494,7 +1494,7 @@
             ]
           },
           {
-            "description": "Opt & Cmd swap - Launchpad version (Mac keyboards only)",
+            "description": "Opt & Cmd swap (Launchpad)",
             "manipulators": [
               {
                 "conditions": [

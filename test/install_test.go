@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestInstallWithPrompts(t *testing.T) {
+func TestInstallWithFirstOptionsFromPrompts(t *testing.T) {
 
 	i, _, _ := runInstaller(nil)
 	defer tearDown(i)

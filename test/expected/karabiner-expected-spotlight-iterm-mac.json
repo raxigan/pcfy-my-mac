@@ -1494,7 +1494,7 @@
             ]
           },
           {
-            "description": "Opt & Cmd swap - Spotlight version (Mac keyboards only)",
+            "description": "Opt & Cmd swap (Spotlight)",
             "manipulators": [
               {
                 "conditions": [],

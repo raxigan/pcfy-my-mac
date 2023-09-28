@@ -137,6 +137,7 @@ func makeSurvey(s MySurvey) string {
 	prompt := &survey.Select{
 		Message: s.Message,
 		Options: append(s.Options, "None"),
+		Default: s.Options[0],
 	}
 
 	appLauncher = strings.TrimSpace(appLauncher)
@@ -361,7 +362,7 @@ func (i Installation) install(params Params) error {
 				}
 
 				for _, e := range dirs {
-					copyFileFromEmbedFS("alfred5/prefs.plist", e)
+					copyFileFromEmbedFS("alfred/prefs.plist", e)
 				}
 			} else {
 				printColored(YELLOW, fmt.Sprintf("Alfred app not found. Skipping..."))

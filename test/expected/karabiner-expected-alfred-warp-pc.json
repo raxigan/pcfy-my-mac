@@ -1494,7 +1494,7 @@
             ]
           },
           {
-            "description": "Opt & Cmd swap - Alfred version (Mac keyboards only)",
+            "description": "Opt & Cmd swap (Alfred)",
             "manipulators": [
               {
                 "conditions": [
