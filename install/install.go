@@ -131,7 +131,6 @@ func collectYamlParams(yml *string) (FileParams, error) {
 }
 
 func makeSurvey(s MySurvey) string {
-	script.Exec("clear").Stdout()
 
 	appLauncher := ""
 
@@ -187,103 +186,87 @@ func (i Installation) collectParams() Params {
 	var idesToInstall []IDE
 	var blacklist []string
 
-	if i.shouldBeInstalled("jq", "jq", true, false) {
-
+	appLauncherSurvey := MySurvey{
+		Message: "App Launcher (will be available with Win(⊞)/Opt(⌥) key):",
+		Options: []string{Spotlight.String(), Launchpad.String(), Alfred.String()},
 	}
 
-	if i.shouldBeInstalled("Karabiner-Elements", "/Applications/Karabiner-Elements.app", true, true) {
+	terminalSurvey := MySurvey{
+		Message: "What is your terminal of choice (will be available with Ctrl+Alt+T/Ctrl+Cmd+T shortcut):",
+		Options: []string{Default.String(), iTerm.String(), Warp.String()},
+	}
 
-		appLauncherSurvey := MySurvey{
-			Message: "App Launcher (will be available with Win(⊞)/Opt(⌥) key):",
-			Options: []string{Spotlight.String(), Launchpad.String(), Alfred.String()},
+	kbTypeSurvey := MySurvey{
+		Message: "Your external keyboard layout:",
+		Options: []string{PC.String(), Mac.String()},
+	}
+
+	if i.params.AppLauncher == nil {
+		app = makeSurvey(appLauncherSurvey)
+	} else {
+		app = *i.params.AppLauncher
+	}
+
+	if i.params.Terminal == nil {
+		term = makeSurvey(terminalSurvey)
+	} else {
+		term = *i.params.Terminal
+	}
+
+	if i.params.KeyboardLayout == nil {
+		kbType = makeSurvey(kbTypeSurvey)
+	} else {
+		kbType = *i.params.KeyboardLayout
+	}
+
+	if i.params.Ides == nil {
+
+		ideSurvey := survey.MultiSelect{
+			Message: "IDE keymaps to install:",
+			Options: IdeKeymapsSurveyOptions(),
+			Help:    "help",
 		}
 
-		terminalSurvey := MySurvey{
-			Message: "What is your terminal of choice (will be available with Ctrl+Alt+T/Ctrl+Cmd+T shortcut):",
-			Options: []string{Default.String(), iTerm.String(), Warp.String()},
+		fullNames := makeMultiSelect(ideSurvey)
+
+		for _, e := range fullNames {
+			name, _ := IdeKeymapByFullName(e)
+			idesToInstall = append(idesToInstall, name)
 		}
+	} else {
 
-		kbTypeSurvey := MySurvey{
-			Message: "Your external keyboard layout:",
-			Options: []string{PC.String(), Mac.String()},
-		}
-
-		if i.params.AppLauncher == nil {
-			app = makeSurvey(appLauncherSurvey)
-		} else {
-			app = *i.params.AppLauncher
-		}
-
-		if i.params.Terminal == nil {
-			term = makeSurvey(terminalSurvey)
-		} else {
-			term = *i.params.Terminal
-		}
-
-		if i.params.KeyboardLayout == nil {
-			kbType = makeSurvey(kbTypeSurvey)
-		} else {
-			kbType = *i.params.KeyboardLayout
-		}
-
-		i.run("clear")
-
-		if i.params.Ides == nil {
-
-			ideSurvey := survey.MultiSelect{
-				Message: "IDE keymaps to install:",
-				Options: IdeKeymapsSurveyOptions(),
-				Help:    "help",
-			}
-
-			fullNames := makeMultiSelect(ideSurvey)
-
-			for _, e := range fullNames {
-				name, _ := IdeKeymapByFullName(e)
-				idesToInstall = append(idesToInstall, name)
-			}
+		if slices.Contains(*i.params.Ides, "all") {
+			idesToInstall = IDEKeymaps
 		} else {
 
-			if slices.Contains(*i.params.Ides, "all") {
-				idesToInstall = IDEKeymaps
-			} else {
+			var idesFromFlags []IDE
 
-				var idesFromFlags []IDE
-
-				for _, e := range *i.params.Ides {
-					if e != "" {
-						byFlag, _ := IdeKeymapByFullName(e)
-						idesFromFlags = append(idesFromFlags, byFlag)
-					}
+			for _, e := range *i.params.Ides {
+				if e != "" {
+					byFlag, _ := IdeKeymapByFullName(e)
+					idesFromFlags = append(idesFromFlags, byFlag)
 				}
-
-				idesToInstall = idesFromFlags
 			}
+
+			idesToInstall = idesFromFlags
 		}
 	}
 
-	if i.shouldBeInstalled("Rectangle", "/Applications/Rectangle.app", false, true) {
-		// TODO remember decision and pass to install()
-	}
+	if i.params.Blacklist == nil {
 
-	if i.shouldBeInstalled("Alt-Tab", "/Applications/AltTab.app", false, true) {
-
-		if i.params.Blacklist == nil {
-
-			msBlacklist := survey.MultiSelect{
-				Message: "Select apps to be blacklisted:",
-				Options: []string{
-					"Spotify",
-					`Finder"`,
-					"System Preferences",
-				},
-				Help: "help",
-			}
-
-			blacklist = makeMultiSelect(msBlacklist)
-		} else {
-			blacklist = *i.params.Blacklist
+		msBlacklist := survey.MultiSelect{
+			Message: "Select apps to be blacklisted:",
+			Options: []string{
+				"Spotify",
+				"Finder",
+				"System Preferences",
+			},
+			Help: "help",
 		}
+
+		blacklist = makeMultiSelect(msBlacklist)
+	} else {
+		blacklist = *i.params.Blacklist
 	}
 
 	var options []string
@@ -327,6 +310,8 @@ func (i Installation) collectParams() Params {
 
 func (i Installation) install(params Params) error {
 
+	i.tryInstallDependencies()
+
 	i.run("killall Karabiner-Elements")
 
 	// do karabiner.json backup
@@ -364,18 +349,22 @@ func (i Installation) install(params Params) error {
 		applyRules(i, "launchpad.json")
 	case "alfred":
 		{
-			i.shouldBeInstalled("Alfred", "/Applications/Alfred 5.app", false, true)
-			fmt.Println("Applying alfred rules...")
-			applyRules(i, "alfred.json")
+			if i.cmd.Exists("Alfred 4.app") || i.cmd.Exists("Alfred 5.app") {
 
-			dirs, err := findMatchingDirs(i.homeDir.ApplicationSupportDir()+"/Alfred/Alfred.alfredpreferences/preferences/local", "", "hotkey", "prefs.plist")
+				fmt.Println("Applying alfred rules...")
+				applyRules(i, "alfred.json")
 
-			if err != nil {
-				return err
-			}
+				dirs, err := findMatchingDirs(i.homeDir.ApplicationSupportDir()+"/Alfred/Alfred.alfredpreferences/preferences/local", "", "hotkey", "prefs.plist")
 
-			for _, e := range dirs {
-				copyFileFromEmbedFS("alfred5/prefs.plist", e)
+				if err != nil {
+					return err
+				}
+
+				for _, e := range dirs {
+					copyFileFromEmbedFS("alfred5/prefs.plist", e)
+				}
+			} else {
+				printColored(YELLOW, fmt.Sprintf("Alfred app not found. Skipping..."))
 			}
 		}
 	}
@@ -393,11 +382,21 @@ func (i Installation) install(params Params) error {
 		fmt.Println("Applying apple terminal rules...")
 		applyRules(i, "apple-terminal.json")
 	case "iterm":
-		fmt.Println("Applying iterm rules...")
-		applyRules(i, "iterm.json")
+		if i.cmd.Exists("iTerm.app") {
+			fmt.Println("Applying iterm rules...")
+			applyRules(i, "iterm.json")
+		} else {
+			printColored(YELLOW, fmt.Sprintf("iTerm app not found. Skipping..."))
+		}
 	case "warp":
-		fmt.Println("Applying warp rules...")
-		applyRules(i, "warp.json")
+		{
+			if i.cmd.Exists("Warp.app") {
+				fmt.Println("Applying warp rules...")
+				applyRules(i, "warp.json")
+			} else {
+				printColored(YELLOW, fmt.Sprintf("Warp app not found. Skipping..."))
+			}
+		}
 	}
 
 	// reformat using 2 spaces indentation
@@ -411,43 +410,37 @@ func (i Installation) install(params Params) error {
 
 	i.run("killall Rectangle")
 
-	if i.shouldBeInstalled("Rectangle", "/Applications/Rectangle.app", false, true) {
+	rectanglePlist := i.homeDir.PreferencesDir() + "/com.knollsoft.Rectangle.plist"
+	copyFileFromEmbedFS("rectangle/Settings.xml", rectanglePlist)
 
-		rectanglePlist := i.homeDir.PreferencesDir() + "/com.knollsoft.Rectangle.plist"
-		copyFileFromEmbedFS("rectangle/Settings.xml", rectanglePlist)
+	plutilCmdRectangle := fmt.Sprintf("plutil -convert binary1 %s", rectanglePlist)
+	i.run(plutilCmdRectangle)
+	i.run("defaults read com.knollsoft.Rectangle.plist")
+	i.run("open -a Rectangle")
 
-		plutilCmd := fmt.Sprintf("plutil -convert binary1 %s", rectanglePlist)
-		i.run(plutilCmd)
+	i.run("killall AltTab")
 
-		i.run("defaults read com.knollsoft.Rectangle.plist")
-		i.run("open -a Rectangle")
+	altTabPlist := i.homeDir.PreferencesDir() + "/com.lwouis.alt-tab-macos.plist"
+	copyFileFromEmbedFS("alt-tab/Settings.xml", altTabPlist)
+
+	// set up blacklist
+
+	var mappedStrings []string
+	for _, s := range params.blacklist {
+		mappedStrings = append(mappedStrings, fmt.Sprintf(`{"ignore":"0","bundleIdentifier":"%s","hide":"1"}`, s))
 	}
 
-	if i.shouldBeInstalled("Alt-Tab", "/Applications/AltTab.app", false, true) {
-		i.run("killall AltTab")
+	result := "[" + strings.Join(mappedStrings, ",") + "]"
 
-		altTabPlist := i.homeDir.PreferencesDir() + "/com.lwouis.alt-tab-macos.plist"
-		copyFileFromEmbedFS("alt-tab/Settings.xml", altTabPlist)
+	fmt.Println("Blacklist: " + result)
 
-		// set up blacklist
+	replaceWordInFile(altTabPlist, "_BLACKLIST_", result)
 
-		var mappedStrings []string
-		for _, s := range params.blacklist {
-			mappedStrings = append(mappedStrings, fmt.Sprintf(`{"ignore":"0","bundleIdentifier":"%s","hide":"1"}`, s))
-		}
+	plutilCmd := fmt.Sprintf("plutil -convert binary1 %s", altTabPlist)
+	i.run(plutilCmd)
 
-		result := "[" + strings.Join(mappedStrings, ",") + "]"
-
-		fmt.Println("Blacklist: " + result)
-
-		replaceWordInFile(altTabPlist, "_BLACKLIST_", result)
-
-		plutilCmd := fmt.Sprintf("plutil -convert binary1 %s", altTabPlist)
-		i.run(plutilCmd)
-
-		i.run("defaults read com.lwouis.alt-tab-macos.plist")
-		i.run("open -a AltTab")
-	}
+	i.run("defaults read com.lwouis.alt-tab-macos.plist")
+	i.run("open -a AltTab")
 
 	optionsMap := make(map[string]bool)
 	for _, value := range params.additionalOptions {
@@ -483,39 +476,47 @@ func (i Installation) install(params Params) error {
 	return nil
 }
 
-func (i Installation) shouldBeInstalled(appName string, appFile string, isRequired bool, isCask bool) bool {
+func (i Installation) tryInstallDependencies() {
 
-	exists := i.cmd.Exists(appFile)
+	var notInstalled []string
+	var commands []string
 
-	if exists {
-		return true
+	if !i.cmd.Exists("jq") {
+		notInstalled = append(notInstalled, "jq")
+		commands = append(commands, "brew install jq")
 	}
 
-	i.run("clear")
-	installApp := false
-	prompt := &survey.Confirm{
-		Message: fmt.Sprintf("Do you want to install %s?", appName),
+	if !i.cmd.Exists("Karabiner-Elements.app") {
+		notInstalled = append(notInstalled, "Karabiner-Elements")
+		commands = append(commands, "brew install --cask karabiner-elements")
 	}
-	handleInterrupt(survey.AskOne(prompt, &installApp))
 
-	if installApp {
-		fmt.Println(fmt.Sprintf("Installing %s...", appName))
+	if !i.cmd.Exists("AltTab.app") {
+		notInstalled = append(notInstalled, "AltTab")
+		commands = append(commands, "brew install --cask alt-tab")
+	}
 
-		brewCommand := fmt.Sprintf("brew install %s", strings.ToLower(appName))
+	if !i.cmd.Exists("Rectangle.app") {
+		notInstalled = append(notInstalled, "Rectangle")
+		commands = append(commands, "brew install --cask rectangle")
+	}
 
-		if isCask {
-			brewCommand = fmt.Sprintf("brew install --cask %s", strings.ToLower(appName))
+	if len(notInstalled) > 0 {
+		installApp := false
+		prompt := &survey.Confirm{
+			Message: fmt.Sprintf("The following dependencies will be installed: %s. Do you agree?", strings.Join(notInstalled, ", ")),
+		}
+		handleInterrupt(survey.AskOne(prompt, &installApp))
+
+		if !installApp {
+			fmt.Printf("Qutting...")
+			i.cmd.Exit(0)
 		}
 
-		script.Exec(brewCommand).Stdout()
-	} else {
-		if isRequired {
-			fmt.Println(fmt.Sprintf("%s is required to proceed. Quitting...", appName))
-			os.Exit(0)
+		for _, c := range commands {
+			i.run(c)
 		}
 	}
-
-	return installApp
 }
 
 func (i Installation) run(cmd string) {

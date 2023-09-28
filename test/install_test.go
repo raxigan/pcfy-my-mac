@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestInstallAlwaysChooseFirstOptionInSurvey(t *testing.T) {
+func TestInstallWithPrompts(t *testing.T) {
 
 	i, _, _ := runInstaller(nil)
 	defer tearDown(i)
@@ -33,7 +33,7 @@ func TestInstallFromYamlFile(t *testing.T) {
 
 func TestInstallWarpAlfredPC(t *testing.T) {
 
-	yml := yaml(`
+	yml := install.Trim(`
 		app-launcher: alfred
 		terminal: warp
 		keyboard-layout: pc
@@ -50,7 +50,6 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 
 	AssertFilesEqual(t, actual, expected)
 	AssertSlicesEqual(t, c.CommandsLog, []string{
-		"clear",
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
 		"killall Rectangle",
@@ -66,7 +65,7 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 
 func TestInstallNoneDefaultNone(t *testing.T) {
 
-	yml := yaml(`
+	yml := install.Trim(`
 		app-launcher: None
 		terminal: Default
 		keyboard-layout: None
@@ -83,7 +82,6 @@ func TestInstallNoneDefaultNone(t *testing.T) {
 
 	AssertFilesEqual(t, actual, expected)
 	AssertSlicesEqual(t, c.CommandsLog, []string{
-		"clear",
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
 		"killall Rectangle",
@@ -99,7 +97,7 @@ func TestInstallNoneDefaultNone(t *testing.T) {
 
 func TestInstallItermSpotlightMac(t *testing.T) {
 
-	yml := yaml(`
+	yml := install.Trim(`
 		app-launcher: spotlight
 		terminal: iterm
 		keyboard-layout: mac
@@ -116,7 +114,6 @@ func TestInstallItermSpotlightMac(t *testing.T) {
 
 	AssertFilesEqual(t, actual, expected)
 	AssertSlicesEqual(t, c.CommandsLog, []string{
-		"clear",
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
 		"killall Rectangle",
@@ -132,7 +129,7 @@ func TestInstallItermSpotlightMac(t *testing.T) {
 
 func TestInstallNoneLaunchpadPC(t *testing.T) {
 
-	yml := yaml(`
+	yml := install.Trim(`
 		app-launcher: launchpad
 		terminal: warp
 		keyboard-layout: pc
@@ -149,7 +146,6 @@ func TestInstallNoneLaunchpadPC(t *testing.T) {
 
 	AssertFilesEqual(t, actual, expected)
 	AssertSlicesEqual(t, c.CommandsLog, []string{
-		"clear",
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
 		"killall Rectangle",
@@ -165,7 +161,7 @@ func TestInstallNoneLaunchpadPC(t *testing.T) {
 
 func TestInstallAllKeymaps(t *testing.T) {
 
-	yml := yaml(`
+	yml := install.Trim(`
 		app-launcher: None
 		terminal: None
 		keyboard-layout: None
@@ -183,7 +179,6 @@ func TestInstallAllKeymaps(t *testing.T) {
 	AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.GoLand()), i.IdeKeymapPaths(install.GoLand())[0])
 	AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.Fleet()), i.IdeKeymapPaths(install.Fleet())[0])
 	AssertSlicesEqual(t, c.CommandsLog, []string{
-		"clear",
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
 		"killall Rectangle",
@@ -199,7 +194,7 @@ func TestInstallAllKeymaps(t *testing.T) {
 
 func TestFailForUnknownParam(t *testing.T) {
 
-	yml := yaml(`unknown: hello`)
+	yml := install.Trim(`unknown: hello`)
 
 	i, c, err := runInstaller(&yml)
 	defer tearDown(i)
@@ -210,7 +205,7 @@ func TestFailForUnknownParam(t *testing.T) {
 
 func TestFailForInvalidYaml(t *testing.T) {
 
-	yml := yaml(`[] :app-launcher:`)
+	yml := install.Trim(`[] :app-launcher:`)
 
 	i, c, err := runInstaller(&yml)
 	defer tearDown(i)
@@ -231,7 +226,7 @@ func TestInstallYmlFileDoesNotExist(t *testing.T) {
 
 func TestInstallEnableHomeAndEndKeys(t *testing.T) {
 
-	yml := yaml(`
+	yml := install.Trim(`
 		app-launcher: None
 		terminal: None
 		keyboard-layout: None
@@ -251,7 +246,7 @@ func TestInstallEnableHomeAndEndKeys(t *testing.T) {
 
 func TestInstallInvalidAppLauncher(t *testing.T) {
 
-	yml := yaml(`
+	yml := install.Trim(`
 		app-launcher: Unknown
 		terminal: None
 		keyboard-layout: None
@@ -272,7 +267,7 @@ func TestInstallInvalidAppLauncher(t *testing.T) {
 
 func TestInstallInvalidTerminal(t *testing.T) {
 
-	yml := yaml(`
+	yml := install.Trim(`
 		app-launcher: None
 		terminal: unknown
 		keyboard-layout: None
@@ -293,7 +288,7 @@ func TestInstallInvalidTerminal(t *testing.T) {
 
 func TestInstallInvalidKeyboardLayout(t *testing.T) {
 
-	yml := yaml(`
+	yml := install.Trim(`
 		app-launcher: None
 		terminal: None
 		keyboard-layout: unknown
@@ -312,7 +307,7 @@ func TestInstallInvalidKeyboardLayout(t *testing.T) {
 
 func TestInstallAdditionalOptions(t *testing.T) {
 
-	yml := yaml(`
+	yml := install.Trim(`
 		app-launcher: alfred
 		terminal: warp
 		keyboard-layout: pc
@@ -335,7 +330,6 @@ func TestInstallAdditionalOptions(t *testing.T) {
 
 	AssertFilesEqual(t, actual, expected)
 	AssertSlicesEqual(t, c.CommandsLog, []string{
-		"clear",
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
 		"killall Rectangle",

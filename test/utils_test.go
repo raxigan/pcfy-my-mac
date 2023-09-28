@@ -31,7 +31,3 @@ func copyFile(src, dst string) {
 
 	io.Copy(destFile, sourceFile)
 }
-
-func yaml(yaml string) string {
-	return strings.TrimSpace(strings.ReplaceAll(yaml, "\t", ""))
-}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -25,6 +26,7 @@ func (tp DefaultTimeProvider) Now() time.Time {
 type Commander interface {
 	Run(command string)
 	Exists(command string) bool
+	Exit(code int)
 }
 
 type DefaultCommander struct {
@@ -49,11 +51,15 @@ func (c DefaultCommander) Run(command string) {
 
 func (c DefaultCommander) Exists(command string) bool {
 	if strings.HasSuffix(command, ".app") {
-		return fileExists(command)
+		return fileExists(filepath.Join("/Applications", command))
 	} else {
 		_, err := exec.LookPath(command)
 		return err == nil
 	}
+}
+
+func (c DefaultCommander) Exit(code int) {
+	os.Exit(code)
 }
 
 func fileExists(filename string) bool {
@@ -80,4 +86,8 @@ func replaceWordInFile(path, oldWord, newWord string) error {
 	}
 
 	return nil
+}
+
+func Trim(yaml string) string {
+	return strings.TrimSpace(strings.ReplaceAll(yaml, "\t", ""))
 }

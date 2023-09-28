@@ -3,6 +3,7 @@ package install_test
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"github.com/raxigan/pcfy-my-mac/install"
 	"io"
 	"log"
 	"os"
@@ -46,7 +47,7 @@ func AssertErrorContains(t *testing.T, err error, expected string) {
 		t.Fatalf("")
 	}
 
-	if !strings.Contains(err.Error(), yaml(expected)) {
+	if !strings.Contains(err.Error(), install.Trim(expected)) {
 		t.Fatalf(`EXPECTED: "%s" ACTUAL: "%s"`, err, expected)
 	}
 }
