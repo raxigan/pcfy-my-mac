@@ -7,7 +7,6 @@ import (
 )
 
 func main() {
-
 	handleError(
 		install.RunInstaller(install.DefaultHomeDir(), install.DefaultCommander{}, install.DefaultTimeProvider{}, nil),
 	)

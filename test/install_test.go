@@ -3,18 +3,15 @@ package install_test
 import (
 	"flag"
 	"github.com/raxigan/pcfy-my-mac/install"
-	"io"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
-	"time"
 )
 
 func TestInstallAlwaysChooseFirstOptionInSurvey(t *testing.T) {
 
 	i, _, _ := runInstaller(nil)
-	defer reset(i)
+	defer tearDown(i)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-spotlight-default-pc.json"
@@ -26,7 +23,7 @@ func TestInstallFromYamlFile(t *testing.T) {
 
 	os.Args = []string{"script_name", "--params=params.yml"}
 	i, _, _ := runInstaller(nil)
-	defer reset(i)
+	defer tearDown(i)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-alfred-warp-pc.json"
@@ -46,7 +43,7 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 	)
 
 	i, c, _ := runInstaller(&yml)
-	defer reset(i)
+	defer tearDown(i)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-alfred-warp-pc.json"
@@ -79,7 +76,7 @@ func TestInstallNoneDefaultNone(t *testing.T) {
 	)
 
 	i, c, _ := runInstaller(&yml)
-	defer reset(i)
+	defer tearDown(i)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-none-default-none.json"
@@ -112,7 +109,7 @@ func TestInstallItermSpotlightMac(t *testing.T) {
 	)
 
 	i, c, _ := runInstaller(&yml)
-	defer reset(i)
+	defer tearDown(i)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-spotlight-iterm-mac.json"
@@ -145,7 +142,7 @@ func TestInstallNoneLaunchpadPC(t *testing.T) {
 	)
 
 	i, c, _ := runInstaller(&yml)
-	defer reset(i)
+	defer tearDown(i)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-launchpad-none-pc.json"
@@ -178,7 +175,7 @@ func TestInstallAllKeymaps(t *testing.T) {
 	)
 
 	i, c, _ := runInstaller(&yml)
-	defer reset(i)
+	defer tearDown(i)
 
 	AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJ()), i.IdeKeymapPaths(install.IntelliJ())[0])
 	AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJ()), i.IdeKeymapPaths(install.IntelliJ())[1])
@@ -205,7 +202,7 @@ func TestFailForUnknownParam(t *testing.T) {
 	yml := yaml(`unknown: hello`)
 
 	i, c, err := runInstaller(&yml)
-	defer reset(i)
+	defer tearDown(i)
 
 	AssertErrorContains(t, err, "Unknown parameter: unknown")
 	AssertSlicesEqual(t, c.CommandsLog, []string{})
@@ -216,7 +213,7 @@ func TestFailForInvalidYaml(t *testing.T) {
 	yml := yaml(`[] :app-launcher:`)
 
 	i, c, err := runInstaller(&yml)
-	defer reset(i)
+	defer tearDown(i)
 
 	AssertErrorContains(t, err, "cannot unmarshal !!seq into install.FileParams")
 	AssertSlicesEqual(t, c.CommandsLog, []string{})
@@ -226,7 +223,7 @@ func TestInstallYmlFileDoesNotExist(t *testing.T) {
 
 	os.Args = []string{"script_name", "--params=nope.yml"}
 	i, c, err := runInstaller(nil)
-	defer reset(i)
+	defer tearDown(i)
 
 	AssertErrorContains(t, err, "open nope.yml: no such file or directory")
 	AssertSlicesEqual(t, c.CommandsLog, []string{})
@@ -244,7 +241,7 @@ func TestInstallEnableHomeAndEndKeys(t *testing.T) {
 	)
 
 	i, _, _ := runInstaller(&yml)
-	defer reset(i)
+	defer tearDown(i)
 
 	actual := "../configs/system/DefaultKeyBinding.dict"
 	expected := i.LibraryDir() + "/KeyBindings/DefaultKeyBinding.dict"
@@ -264,7 +261,7 @@ func TestInstallInvalidAppLauncher(t *testing.T) {
 	)
 
 	i, _, err := runInstaller(&yml)
-	defer reset(i)
+	defer tearDown(i)
 
 	AssertErrorContains(t, err, `Invalid param 'app-launcher' value/s 'unknown', valid values:
 		spotlight
@@ -285,7 +282,7 @@ func TestInstallInvalidTerminal(t *testing.T) {
 	)
 
 	i, _, err := runInstaller(&yml)
-	defer reset(i)
+	defer tearDown(i)
 
 	AssertErrorContains(t, err, `Invalid param 'terminal' value/s 'unknown', valid values:
 		default
@@ -306,7 +303,7 @@ func TestInstallInvalidKeyboardLayout(t *testing.T) {
 	)
 
 	i, _, err := runInstaller(&yml)
-	defer reset(i)
+	defer tearDown(i)
 
 	AssertErrorContains(t, err, `Invalid param 'keyboard-layout' value/s 'unknown', valid values:
 		pc
@@ -331,7 +328,7 @@ func TestInstallAdditionalOptions(t *testing.T) {
 	)
 
 	i, c, _ := runInstaller(&yml)
-	defer reset(i)
+	defer tearDown(i)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-alfred-warp-pc.json"
@@ -372,41 +369,15 @@ func testHomeDir() install.HomeDir {
 	}
 }
 
-func reset(i install.HomeDir) {
+func tearDown(i install.HomeDir) {
 	removeFiles(i.KarabinerConfigBackupFile(FakeTimeProvider{}.Now()))
-	copyFile(karabinerTestDefaultConfig(i), i.KarabinerConfigFile())
 	removeFiles(i.IdesKeymapPaths(install.IDEKeymaps)...)
-	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+	removeFilesWithExt(i.LibraryDir(), "plist")
+	removeFilesWithExt(i.LibraryDir(), "dict")
+	copyFile(karabinerTestDefaultConfig(i), i.KarabinerConfigFile())
+	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError) // reset flags
 }
 
 func karabinerTestDefaultConfig(i install.HomeDir) string {
 	return i.KarabinerConfigDir() + "/karabiner-default.json"
-}
-
-func removeFiles(paths ...string) {
-	for _, path := range paths {
-		os.Remove(path)
-	}
-}
-
-func copyFile(src, dst string) {
-	sourceFile, _ := os.Open(src)
-	defer sourceFile.Close()
-
-	destFile, _ := os.Create(dst)
-	defer destFile.Close()
-
-	io.Copy(destFile, sourceFile)
-}
-
-func yaml(yaml string) string {
-	return strings.TrimSpace(strings.ReplaceAll(yaml, "\t", ""))
-}
-
-type FakeTimeProvider struct {
-}
-
-func (tp FakeTimeProvider) Now() time.Time {
-	parse, _ := time.Parse("2006-01-02 15:04:05", "2023-09-27 12:30:00")
-	return parse
 }
