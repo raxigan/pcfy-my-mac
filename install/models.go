@@ -1,6 +1,8 @@
 package install
 
-import "errors"
+import (
+	"errors"
+)
 
 type AppLauncher int
 

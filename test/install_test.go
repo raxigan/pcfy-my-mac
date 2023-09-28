@@ -5,8 +5,10 @@ import (
 	"github.com/raxigan/pcfy-my-mac/install"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestInstallAlwaysChooseFirstOptionInSurvey(t *testing.T) {
@@ -356,21 +358,28 @@ func TestInstallAdditionalOptions(t *testing.T) {
 	})
 }
 
-func runInstaller(yml *string) (install.Installation, install.MockCommander, error) {
-	wd, _ := os.Getwd()
-	commander := install.MockCommander{}
-	installer, err := install.RunInstaller(wd+"/homedir", &commander, yml)
-	return installer, commander, err
+func runInstaller(yml *string) (install.HomeDir, MockCommander, error) {
+	commander := MockCommander{}
+	homeDir := testHomeDir()
+	err := install.RunInstaller(homeDir, &commander, FakeTimeProvider{}, yml)
+	return homeDir, commander, err
 }
 
-func reset(i install.Installation) {
-	removeFiles(i.KarabinerConfigBackupFile())
+func testHomeDir() install.HomeDir {
+	wd, _ := os.Getwd()
+	return install.HomeDir{
+		Path: filepath.Join(wd, "homedir"),
+	}
+}
+
+func reset(i install.HomeDir) {
+	removeFiles(i.KarabinerConfigBackupFile(FakeTimeProvider{}.Now()))
 	copyFile(karabinerTestDefaultConfig(i), i.KarabinerConfigFile())
 	removeFiles(i.IdesKeymapPaths(install.IDEKeymaps)...)
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 }
 
-func karabinerTestDefaultConfig(i install.Installation) string {
+func karabinerTestDefaultConfig(i install.HomeDir) string {
 	return i.KarabinerConfigDir() + "/karabiner-default.json"
 }
 
@@ -392,4 +401,12 @@ func copyFile(src, dst string) {
 
 func yaml(yaml string) string {
 	return strings.TrimSpace(strings.ReplaceAll(yaml, "\t", ""))
+}
+
+type FakeTimeProvider struct {
+}
+
+func (tp FakeTimeProvider) Now() time.Time {
+	parse, _ := time.Parse("2006-01-02 15:04:05", "2023-09-27 12:30:00")
+	return parse
 }

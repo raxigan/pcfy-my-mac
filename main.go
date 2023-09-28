@@ -1,20 +1,21 @@
 package main
 
 import (
-	"log"
+	"fmt"
+	"github.com/raxigan/pcfy-my-mac/install"
 	"os"
 )
-import "github.com/raxigan/pcfy-my-mac/install"
 
 func main() {
-	homeDir, _ := os.UserHomeDir()
-	_, err := install.RunInstaller(homeDir, install.DefaultCommander{}, nil)
 
-	if err != nil {
-		fail(err)
-	}
+	handleError(
+		install.RunInstaller(install.DefaultHomeDir(), install.DefaultCommander{}, install.DefaultTimeProvider{}, nil),
+	)
 }
 
-func fail(err error) {
-	log.Fatalf("Error: %s", err)
+func handleError(err error) {
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+		os.Exit(1)
+	}
 }

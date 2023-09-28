@@ -6,19 +6,31 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 const YELLOW = "\x1b[33m%s\x1b[0m"
 
+type TimeProvider interface {
+	Now() time.Time
+}
+
+type DefaultTimeProvider struct {
+}
+
+func (tp DefaultTimeProvider) Now() time.Time {
+	return time.Now()
+}
+
 type Commander interface {
-	run(command string)
-	exists(command string) bool
+	Run(command string)
+	Exists(command string) bool
 }
 
 type DefaultCommander struct {
 }
 
-func (c DefaultCommander) run(command string) {
+func (c DefaultCommander) Run(command string) {
 	fmt.Println("Running: " + command)
 
 	out, err := exec.Command("/bin/bash", "-c", command).CombinedOutput()
@@ -30,47 +42,18 @@ func (c DefaultCommander) run(command string) {
 			fmt.Printf("Stderr: %s", out)
 			os.Exit(1)
 		}
-		return
 	}
 
 	fmt.Print(string(out))
 }
 
-func (c DefaultCommander) exists(command string) bool {
+func (c DefaultCommander) Exists(command string) bool {
 	if strings.HasSuffix(command, ".app") {
 		return fileExists(command)
 	} else {
 		_, err := exec.LookPath(command)
 		return err == nil
 	}
-}
-
-type MockCommander struct {
-	CommandsLog []string
-}
-
-func (c *MockCommander) run(command string) {
-
-	cmd := strings.Fields(command)[0]
-
-	fmt.Println("Running: " + command)
-
-	switch cmd {
-	case "jq":
-		DefaultCommander{}.run(command)
-	case "killall", "open", "clear", "defaults":
-		c.CommandsLog = append(c.CommandsLog, command)
-	case "plutil":
-		pwd, _ := os.Getwd()
-		c.CommandsLog = append(c.CommandsLog, strings.ReplaceAll(command, pwd, ""))
-	default:
-		fmt.Println("Cannot execute command: " + command)
-		os.Exit(1)
-	}
-}
-
-func (c *MockCommander) exists(command string) bool {
-	return true
 }
 
 func fileExists(filename string) bool {

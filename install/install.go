@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/bitfield/script"
 	"github.com/raxigan/pcfy-my-mac/configs"
 	"gopkg.in/yaml.v3"
@@ -33,7 +34,7 @@ type Params struct {
 }
 
 type Installation struct {
-	homeDir string
+	homeDir HomeDir
 	params  FileParams
 
 	profileName      string
@@ -51,7 +52,7 @@ type FileParams struct {
 	Extra             map[string]string `yaml:",inline"`
 }
 
-func NewInstallation(homeDir string, commander Commander, yml *string) (*Installation, error) {
+func collectYamlParams(yml *string) (FileParams, error) {
 
 	var data []byte
 	fp := FileParams{}
@@ -67,7 +68,7 @@ func NewInstallation(homeDir string, commander Commander, yml *string) (*Install
 			d, e := os.ReadFile(*paramsFile)
 
 			if e != nil {
-				return nil, e
+				return FileParams{}, e
 			}
 
 			data = d
@@ -76,12 +77,12 @@ func NewInstallation(homeDir string, commander Commander, yml *string) (*Install
 
 	err := yaml.Unmarshal(data, &fp)
 	if err != nil {
-		return nil, err
+		return FileParams{}, err
 	}
 
 	if len(fp.Extra) > 0 {
 		for field := range fp.Extra {
-			return nil, errors.New("Unknown parameter: " + field)
+			return FileParams{}, errors.New("Unknown parameter: " + field)
 		}
 	}
 
@@ -116,56 +117,17 @@ func NewInstallation(homeDir string, commander Commander, yml *string) (*Install
 	)
 
 	if validationErr != nil {
-		return nil, validationErr
+		return FileParams{}, validationErr
 	}
 
-	return &Installation{
-		homeDir: homeDir,
-		params: FileParams{
-			AppLauncher:       fp.AppLauncher,
-			Terminal:          fp.Terminal,
-			KeyboardLayout:    fp.KeyboardLayout,
-			Ides:              fp.Ides,
-			AdditionalOptions: fp.AdditionalOptions,
-			Blacklist:         fp.Blacklist,
-		},
-		profileName:      "PC mode GOLANG",
-		installationTime: time.Now(),
-		cmd:              commander,
+	return FileParams{
+		AppLauncher:       fp.AppLauncher,
+		Terminal:          fp.Terminal,
+		KeyboardLayout:    fp.KeyboardLayout,
+		Ides:              fp.Ides,
+		AdditionalOptions: fp.AdditionalOptions,
+		Blacklist:         fp.Blacklist,
 	}, nil
-}
-
-func (i Installation) KarabinerConfigDir() string {
-	return i.homeDir + "/.config/karabiner"
-}
-
-func (i Installation) KarabinerConfigFile() string {
-	return filepath.Join(i.KarabinerConfigDir(), "/karabiner.json")
-}
-
-func (i Installation) KarabinerConfigBackupFile() string {
-	currentTime := i.installationTime.Format("02-01-2006_15:04:05")
-	return i.KarabinerConfigDir() + "/karabiner-" + currentTime + ".json"
-}
-
-func (i Installation) KarabinerComplexModificationsDir() string {
-	return i.homeDir + "/.config/karabiner/assets/complex_modifications"
-}
-
-func (i Installation) applicationSupportDir() string {
-	return i.homeDir + "/Library/Application Support"
-}
-
-func (i Installation) preferencesDir() string {
-	return i.homeDir + "/Library/preferences"
-}
-
-func (i Installation) LibraryDir() string {
-	return i.homeDir + "/Library"
-}
-
-func (i Installation) SourceKeymap(ide IDE) string {
-	return "keymaps/" + ide.srcKeymapsFile
 }
 
 func makeSurvey(s MySurvey) string {
@@ -180,27 +142,37 @@ func makeSurvey(s MySurvey) string {
 
 	appLauncher = strings.TrimSpace(appLauncher)
 
-	survey.AskOne(prompt, &appLauncher, survey.WithValidator(survey.Required))
+	handleInterrupt(survey.AskOne(prompt, &appLauncher, survey.WithValidator(survey.Required)))
 
 	return strings.ToLower(strings.TrimSpace(appLauncher))
 }
 
 func makeMultiSelect(s survey.MultiSelect) []string {
-
-	script.Exec("clear").Stdout()
-
 	var appLauncher []string
-
-	survey.AskOne(&s, &appLauncher)
-
+	handleInterrupt(survey.AskOne(&s, &appLauncher))
 	return appLauncher
 }
 
-func RunInstaller(homeDir string, commander Commander, yaml *string) (Installation, error) {
-	installation, err := NewInstallation(homeDir, commander, yaml)
+func RunInstaller(homeDir HomeDir, commander Commander, tp TimeProvider, yaml *string) error {
+	fp, err := collectYamlParams(yaml)
 
 	if err != nil {
-		return Installation{}, err
+		return err
+	}
+
+	installation := Installation{
+		homeDir: homeDir,
+		params: FileParams{
+			AppLauncher:       fp.AppLauncher,
+			Terminal:          fp.Terminal,
+			KeyboardLayout:    fp.KeyboardLayout,
+			Ides:              fp.Ides,
+			AdditionalOptions: fp.AdditionalOptions,
+			Blacklist:         fp.Blacklist,
+		},
+		profileName:      "PC mode GOLANG",
+		installationTime: tp.Now(),
+		cmd:              commander,
 	}
 
 	params := installation.collectParams()
@@ -295,27 +267,19 @@ func (i Installation) collectParams() Params {
 	}
 
 	if i.shouldBeInstalled("Alt-Tab", "/Applications/AltTab.app", false, true) {
-		msBlacklist := survey.MultiSelect{
-			Message: "Select additional options:",
-			Options: []string{
-				"Enable Dock auto-hide (2s delay)",
-				`Change Dock minimize animation to "scale"`,
-				"Enable Home & End keys",
-				"Show hidden files in Finder",
-				"Show directories on top in Finder",
-				"Show full POSIX paths in Finder",
-			},
-			Description: func(value string, index int) string {
-				if index < 2 {
-					return "Recommended"
-				}
-				return ""
-			},
-			Help:     "help",
-			PageSize: 15,
-		}
 
 		if i.params.Blacklist == nil {
+
+			msBlacklist := survey.MultiSelect{
+				Message: "Select apps to be blacklisted:",
+				Options: []string{
+					"Spotify",
+					`Finder"`,
+					"System Preferences",
+				},
+				Help: "help",
+			}
+
 			blacklist = makeMultiSelect(msBlacklist)
 		} else {
 			blacklist = *i.params.Blacklist
@@ -361,31 +325,31 @@ func (i Installation) collectParams() Params {
 	}
 }
 
-func (i Installation) install(params Params) (Installation, error) {
+func (i Installation) install(params Params) error {
 
 	i.run("killall Karabiner-Elements")
 
 	// do karabiner.json backup
-	original := i.KarabinerConfigFile()
-	backupDest := i.KarabinerConfigBackupFile()
+	original := i.homeDir.KarabinerConfigFile()
+	backupDest := i.homeDir.KarabinerConfigBackupFile(i.installationTime)
 
 	script.Exec("cp " + original + " " + backupDest).Wait()
 
 	// delete existing profile
-	deleteProfileJqCmd := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" 'del(.profiles[] | select(.name == \"%s\"))' %s >tmp && mv tmp %s", i.profileName, i.profileName, i.KarabinerConfigFile(), i.KarabinerConfigFile())
+	deleteProfileJqCmd := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" 'del(.profiles[] | select(.name == \"%s\"))' %s >tmp && mv tmp %s", i.profileName, i.profileName, i.homeDir.KarabinerConfigFile(), i.homeDir.KarabinerConfigFile())
 	i.run(deleteProfileJqCmd)
 
 	// add new karabiner profile
 	copyFileFromEmbedFS("karabiner/karabiner-profile.json", "tmp")
-	addProfileJqCmd := fmt.Sprintf("jq '.profiles += $profile' %s --slurpfile profile tmp --indent 4 >INPUT.tmp && mv INPUT.tmp %s && rm tmp", i.KarabinerConfigFile(), i.KarabinerConfigFile())
+	addProfileJqCmd := fmt.Sprintf("jq '.profiles += $profile' %s --slurpfile profile tmp --indent 4 >INPUT.tmp && mv INPUT.tmp %s && rm tmp", i.homeDir.KarabinerConfigFile(), i.homeDir.KarabinerConfigFile())
 	i.run(addProfileJqCmd)
 
 	// rename the profile
-	renameJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name == \"_PROFILE_NAME_\" then .name = \"%s\" else . end)' %s > tmp && mv tmp %s", i.profileName, i.KarabinerConfigFile(), i.KarabinerConfigFile())
+	renameJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name == \"_PROFILE_NAME_\" then .name = \"%s\" else . end)' %s > tmp && mv tmp %s", i.profileName, i.homeDir.KarabinerConfigFile(), i.homeDir.KarabinerConfigFile())
 	i.run(renameJqCmd)
 
 	// unselect other profiles
-	unselectJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name != \"%s\" then .selected = false else . end)' %s > tmp && mv tmp %s", i.profileName, i.KarabinerConfigFile(), i.KarabinerConfigFile())
+	unselectJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name != \"%s\" then .selected = false else . end)' %s > tmp && mv tmp %s", i.profileName, i.homeDir.KarabinerConfigFile(), i.homeDir.KarabinerConfigFile())
 	i.run(unselectJqCmd)
 
 	applyRules(i, "main.json")
@@ -404,10 +368,10 @@ func (i Installation) install(params Params) (Installation, error) {
 			fmt.Println("Applying alfred rules...")
 			applyRules(i, "alfred.json")
 
-			dirs, err := findMatchingDirs(i.applicationSupportDir()+"/Alfred/Alfred.alfredpreferences/preferences/local", "", "hotkey", "prefs.plist")
+			dirs, err := findMatchingDirs(i.homeDir.ApplicationSupportDir()+"/Alfred/Alfred.alfredpreferences/preferences/local", "", "hotkey", "prefs.plist")
 
 			if err != nil {
-				return Installation{}, err
+				return err
 			}
 
 			for _, e := range dirs {
@@ -437,7 +401,7 @@ func (i Installation) install(params Params) (Installation, error) {
 	}
 
 	// reformat using 2 spaces indentation
-	i.run(fmt.Sprintf("jq '.' %s > tmp && mv tmp %s", i.KarabinerConfigFile(), i.KarabinerConfigFile()))
+	i.run(fmt.Sprintf("jq '.' %s > tmp && mv tmp %s", i.homeDir.KarabinerConfigFile(), i.homeDir.KarabinerConfigFile()))
 
 	i.run("open -a Karabiner-Elements")
 
@@ -449,7 +413,7 @@ func (i Installation) install(params Params) (Installation, error) {
 
 	if i.shouldBeInstalled("Rectangle", "/Applications/Rectangle.app", false, true) {
 
-		rectanglePlist := i.preferencesDir() + "/com.knollsoft.Rectangle.plist"
+		rectanglePlist := i.homeDir.PreferencesDir() + "/com.knollsoft.Rectangle.plist"
 		copyFileFromEmbedFS("rectangle/Settings.xml", rectanglePlist)
 
 		plutilCmd := fmt.Sprintf("plutil -convert binary1 %s", rectanglePlist)
@@ -462,7 +426,7 @@ func (i Installation) install(params Params) (Installation, error) {
 	if i.shouldBeInstalled("Alt-Tab", "/Applications/AltTab.app", false, true) {
 		i.run("killall AltTab")
 
-		altTabPlist := i.preferencesDir() + "/com.lwouis.alt-tab-macos.plist"
+		altTabPlist := i.homeDir.PreferencesDir() + "/com.lwouis.alt-tab-macos.plist"
 		copyFileFromEmbedFS("alt-tab/Settings.xml", altTabPlist)
 
 		// set up blacklist
@@ -501,7 +465,7 @@ func (i Installation) install(params Params) (Installation, error) {
 	}
 	if optionsMap["enable home & end keys"] {
 		fmt.Println("Enable Home & End keys...")
-		copyFileFromEmbedFS("system/DefaultKeyBinding.dict", i.LibraryDir()+"/KeyBindings/DefaultKeyBinding.dict")
+		copyFileFromEmbedFS("system/DefaultKeyBinding.dict", i.homeDir.LibraryDir()+"/KeyBindings/DefaultKeyBinding.dict")
 	}
 	if optionsMap["show hidden files in finder"] {
 		i.run("defaults write com.apple.finder AppleShowAllFiles -bool true")
@@ -516,12 +480,12 @@ func (i Installation) install(params Params) (Installation, error) {
 
 	fmt.Println("SUCCESS")
 
-	return i, nil
+	return nil
 }
 
 func (i Installation) shouldBeInstalled(appName string, appFile string, isRequired bool, isCask bool) bool {
 
-	exists := i.cmd.exists(appFile)
+	exists := i.cmd.Exists(appFile)
 
 	if exists {
 		return true
@@ -532,7 +496,7 @@ func (i Installation) shouldBeInstalled(appName string, appFile string, isRequir
 	prompt := &survey.Confirm{
 		Message: fmt.Sprintf("Do you want to install %s?", appName),
 	}
-	survey.AskOne(prompt, &installApp)
+	handleInterrupt(survey.AskOne(prompt, &installApp))
 
 	if installApp {
 		fmt.Println(fmt.Sprintf("Installing %s...", appName))
@@ -555,7 +519,7 @@ func (i Installation) shouldBeInstalled(appName string, appFile string, isRequir
 }
 
 func (i Installation) run(cmd string) {
-	i.cmd.run(cmd)
+	i.cmd.Run(cmd)
 }
 
 func (i Installation) installIdeKeymap(ide IDE) error {
@@ -563,12 +527,12 @@ func (i Installation) installIdeKeymap(ide IDE) error {
 	var destDirs []string
 
 	if ide.multipleDirs {
-		a := i.IdeKeymapPaths(ide)
+		a := i.homeDir.IdeKeymapPaths(ide)
 
 		destDirs = a
 	} else {
 		destDirs = []string{
-			i.homeDir + "/" + ide.parentDir + "/" + ide.dir + "/" + ide.keymapsDir + "/" + ide.destKeymapsFile,
+			i.homeDir.Path + "/" + ide.parentDir + "/" + ide.dir + "/" + ide.keymapsDir + "/" + ide.destKeymapsFile,
 		}
 	}
 
@@ -578,7 +542,7 @@ func (i Installation) installIdeKeymap(ide IDE) error {
 	}
 
 	for _, d := range destDirs {
-		err := copyFileFromEmbedFS(i.SourceKeymap(ide), d)
+		err := copyFileFromEmbedFS(i.homeDir.SourceKeymap(ide), d)
 
 		if err != nil {
 			return err
@@ -612,17 +576,17 @@ func findMatchingDirs(basePath, namePrefix, subDir, fileName string) ([]string, 
 	return result, err
 }
 
-func (i Installation) IdeKeymapPaths(ide IDE) []string {
-	return i.IdesKeymapPaths([]IDE{ide})
+func (home HomeDir) IdeKeymapPaths(ide IDE) []string {
+	return home.IdesKeymapPaths([]IDE{ide})
 }
 
-func (i Installation) IdesKeymapPaths(ide []IDE) []string {
+func (home HomeDir) IdesKeymapPaths(ide []IDE) []string {
 
 	var result []string
 
 	for _, e := range ide {
 
-		dirs, _ := findMatchingDirs(i.homeDir+e.parentDir, e.dir, e.keymapsDir, e.destKeymapsFile)
+		dirs, _ := findMatchingDirs(home.Path+e.parentDir, e.dir, e.keymapsDir, e.destKeymapsFile)
 
 		for _, e1 := range dirs {
 			result = append(result, e1)
@@ -633,13 +597,13 @@ func (i Installation) IdesKeymapPaths(ide []IDE) []string {
 }
 
 func applyRules(i Installation, file string) {
-	copyFileFromEmbedFS("karabiner/"+file, i.KarabinerComplexModificationsDir()+"/"+file)
-	jq := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" '(.profiles[] | select(.name == \"%s\") | .complex_modifications.rules) += $rules[].rules' %s --slurpfile rules %s/%s >tmp && mv tmp %s", i.profileName, i.profileName, i.KarabinerConfigFile(), i.KarabinerComplexModificationsDir(), file, i.KarabinerConfigFile())
+	copyFileFromEmbedFS("karabiner/"+file, i.homeDir.KarabinerComplexModificationsDir()+"/"+file)
+	jq := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" '(.profiles[] | select(.name == \"%s\") | .complex_modifications.rules) += $rules[].rules' %s --slurpfile rules %s/%s >tmp && mv tmp %s", i.profileName, i.profileName, i.homeDir.KarabinerConfigFile(), i.homeDir.KarabinerComplexModificationsDir(), file, i.homeDir.KarabinerConfigFile())
 	i.run(jq)
 }
 
 func prepareForExternalMacKeyboard(i Installation) {
-	jq := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" '.profiles |= map(if .name == \"%s\" then walk(if type == \"object\" and .conditions then del(.conditions[] | select(.identifiers[]?.is_built_in_keyboard)) else . end) else . end)' %s --indent 4 >tmp && mv tmp %s", i.profileName, i.profileName, i.KarabinerConfigFile(), i.KarabinerConfigFile())
+	jq := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" '.profiles |= map(if .name == \"%s\" then walk(if type == \"object\" and .conditions then del(.conditions[] | select(.identifiers[]?.is_built_in_keyboard)) else . end) else . end)' %s --indent 4 >tmp && mv tmp %s", i.profileName, i.profileName, i.homeDir.KarabinerConfigFile(), i.homeDir.KarabinerConfigFile())
 	i.run(jq)
 }
 
@@ -685,4 +649,11 @@ func validateAll(params ...func() error) error {
 		}
 	}
 	return nil
+}
+
+func handleInterrupt(err error) {
+	if errors.Is(err, terminal.InterruptErr) {
+		fmt.Println("Quitting...")
+		os.Exit(1)
+	}
 }
