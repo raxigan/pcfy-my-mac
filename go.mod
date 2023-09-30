@@ -5,6 +5,7 @@ go 1.21.0
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.7
 	github.com/bitfield/script v0.22.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -17,6 +18,5 @@ require (
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/term v0.3.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 	mvdan.cc/sh/v3 v3.6.0 // indirect
 )

@@ -10,8 +10,7 @@ import (
 
 func TestInstallWithFirstOptionsFromPrompts(t *testing.T) {
 
-	i, _, _ := runInstaller(nil)
-	defer tearDown(i)
+	i, _, _ := runInstaller(t, nil)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-spotlight-default-pc.json"
@@ -22,8 +21,7 @@ func TestInstallWithFirstOptionsFromPrompts(t *testing.T) {
 func TestInstallFromYamlFile(t *testing.T) {
 
 	os.Args = []string{"script_name", "--params=params.yml"}
-	i, _, _ := runInstaller(nil)
-	defer tearDown(i)
+	i, _, _ := runInstaller(t, nil)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-alfred-warp-pc.json"
@@ -33,7 +31,7 @@ func TestInstallFromYamlFile(t *testing.T) {
 
 func TestInstallWarpAlfredPC(t *testing.T) {
 
-	yml := install.Trim(`
+	yml := trim(`
 		app-launcher: alfred
 		terminal: warp
 		keyboard-layout: pc
@@ -42,8 +40,7 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 		blacklist: [ com.apple.Preview ]`,
 	)
 
-	i, c, _ := runInstaller(&yml)
-	defer tearDown(i)
+	i, c, _ := runInstaller(t, &yml)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-alfred-warp-pc.json"
@@ -65,7 +62,7 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 
 func TestInstallNoneDefaultNone(t *testing.T) {
 
-	yml := install.Trim(`
+	yml := trim(`
 		app-launcher: None
 		terminal: Default
 		keyboard-layout: None
@@ -74,8 +71,7 @@ func TestInstallNoneDefaultNone(t *testing.T) {
 		blacklist: [ com.apple.Preview ]`,
 	)
 
-	i, c, _ := runInstaller(&yml)
-	defer tearDown(i)
+	i, c, _ := runInstaller(t, &yml)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-none-default-none.json"
@@ -97,7 +93,7 @@ func TestInstallNoneDefaultNone(t *testing.T) {
 
 func TestInstallItermSpotlightMac(t *testing.T) {
 
-	yml := install.Trim(`
+	yml := trim(`
 		app-launcher: spotlight
 		terminal: iterm
 		keyboard-layout: mac
@@ -106,8 +102,7 @@ func TestInstallItermSpotlightMac(t *testing.T) {
 		blacklist: [ ]`,
 	)
 
-	i, c, _ := runInstaller(&yml)
-	defer tearDown(i)
+	i, c, _ := runInstaller(t, &yml)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-spotlight-iterm-mac.json"
@@ -129,7 +124,7 @@ func TestInstallItermSpotlightMac(t *testing.T) {
 
 func TestInstallNoneLaunchpadPC(t *testing.T) {
 
-	yml := install.Trim(`
+	yml := trim(`
 		app-launcher: launchpad
 		terminal: warp
 		keyboard-layout: pc
@@ -138,8 +133,7 @@ func TestInstallNoneLaunchpadPC(t *testing.T) {
 		blacklist: [ ]`,
 	)
 
-	i, c, _ := runInstaller(&yml)
-	defer tearDown(i)
+	i, c, _ := runInstaller(t, &yml)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-launchpad-none-pc.json"
@@ -161,7 +155,7 @@ func TestInstallNoneLaunchpadPC(t *testing.T) {
 
 func TestInstallAllKeymaps(t *testing.T) {
 
-	yml := install.Trim(`
+	yml := trim(`
 		app-launcher: None
 		terminal: None
 		keyboard-layout: None
@@ -170,8 +164,7 @@ func TestInstallAllKeymaps(t *testing.T) {
 		blacklist: [ ]`,
 	)
 
-	i, c, _ := runInstaller(&yml)
-	defer tearDown(i)
+	i, c, _ := runInstaller(t, &yml)
 
 	AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJ()), i.IdeKeymapPaths(install.IntelliJ())[0])
 	AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJ()), i.IdeKeymapPaths(install.IntelliJ())[1])
@@ -194,10 +187,9 @@ func TestInstallAllKeymaps(t *testing.T) {
 
 func TestFailForUnknownParam(t *testing.T) {
 
-	yml := install.Trim(`unknown: hello`)
+	yml := trim(`unknown: hello`)
 
-	i, c, err := runInstaller(&yml)
-	defer tearDown(i)
+	_, c, err := runInstaller(t, &yml)
 
 	AssertErrorContains(t, err, "Unknown parameter: unknown")
 	AssertSlicesEqual(t, c.CommandsLog, []string{})
@@ -205,10 +197,9 @@ func TestFailForUnknownParam(t *testing.T) {
 
 func TestFailForInvalidYaml(t *testing.T) {
 
-	yml := install.Trim(`[] :app-launcher:`)
+	yml := trim(`[] :app-launcher:`)
 
-	i, c, err := runInstaller(&yml)
-	defer tearDown(i)
+	_, c, err := runInstaller(t, &yml)
 
 	AssertErrorContains(t, err, "cannot unmarshal !!seq into install.FileParams")
 	AssertSlicesEqual(t, c.CommandsLog, []string{})
@@ -217,8 +208,7 @@ func TestFailForInvalidYaml(t *testing.T) {
 func TestInstallYmlFileDoesNotExist(t *testing.T) {
 
 	os.Args = []string{"script_name", "--params=nope.yml"}
-	i, c, err := runInstaller(nil)
-	defer tearDown(i)
+	_, c, err := runInstaller(t, nil)
 
 	AssertErrorContains(t, err, "open nope.yml: no such file or directory")
 	AssertSlicesEqual(t, c.CommandsLog, []string{})
@@ -226,7 +216,7 @@ func TestInstallYmlFileDoesNotExist(t *testing.T) {
 
 func TestInstallEnableHomeAndEndKeys(t *testing.T) {
 
-	yml := install.Trim(`
+	yml := trim(`
 		app-launcher: None
 		terminal: None
 		keyboard-layout: None
@@ -235,18 +225,17 @@ func TestInstallEnableHomeAndEndKeys(t *testing.T) {
 		blacklist: [ ]`,
 	)
 
-	i, _, _ := runInstaller(&yml)
-	defer tearDown(i)
+	homeDir, _, _ := runInstaller(t, &yml)
 
 	actual := "../configs/system/DefaultKeyBinding.dict"
-	expected := i.LibraryDir() + "/KeyBindings/DefaultKeyBinding.dict"
+	expected := homeDir.LibraryDir() + "/KeyBindings/DefaultKeyBinding.dict"
 
 	AssertFilesEqual(t, actual, expected)
 }
 
 func TestInstallInvalidAppLauncher(t *testing.T) {
 
-	yml := install.Trim(`
+	yml := trim(`
 		app-launcher: Unknown
 		terminal: None
 		keyboard-layout: None
@@ -255,8 +244,7 @@ func TestInstallInvalidAppLauncher(t *testing.T) {
 		blacklist: [ ]`,
 	)
 
-	i, _, err := runInstaller(&yml)
-	defer tearDown(i)
+	_, _, err := runInstaller(t, &yml)
 
 	AssertErrorContains(t, err, `Invalid param 'app-launcher' value/s 'unknown', valid values:
 		spotlight
@@ -267,7 +255,7 @@ func TestInstallInvalidAppLauncher(t *testing.T) {
 
 func TestInstallInvalidTerminal(t *testing.T) {
 
-	yml := install.Trim(`
+	yml := trim(`
 		app-launcher: None
 		terminal: unknown
 		keyboard-layout: None
@@ -276,8 +264,7 @@ func TestInstallInvalidTerminal(t *testing.T) {
 		blacklist: [ ]`,
 	)
 
-	i, _, err := runInstaller(&yml)
-	defer tearDown(i)
+	_, _, err := runInstaller(t, &yml)
 
 	AssertErrorContains(t, err, `Invalid param 'terminal' value/s 'unknown', valid values:
 		default
@@ -288,7 +275,7 @@ func TestInstallInvalidTerminal(t *testing.T) {
 
 func TestInstallInvalidKeyboardLayout(t *testing.T) {
 
-	yml := install.Trim(`
+	yml := trim(`
 		app-launcher: None
 		terminal: None
 		keyboard-layout: unknown
@@ -297,8 +284,7 @@ func TestInstallInvalidKeyboardLayout(t *testing.T) {
 		blacklist: [ ]`,
 	)
 
-	i, _, err := runInstaller(&yml)
-	defer tearDown(i)
+	_, _, err := runInstaller(t, &yml)
 
 	AssertErrorContains(t, err, `Invalid param 'keyboard-layout' value/s 'unknown', valid values:
 		pc
@@ -307,7 +293,7 @@ func TestInstallInvalidKeyboardLayout(t *testing.T) {
 
 func TestInstallAdditionalOptions(t *testing.T) {
 
-	yml := install.Trim(`
+	yml := trim(`
 		app-launcher: alfred
 		terminal: warp
 		keyboard-layout: pc
@@ -322,8 +308,7 @@ func TestInstallAdditionalOptions(t *testing.T) {
 		blacklist: [ com.apple.Preview ]`,
 	)
 
-	i, c, _ := runInstaller(&yml)
-	defer tearDown(i)
+	i, c, _ := runInstaller(t, &yml)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-alfred-warp-pc.json"
@@ -349,10 +334,11 @@ func TestInstallAdditionalOptions(t *testing.T) {
 	})
 }
 
-func runInstaller(yml *string) (install.HomeDir, MockCommander, error) {
+func runInstaller(t *testing.T, yml *string) (install.HomeDir, MockCommander, error) {
 	commander := MockCommander{}
 	homeDir := testHomeDir()
 	err := install.RunInstaller(homeDir, &commander, FakeTimeProvider{}, yml)
+	t.Cleanup(func() { tearDown(homeDir) })
 	return homeDir, commander, err
 }
 

@@ -87,7 +87,3 @@ func replaceWordInFile(path, oldWord, newWord string) error {
 
 	return nil
 }
-
-func Trim(yaml string) string {
-	return strings.TrimSpace(strings.ReplaceAll(yaml, "\t", ""))
-}
