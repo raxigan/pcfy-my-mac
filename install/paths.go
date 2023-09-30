@@ -37,7 +37,7 @@ func (home HomeDir) ApplicationSupportDir() string {
 }
 
 func (home HomeDir) PreferencesDir() string {
-	return home.Path + "/Library/preferences"
+	return home.Path + "/Library/Preferences"
 }
 
 func (home HomeDir) LibraryDir() string {

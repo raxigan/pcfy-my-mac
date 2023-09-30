@@ -1,4 +1,4 @@
-package install_test
+package test_utils
 
 import (
 	"io"
@@ -7,13 +7,13 @@ import (
 	"strings"
 )
 
-func removeFiles(paths ...string) {
+func RemoveFiles(paths ...string) {
 	for _, path := range paths {
 		os.Remove(path)
 	}
 }
 
-func removeFilesWithExt(path, ext string) {
+func RemoveFilesWithExt(path, ext string) {
 	filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
 		if !info.IsDir() && strings.HasSuffix(filePath, ext) {
 			os.Remove(filePath)
@@ -22,7 +22,7 @@ func removeFilesWithExt(path, ext string) {
 	})
 }
 
-func copyFile(src, dst string) {
+func CopyFile(src, dst string) {
 	sourceFile, _ := os.Open(src)
 	defer sourceFile.Close()
 
@@ -32,6 +32,6 @@ func copyFile(src, dst string) {
 	io.Copy(destFile, sourceFile)
 }
 
-func trim(yaml string) string {
+func Trim(yaml string) string {
 	return strings.TrimSpace(strings.ReplaceAll(yaml, "\t", ""))
 }

@@ -30,10 +30,11 @@ type Commander interface {
 }
 
 type DefaultCommander struct {
+	Verbose bool
 }
 
 func (c DefaultCommander) Run(command string) {
-	fmt.Println("Running: " + command)
+	c.tryPrint("Running: " + command)
 
 	out, err := exec.Command("/bin/bash", "-c", command).CombinedOutput()
 
@@ -46,7 +47,7 @@ func (c DefaultCommander) Run(command string) {
 		}
 	}
 
-	fmt.Print(string(out))
+	c.tryPrint(string(out))
 }
 
 func (c DefaultCommander) Exists(command string) bool {
@@ -60,6 +61,12 @@ func (c DefaultCommander) Exists(command string) bool {
 
 func (c DefaultCommander) Exit(code int) {
 	os.Exit(code)
+}
+
+func (c DefaultCommander) tryPrint(output string) {
+	if c.Verbose {
+		fmt.Print(output)
+	}
 }
 
 func fileExists(filename string) bool {
@@ -86,4 +93,14 @@ func replaceWordInFile(path, oldWord, newWord string) error {
 	}
 
 	return nil
+}
+
+func TextFromFile(paramsFile string) (string, error) {
+	d, e := os.ReadFile(paramsFile)
+
+	if e != nil {
+		return "", e
+	}
+
+	return string(d), nil
 }

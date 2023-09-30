@@ -1,4 +1,4 @@
-package install_test
+package test_utils
 
 import (
 	"crypto/sha256"
@@ -46,7 +46,7 @@ func AssertErrorContains(t *testing.T, err error, expected string) {
 		t.Fatalf("")
 	}
 
-	if !strings.Contains(err.Error(), trim(expected)) {
+	if !strings.Contains(err.Error(), Trim(expected)) {
 		t.Fatalf(`EXPECTED: "%s" ACTUAL: "%s"`, err, expected)
 	}
 }

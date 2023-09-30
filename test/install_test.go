@@ -3,58 +3,38 @@ package install_test
 import (
 	"flag"
 	"github.com/raxigan/pcfy-my-mac/install"
+	"github.com/raxigan/pcfy-my-mac/test/test_utils"
 	"os"
 	"path/filepath"
 	"testing"
 )
 
-func TestInstallWithFirstOptionsFromPrompts(t *testing.T) {
-
-	i, _, _ := runInstaller(t, nil)
-
-	actual := i.KarabinerConfigFile()
-	expected := "expected/karabiner-expected-spotlight-default-pc.json"
-
-	AssertFilesEqual(t, actual, expected)
-}
-
-func TestInstallFromYamlFile(t *testing.T) {
-
-	os.Args = []string{"script_name", "--params=params.yml"}
-	i, _, _ := runInstaller(t, nil)
-
-	actual := i.KarabinerConfigFile()
-	expected := "expected/karabiner-expected-alfred-warp-pc.json"
-
-	AssertFilesEqual(t, actual, expected)
-}
-
 func TestInstallWarpAlfredPC(t *testing.T) {
 
-	yml := trim(`
-		app-launcher: alfred
-		terminal: warp
-		keyboard-layout: pc
-		ides: [ ]
-		additional-options: [ ]
-		blacklist: [ com.apple.Preview ]`,
-	)
+	params := install.Params{
+		AppLauncher:       "alfred",
+		Terminal:          "warp",
+		KeyboardLayout:    "pc",
+		Ides:              []install.IDE{},
+		Blacklist:         []string{},
+		AdditionalOptions: []string{},
+	}
 
-	i, c, _ := runInstaller(t, &yml)
+	i, c, _ := runInstaller(t, params)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-alfred-warp-pc.json"
 
-	AssertFilesEqual(t, actual, expected)
-	AssertSlicesEqual(t, c.CommandsLog, []string{
+	test_utils.AssertFilesEqual(t, actual, expected)
+	test_utils.AssertSlicesEqual(t, c.CommandsLog, []string{
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
 		"killall Rectangle",
-		"plutil -convert binary1 /homedir/Library/preferences/com.knollsoft.Rectangle.plist",
+		"plutil -convert binary1 /homedir/Library/Preferences/com.knollsoft.Rectangle.plist",
 		"defaults read com.knollsoft.Rectangle.plist",
 		"open -a Rectangle",
 		"killall AltTab",
-		"plutil -convert binary1 /homedir/Library/preferences/com.lwouis.alt-tab-macos.plist",
+		"plutil -convert binary1 /homedir/Library/Preferences/com.lwouis.alt-tab-macos.plist",
 		"defaults read com.lwouis.alt-tab-macos.plist",
 		"open -a AltTab",
 	})
@@ -62,30 +42,30 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 
 func TestInstallNoneDefaultNone(t *testing.T) {
 
-	yml := trim(`
-		app-launcher: None
-		terminal: Default
-		keyboard-layout: None
-		ides: [ ]
-		additional-options: [ ]
-		blacklist: [ com.apple.Preview ]`,
-	)
+	params := install.Params{
+		AppLauncher:       "none",
+		Terminal:          "default",
+		KeyboardLayout:    "none",
+		Ides:              []install.IDE{},
+		Blacklist:         []string{},
+		AdditionalOptions: []string{},
+	}
 
-	i, c, _ := runInstaller(t, &yml)
+	i, c, _ := runInstaller(t, params)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-none-default-none.json"
 
-	AssertFilesEqual(t, actual, expected)
-	AssertSlicesEqual(t, c.CommandsLog, []string{
+	test_utils.AssertFilesEqual(t, actual, expected)
+	test_utils.AssertSlicesEqual(t, c.CommandsLog, []string{
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
 		"killall Rectangle",
-		"plutil -convert binary1 /homedir/Library/preferences/com.knollsoft.Rectangle.plist",
+		"plutil -convert binary1 /homedir/Library/Preferences/com.knollsoft.Rectangle.plist",
 		"defaults read com.knollsoft.Rectangle.plist",
 		"open -a Rectangle",
 		"killall AltTab",
-		"plutil -convert binary1 /homedir/Library/preferences/com.lwouis.alt-tab-macos.plist",
+		"plutil -convert binary1 /homedir/Library/Preferences/com.lwouis.alt-tab-macos.plist",
 		"defaults read com.lwouis.alt-tab-macos.plist",
 		"open -a AltTab",
 	})
@@ -93,30 +73,30 @@ func TestInstallNoneDefaultNone(t *testing.T) {
 
 func TestInstallItermSpotlightMac(t *testing.T) {
 
-	yml := trim(`
-		app-launcher: spotlight
-		terminal: iterm
-		keyboard-layout: mac
-		ides: [ ]
-		additional-options: [ ]
-		blacklist: [ ]`,
-	)
+	params := install.Params{
+		AppLauncher:       "spotlight",
+		Terminal:          "iterm",
+		KeyboardLayout:    "mac",
+		Ides:              []install.IDE{},
+		Blacklist:         []string{},
+		AdditionalOptions: []string{},
+	}
 
-	i, c, _ := runInstaller(t, &yml)
+	i, c, _ := runInstaller(t, params)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-spotlight-iterm-mac.json"
 
-	AssertFilesEqual(t, actual, expected)
-	AssertSlicesEqual(t, c.CommandsLog, []string{
+	test_utils.AssertFilesEqual(t, actual, expected)
+	test_utils.AssertSlicesEqual(t, c.CommandsLog, []string{
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
 		"killall Rectangle",
-		"plutil -convert binary1 /homedir/Library/preferences/com.knollsoft.Rectangle.plist",
+		"plutil -convert binary1 /homedir/Library/Preferences/com.knollsoft.Rectangle.plist",
 		"defaults read com.knollsoft.Rectangle.plist",
 		"open -a Rectangle",
 		"killall AltTab",
-		"plutil -convert binary1 /homedir/Library/preferences/com.lwouis.alt-tab-macos.plist",
+		"plutil -convert binary1 /homedir/Library/Preferences/com.lwouis.alt-tab-macos.plist",
 		"defaults read com.lwouis.alt-tab-macos.plist",
 		"open -a AltTab",
 	})
@@ -124,30 +104,30 @@ func TestInstallItermSpotlightMac(t *testing.T) {
 
 func TestInstallNoneLaunchpadPC(t *testing.T) {
 
-	yml := trim(`
-		app-launcher: launchpad
-		terminal: warp
-		keyboard-layout: pc
-		ides: [ ]
-		additional-options: [ ]
-		blacklist: [ ]`,
-	)
+	params := install.Params{
+		AppLauncher:       "launchpad",
+		Terminal:          "warp",
+		KeyboardLayout:    "pc",
+		Ides:              []install.IDE{},
+		Blacklist:         []string{},
+		AdditionalOptions: []string{},
+	}
 
-	i, c, _ := runInstaller(t, &yml)
+	i, c, _ := runInstaller(t, params)
 
 	actual := i.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-launchpad-none-pc.json"
 
-	AssertFilesEqual(t, actual, expected)
-	AssertSlicesEqual(t, c.CommandsLog, []string{
+	test_utils.AssertFilesEqual(t, actual, expected)
+	test_utils.AssertSlicesEqual(t, c.CommandsLog, []string{
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
 		"killall Rectangle",
-		"plutil -convert binary1 /homedir/Library/preferences/com.knollsoft.Rectangle.plist",
+		"plutil -convert binary1 /homedir/Library/Preferences/com.knollsoft.Rectangle.plist",
 		"defaults read com.knollsoft.Rectangle.plist",
 		"open -a Rectangle",
 		"killall AltTab",
-		"plutil -convert binary1 /homedir/Library/preferences/com.lwouis.alt-tab-macos.plist",
+		"plutil -convert binary1 /homedir/Library/Preferences/com.lwouis.alt-tab-macos.plist",
 		"defaults read com.lwouis.alt-tab-macos.plist",
 		"open -a AltTab",
 	})
@@ -155,174 +135,84 @@ func TestInstallNoneLaunchpadPC(t *testing.T) {
 
 func TestInstallAllKeymaps(t *testing.T) {
 
-	yml := trim(`
-		app-launcher: None
-		terminal: None
-		keyboard-layout: None
-		ides: [ "all" ]
-		additional-options: [ ]
-		blacklist: [ ]`,
-	)
+	params := install.Params{
+		AppLauncher:       "none",
+		Terminal:          "none",
+		KeyboardLayout:    "none",
+		Ides:              []install.IDE{install.IntelliJ(), install.IntelliJCE(), install.PyCharm(), install.GoLand(), install.Fleet()},
+		Blacklist:         []string{},
+		AdditionalOptions: []string{},
+	}
 
-	i, c, _ := runInstaller(t, &yml)
+	i, c, _ := runInstaller(t, params)
 
-	AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJ()), i.IdeKeymapPaths(install.IntelliJ())[0])
-	AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJ()), i.IdeKeymapPaths(install.IntelliJ())[1])
-	AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJCE()), i.IdeKeymapPaths(install.IntelliJCE())[0])
-	AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.GoLand()), i.IdeKeymapPaths(install.GoLand())[0])
-	AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.Fleet()), i.IdeKeymapPaths(install.Fleet())[0])
-	AssertSlicesEqual(t, c.CommandsLog, []string{
+	test_utils.AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJ()), i.IdeKeymapPaths(install.IntelliJ())[0])
+	test_utils.AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJ()), i.IdeKeymapPaths(install.IntelliJ())[1])
+	test_utils.AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJCE()), i.IdeKeymapPaths(install.IntelliJCE())[0])
+	test_utils.AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.GoLand()), i.IdeKeymapPaths(install.GoLand())[0])
+	test_utils.AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.Fleet()), i.IdeKeymapPaths(install.Fleet())[0])
+	test_utils.AssertSlicesEqual(t, c.CommandsLog, []string{
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
 		"killall Rectangle",
-		"plutil -convert binary1 /homedir/Library/preferences/com.knollsoft.Rectangle.plist",
+		"plutil -convert binary1 /homedir/Library/Preferences/com.knollsoft.Rectangle.plist",
 		"defaults read com.knollsoft.Rectangle.plist",
 		"open -a Rectangle",
 		"killall AltTab",
-		"plutil -convert binary1 /homedir/Library/preferences/com.lwouis.alt-tab-macos.plist",
+		"plutil -convert binary1 /homedir/Library/Preferences/com.lwouis.alt-tab-macos.plist",
 		"defaults read com.lwouis.alt-tab-macos.plist",
 		"open -a AltTab",
 	})
 }
 
-func TestFailForUnknownParam(t *testing.T) {
-
-	yml := trim(`unknown: hello`)
-
-	_, c, err := runInstaller(t, &yml)
-
-	AssertErrorContains(t, err, "Unknown parameter: unknown")
-	AssertSlicesEqual(t, c.CommandsLog, []string{})
-}
-
-func TestFailForInvalidYaml(t *testing.T) {
-
-	yml := trim(`[] :app-launcher:`)
-
-	_, c, err := runInstaller(t, &yml)
-
-	AssertErrorContains(t, err, "cannot unmarshal !!seq into install.FileParams")
-	AssertSlicesEqual(t, c.CommandsLog, []string{})
-}
-
-func TestInstallYmlFileDoesNotExist(t *testing.T) {
-
-	os.Args = []string{"script_name", "--params=nope.yml"}
-	_, c, err := runInstaller(t, nil)
-
-	AssertErrorContains(t, err, "open nope.yml: no such file or directory")
-	AssertSlicesEqual(t, c.CommandsLog, []string{})
-}
-
 func TestInstallEnableHomeAndEndKeys(t *testing.T) {
 
-	yml := trim(`
-		app-launcher: None
-		terminal: None
-		keyboard-layout: None
-		ides: [ ]
-		additional-options: [ "Enable Home & End keys" ]
-		blacklist: [ ]`,
-	)
+	params := install.Params{
+		AppLauncher:       "none",
+		Terminal:          "none",
+		KeyboardLayout:    "none",
+		Ides:              []install.IDE{},
+		Blacklist:         []string{},
+		AdditionalOptions: []string{"Enable Home & End keys"},
+	}
 
-	homeDir, _, _ := runInstaller(t, &yml)
+	homeDir, _, _ := runInstaller(t, params)
 
 	actual := "../configs/system/DefaultKeyBinding.dict"
 	expected := homeDir.LibraryDir() + "/KeyBindings/DefaultKeyBinding.dict"
 
-	AssertFilesEqual(t, actual, expected)
-}
-
-func TestInstallInvalidAppLauncher(t *testing.T) {
-
-	yml := trim(`
-		app-launcher: Unknown
-		terminal: None
-		keyboard-layout: None
-		ides: [ ]
-		additional-options: [ ]
-		blacklist: [ ]`,
-	)
-
-	_, _, err := runInstaller(t, &yml)
-
-	AssertErrorContains(t, err, `Invalid param 'app-launcher' value/s 'unknown', valid values:
-		spotlight
-		launchpad
-		alfred
-		none`)
-}
-
-func TestInstallInvalidTerminal(t *testing.T) {
-
-	yml := trim(`
-		app-launcher: None
-		terminal: unknown
-		keyboard-layout: None
-		ides: [ ]
-		additional-options: [ ]
-		blacklist: [ ]`,
-	)
-
-	_, _, err := runInstaller(t, &yml)
-
-	AssertErrorContains(t, err, `Invalid param 'terminal' value/s 'unknown', valid values:
-		default
-		iterm
-		warp
-		none`)
-}
-
-func TestInstallInvalidKeyboardLayout(t *testing.T) {
-
-	yml := trim(`
-		app-launcher: None
-		terminal: None
-		keyboard-layout: unknown
-		ides: [ ]
-		additional-options: [ ]
-		blacklist: [ ]`,
-	)
-
-	_, _, err := runInstaller(t, &yml)
-
-	AssertErrorContains(t, err, `Invalid param 'keyboard-layout' value/s 'unknown', valid values:
-		pc
-		mac`)
+	test_utils.AssertFilesEqual(t, actual, expected)
 }
 
 func TestInstallAdditionalOptions(t *testing.T) {
 
-	yml := trim(`
-		app-launcher: alfred
-		terminal: warp
-		keyboard-layout: pc
-		ides: [ ]
-		additional-options:
-		- Enable Dock auto-hide (2s delay)
-		- Change Dock minimize animation to "scale"
-		- Enable Home & End keys
-		- Show hidden files in Finder
-		- Show directories on top in Finder
-		- Show full POSIX paths in Finder window title
-		blacklist: [ com.apple.Preview ]`,
-	)
+	params := install.Params{
+		AppLauncher:    "none",
+		Terminal:       "none",
+		KeyboardLayout: "none",
+		Ides:           []install.IDE{},
+		Blacklist:      []string{},
+		AdditionalOptions: []string{
+			"Enable Dock auto-hide (2s delay)",
+			`Change Dock minimize animation to "scale"`,
+			"Enable Home & End keys",
+			"Show hidden files in Finder",
+			"Show directories on top in Finder",
+			"Show full POSIX paths in Finder window title",
+		},
+	}
 
-	i, c, _ := runInstaller(t, &yml)
+	_, c, _ := runInstaller(t, params)
 
-	actual := i.KarabinerConfigFile()
-	expected := "expected/karabiner-expected-alfred-warp-pc.json"
-
-	AssertFilesEqual(t, actual, expected)
-	AssertSlicesEqual(t, c.CommandsLog, []string{
+	test_utils.AssertSlicesEqual(t, c.CommandsLog, []string{
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
 		"killall Rectangle",
-		"plutil -convert binary1 /homedir/Library/preferences/com.knollsoft.Rectangle.plist",
+		"plutil -convert binary1 /homedir/Library/Preferences/com.knollsoft.Rectangle.plist",
 		"defaults read com.knollsoft.Rectangle.plist",
 		"open -a Rectangle",
 		"killall AltTab",
-		"plutil -convert binary1 /homedir/Library/preferences/com.lwouis.alt-tab-macos.plist",
+		"plutil -convert binary1 /homedir/Library/Preferences/com.lwouis.alt-tab-macos.plist",
 		"defaults read com.lwouis.alt-tab-macos.plist",
 		"open -a AltTab",
 		"defaults write com.apple.dock autohide -bool true",
@@ -334,10 +224,10 @@ func TestInstallAdditionalOptions(t *testing.T) {
 	})
 }
 
-func runInstaller(t *testing.T, yml *string) (install.HomeDir, MockCommander, error) {
-	commander := MockCommander{}
+func runInstaller(t *testing.T, params install.Params) (install.HomeDir, test_utils.MockCommander, error) {
+	commander := test_utils.MockCommander{}
 	homeDir := testHomeDir()
-	err := install.RunInstaller(homeDir, &commander, FakeTimeProvider{}, yml)
+	err := install.RunInstaller(homeDir, &commander, test_utils.FakeTimeProvider{}, params)
 	t.Cleanup(func() { tearDown(homeDir) })
 	return homeDir, commander, err
 }
@@ -350,11 +240,11 @@ func testHomeDir() install.HomeDir {
 }
 
 func tearDown(i install.HomeDir) {
-	removeFiles(i.KarabinerConfigBackupFile(FakeTimeProvider{}.Now()))
-	removeFiles(i.IdesKeymapPaths(install.IDEKeymaps)...)
-	removeFilesWithExt(i.LibraryDir(), "plist")
-	removeFilesWithExt(i.LibraryDir(), "dict")
-	copyFile(karabinerTestDefaultConfig(i), i.KarabinerConfigFile())
+	test_utils.RemoveFiles(i.KarabinerConfigBackupFile(test_utils.FakeTimeProvider{}.Now()))
+	test_utils.RemoveFiles(i.IdesKeymapPaths(install.IDEKeymaps)...)
+	test_utils.RemoveFilesWithExt(i.LibraryDir(), "plist")
+	test_utils.RemoveFilesWithExt(i.LibraryDir(), "dict")
+	test_utils.CopyFile(karabinerTestDefaultConfig(i), i.KarabinerConfigFile())
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError) // reset flags
 }
 
