@@ -14,13 +14,18 @@ func main() {
 	paramsFile := flag.String("params", "", "YAML file with installer parameters")
 	flag.Parse()
 
-	yamlStr, err := install.TextFromFile(*paramsFile)
+	fileParams := install.FileParams{}
 
-	if err != nil {
-		log.Fatalf("Error: %s", err)
+	if *paramsFile != "" {
+		yamlStr, err := install.TextFromFile(*paramsFile)
+
+		if err != nil {
+			log.Fatalf("Error: %s", err)
+		}
+
+		fileParams, _ = install.CollectYamlParams(yamlStr)
 	}
 
-	fileParams, _ := install.CollectYamlParams(yamlStr)
 	params := install.CollectParams(fileParams)
 
 	handleError(
