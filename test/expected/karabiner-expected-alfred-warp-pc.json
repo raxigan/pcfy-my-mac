@@ -1938,7 +1938,7 @@
           ]
         }
       ],
-      "name": "PC mode GOLANG",
+      "name": "PCfy",
       "parameters": {
         "delay_milliseconds_before_open_device": 1000
       },

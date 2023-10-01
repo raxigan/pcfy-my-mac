@@ -11,11 +11,6 @@ import (
 	"time"
 )
 
-const Yellow = "\033[33m"
-const Red = "\033[31m"
-const Green = "\033[32m"
-const Reset = "\033[0m"
-
 type TimeProvider interface {
 	Now() time.Time
 }
@@ -31,6 +26,7 @@ type Commander interface {
 	Run(command string)
 	Exists(command string) bool
 	Exit(code int)
+	TryPrint(prefix, text string)
 }
 
 type DefaultCommander struct {
@@ -47,7 +43,7 @@ func NewDefaultCommander(verbose bool) *DefaultCommander {
 
 func (c *DefaultCommander) Run(command string) {
 
-	c.tryPrint("Running: " + command)
+	c.TryPrint(Colored(Green, "RUN"), command)
 
 	out, err := exec.Command("/bin/bash", "-c", command).CombinedOutput()
 
@@ -60,7 +56,7 @@ func (c *DefaultCommander) Run(command string) {
 		}
 	}
 
-	c.tryPrint(string(out))
+	c.TryPrint(Colored(Yellow, "SYSOUT"), string(out))
 }
 
 func (c *DefaultCommander) Exists(command string) bool {
@@ -76,46 +72,10 @@ func (c *DefaultCommander) Exit(code int) {
 	os.Exit(code)
 }
 
-func (c *DefaultCommander) tryPrint(output string) {
-	if !c.Verbose {
+func (c *DefaultCommander) TryPrint(prefix, output string) {
+	if !c.Verbose && c.Progress != nil {
 		c.Progress.Add(4)
 	} else if len(output) != 0 {
-		fmt.Println(output)
+		fmt.Println(fmt.Sprintf("[%s] %s", prefix, output))
 	}
-}
-
-func fileExists(filename string) bool {
-	_, err := os.Stat(filename)
-	return !os.IsNotExist(err)
-}
-
-func printColored(color, msg string) {
-	fmt.Println(color + msg + Reset)
-}
-
-func replaceWordInFile(path, oldWord, newWord string) error {
-
-	content, err := os.ReadFile(path)
-	if err != nil {
-		return err
-	}
-
-	modifiedContent := strings.ReplaceAll(string(content), oldWord, newWord)
-
-	err = os.WriteFile(path, []byte(modifiedContent), 0644)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func TextFromFile(paramsFile string) (string, error) {
-	d, e := os.ReadFile(paramsFile)
-
-	if e != nil {
-		return "", e
-	}
-
-	return string(d), nil
 }

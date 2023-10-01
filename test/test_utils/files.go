@@ -1,7 +1,6 @@
 package test_utils
 
 import (
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -20,16 +19,6 @@ func RemoveFilesWithExt(path, ext string) {
 		}
 		return nil
 	})
-}
-
-func CopyFile(src, dst string) {
-	sourceFile, _ := os.Open(src)
-	defer sourceFile.Close()
-
-	destFile, _ := os.Create(dst)
-	defer destFile.Close()
-
-	io.Copy(destFile, sourceFile)
 }
 
 func Trim(yaml string) string {

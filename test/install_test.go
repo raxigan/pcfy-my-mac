@@ -244,7 +244,7 @@ func tearDown(i install.HomeDir) {
 	test_utils.RemoveFiles(i.IdesKeymapPaths(install.IDEKeymaps)...)
 	test_utils.RemoveFilesWithExt(i.LibraryDir(), "plist")
 	test_utils.RemoveFilesWithExt(i.LibraryDir(), "dict")
-	test_utils.CopyFile(karabinerTestDefaultConfig(i), i.KarabinerConfigFile())
+	install.CopyFile(karabinerTestDefaultConfig(i), i.KarabinerConfigFile())
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError) // reset flags
 }
 

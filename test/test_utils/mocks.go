@@ -13,9 +13,12 @@ type MockCommander struct {
 	CommandsLog      []string
 }
 
+func (c *MockCommander) TryPrint(prefix, text string) {
+}
+
 func NewMockCommander() *MockCommander {
 	return &MockCommander{
-		DefaultCommander: install.NewDefaultCommander(false),
+		DefaultCommander: &install.DefaultCommander{Verbose: false},
 	}
 }
 
@@ -23,7 +26,7 @@ func (c *MockCommander) Run(command string) {
 
 	cmd := strings.Fields(command)[0]
 
-	fmt.Println("Running: " + command)
+	fmt.Println(fmt.Sprintf("[%s] %s", install.Colored(install.Green, "RUN"), command))
 
 	switch cmd {
 	case "jq":
