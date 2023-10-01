@@ -27,22 +27,16 @@ const (
 	Warp
 )
 
-func (me AppLauncher) String() string {
-	return [...]string{"Spotlight", "Launchpad", "Alfred"}[me]
+func (at AppLauncher) String() string {
+	return [...]string{"Spotlight", "Launchpad", "Alfred"}[at]
 }
 
-func (me KeyboardLayout) String() string {
-	return [...]string{"PC", "Mac"}[me]
+func (kl KeyboardLayout) String() string {
+	return [...]string{"PC", "Mac"}[kl]
 }
 
-func (me Terminal) String() string {
-	return [...]string{"Default", "iTerm", "Warp"}[me]
-}
-
-type MySurvey struct {
-	Message     string
-	Options     []string
-	Description func(value string, index int) string
+func (t Terminal) String() string {
+	return [...]string{"Default", "iTerm", "Warp"}[t]
 }
 
 type IDE struct {
@@ -57,9 +51,9 @@ type IDE struct {
 
 func IntelliJ() IDE {
 	return IDE{
-		parentDir:       "/Library/Application Support/JetBrains/",
+		parentDir:       "Library/Application Support/JetBrains/",
 		dir:             "IntelliJ",
-		keymapsDir:      "/keymaps",
+		keymapsDir:      "keymaps",
 		fullName:        "IntelliJ IDEA Ultimate",
 		srcKeymapsFile:  "idea.xml",
 		destKeymapsFile: "intellij-idea-ultimate.xml",
@@ -69,9 +63,9 @@ func IntelliJ() IDE {
 
 func IntelliJCE() IDE {
 	return IDE{
-		parentDir:       "/Library/Application Support/JetBrains/",
+		parentDir:       "Library/Application Support/JetBrains/",
 		dir:             "IdeaIC",
-		keymapsDir:      "/keymaps",
+		keymapsDir:      "keymaps",
 		fullName:        "IntelliJ IDEA CE",
 		srcKeymapsFile:  "idea.xml",
 		destKeymapsFile: "intellij-idea-community-edition.xml",
@@ -81,9 +75,9 @@ func IntelliJCE() IDE {
 
 func PyCharm() IDE {
 	return IDE{
-		parentDir:       "/Library/Application Support/JetBrains/",
+		parentDir:       "Library/Application Support/JetBrains/",
 		dir:             "PyCharmCE",
-		keymapsDir:      "/keymaps",
+		keymapsDir:      "keymaps",
 		fullName:        "PyCharm CE",
 		srcKeymapsFile:  "idea.xml",
 		destKeymapsFile: "pycharm-community-edition.xml",
@@ -93,9 +87,9 @@ func PyCharm() IDE {
 
 func GoLand() IDE {
 	return IDE{
-		parentDir:       "/Library/Application Support/JetBrains/",
+		parentDir:       "Library/Application Support/JetBrains/",
 		dir:             "GoLand",
-		keymapsDir:      "/keymaps",
+		keymapsDir:      "keymaps",
 		fullName:        "GoLand",
 		srcKeymapsFile:  "idea.xml",
 		destKeymapsFile: "goland.xml",
@@ -107,7 +101,7 @@ func Fleet() IDE {
 	return IDE{
 		parentDir:       "",
 		dir:             ".fleet",
-		keymapsDir:      "/keymap",
+		keymapsDir:      "keymap",
 		fullName:        "Fleet",
 		srcKeymapsFile:  "fleet.json",
 		destKeymapsFile: "user.json",
@@ -122,17 +116,6 @@ var SystemSettings = []string{
 	"Show hidden files in Finder",
 	"Show directories on top in Finder",
 	"Show full POSIX paths in Finder window title",
-}
-
-func IdeKeymapsSurveyOptions() []string {
-
-	var options []string
-
-	for _, e := range IDEKeymaps {
-		options = append(options, e.fullName)
-	}
-
-	return options
 }
 
 func IdeKeymapOptions() []string {

@@ -1,10 +1,10 @@
 Output demo.gif
 Set Padding 14
 Set TypingSpeed 100ms
-Set FontSize 12
+Set FontSize 14
 Set LineHeight 1.6
-Set Width 800
-Set Height 380
+Set Width 1000
+Set Height 370
 
 # Run pcfy
 Sleep 1500ms

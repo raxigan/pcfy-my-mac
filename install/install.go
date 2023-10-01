@@ -27,7 +27,7 @@ type Params struct {
 	AppLauncher    string
 	Terminal       string
 	KeyboardLayout string
-	Ides           []IDE
+	Ides           []string
 	SystemSettings []string
 	Blacklist      []string
 }
@@ -107,29 +107,6 @@ func CollectYamlParams(yml string) (FileParams, error) {
 	}, nil
 }
 
-func makeSurvey(s MySurvey) string {
-
-	appLauncher := ""
-
-	prompt := &survey.Select{
-		Message: s.Message,
-		Options: append(s.Options, "None"),
-		Default: s.Options[0],
-	}
-
-	appLauncher = strings.TrimSpace(appLauncher)
-
-	handleInterrupt(survey.AskOne(prompt, &appLauncher, survey.WithValidator(survey.Required)))
-
-	return strings.ToLower(strings.TrimSpace(appLauncher))
-}
-
-func makeMultiSelect(s survey.MultiSelect) []string {
-	var opt []string
-	handleInterrupt(survey.AskOne(&s, &opt, survey.WithRemoveSelectAll(), survey.WithRemoveSelectNone()))
-	return opt
-}
-
 func RunInstaller(homeDir HomeDir, commander Commander, tp TimeProvider, params Params) error {
 
 	installation := Installation{
@@ -141,134 +118,45 @@ func RunInstaller(homeDir HomeDir, commander Commander, tp TimeProvider, params 
 	return installation.install(params, homeDir)
 }
 
-func CollectParams(params FileParams) Params {
+func CollectParams(fileParams FileParams) Params {
 
-	var app string
-	var term string
-	var kbType string
-	var idesToInstall []IDE
-	var blacklist []string
+	questionsToAsk := questions
 
-	appLauncherSurvey := MySurvey{
-		Message: "Your App Launcher (Win/Opt key):",
-		Options: []string{Spotlight.String(), Launchpad.String(), Alfred.String()},
+	params := Params{}
+
+	if fileParams.AppLauncher != nil {
+		params.AppLauncher = *fileParams.AppLauncher
+		questionsToAsk = slices.DeleteFunc(questionsToAsk, func(e *survey.Question) bool { return e.Name == "appLauncher" })
 	}
 
-	terminalSurvey := MySurvey{
-		Message: "Your Terminal (Ctrl+Alt+T/Ctrl+Cmd+T shortcut):",
-		Options: []string{Default.String(), iTerm.String(), Warp.String()},
+	if fileParams.Terminal != nil {
+		params.Terminal = *fileParams.Terminal
+		questionsToAsk = slices.DeleteFunc(questionsToAsk, func(e *survey.Question) bool { return e.Name == "terminal" })
 	}
 
-	kbTypeSurvey := MySurvey{
-		Message: "Your external keyboard layout:",
-		Options: []string{PC.String(), Mac.String()},
+	if fileParams.KeyboardLayout != nil {
+		params.KeyboardLayout = *fileParams.KeyboardLayout
+		questionsToAsk = slices.DeleteFunc(questionsToAsk, func(e *survey.Question) bool { return e.Name == "keyboardLayout" })
 	}
 
-	if params.AppLauncher == nil {
-		app = makeSurvey(appLauncherSurvey)
-	} else {
-		app = *params.AppLauncher
+	if fileParams.Ides != nil {
+		params.Ides = *fileParams.Ides
+		questionsToAsk = slices.DeleteFunc(questionsToAsk, func(e *survey.Question) bool { return e.Name == "ides" })
 	}
 
-	if params.Terminal == nil {
-		term = makeSurvey(terminalSurvey)
-	} else {
-		term = *params.Terminal
+	if fileParams.Blacklist != nil {
+		params.Blacklist = *fileParams.Blacklist
+		questionsToAsk = slices.DeleteFunc(questionsToAsk, func(e *survey.Question) bool { return e.Name == "blacklist" })
 	}
 
-	if params.KeyboardLayout == nil {
-		kbType = makeSurvey(kbTypeSurvey)
-	} else {
-		kbType = *params.KeyboardLayout
+	if fileParams.SystemSettings != nil {
+		params.SystemSettings = *fileParams.SystemSettings
+		questionsToAsk = slices.DeleteFunc(questionsToAsk, func(e *survey.Question) bool { return e.Name == "systemSettings" })
 	}
 
-	if params.Ides == nil {
+	handleInterrupt(survey.Ask(questionsToAsk, &params, survey.WithRemoveSelectAll(), survey.WithRemoveSelectNone()))
 
-		ideSurvey := survey.MultiSelect{
-			Message: "IDE keymaps to install:",
-			Options: IdeKeymapsSurveyOptions(),
-			Help:    "help",
-		}
-
-		fullNames := makeMultiSelect(ideSurvey)
-
-		for _, e := range fullNames {
-			name, _ := IdeKeymapByFullName(e)
-			idesToInstall = append(idesToInstall, name)
-		}
-	} else {
-
-		if slices.Contains(*params.Ides, "all") {
-			idesToInstall = IDEKeymaps
-		} else {
-
-			var idesFromFlags []IDE
-
-			for _, e := range *params.Ides {
-				if e != "" {
-					byFlag, _ := IdeKeymapByFullName(e)
-					idesFromFlags = append(idesFromFlags, byFlag)
-				}
-			}
-
-			idesToInstall = idesFromFlags
-		}
-	}
-
-	if params.Blacklist == nil {
-
-		msBlacklist := survey.MultiSelect{
-			Message: "Apps to blacklist:",
-			Options: []string{
-				"Spotify",
-				"Finder",
-				"System Preferences",
-			},
-			Help: "help",
-		}
-
-		blacklist = makeMultiSelect(msBlacklist)
-	} else {
-		blacklist = *params.Blacklist
-	}
-
-	var options []string
-
-	if params.SystemSettings == nil {
-
-		ms := survey.MultiSelect{
-			Message: "System settings:",
-			Options: []string{
-				"Enable Dock auto-hide (2s delay)",
-				`Change Dock minimize animation to "scale"`,
-				"Enable Home & End keys",
-				"Show hidden files in Finder",
-				"Show directories on top in Finder",
-				"Show full POSIX paths in Finder",
-			},
-			Description: func(value string, index int) string {
-				if index < 2 {
-					return "Recommended"
-				}
-				return ""
-			},
-			Help:     "help",
-			PageSize: 15,
-		}
-
-		options = makeMultiSelect(ms)
-	} else {
-		options = *params.SystemSettings
-	}
-
-	return Params{
-		AppLauncher:    app,
-		Terminal:       term,
-		KeyboardLayout: kbType,
-		Ides:           idesToInstall,
-		SystemSettings: options,
-		Blacklist:      blacklist,
-	}
+	return params
 }
 
 func (i Installation) install(params Params, home HomeDir) error {
@@ -359,12 +247,13 @@ func (i Installation) install(params Params, home HomeDir) error {
 	i.Run("open -a Karabiner-Elements")
 
 	for _, ide := range params.Ides {
-		i.installIdeKeymap(home, ide)
+		name, _ := IdeKeymapByFullName(ide)
+		i.installIdeKeymap(home, name)
 	}
 
 	i.Run("killall Rectangle")
 
-	rectanglePlist := home.PreferencesDir() + "/com.knollsoft.Rectangle.plist"
+	rectanglePlist := filepath.Join(home.PreferencesDir(), "com.knollsoft.Rectangle.plist")
 	copyFileFromEmbedFS("rectangle/Settings.xml", rectanglePlist)
 
 	plutilCmdRectangle := fmt.Sprintf("plutil -convert binary1 %s", rectanglePlist)
@@ -374,7 +263,7 @@ func (i Installation) install(params Params, home HomeDir) error {
 
 	i.Run("killall AltTab")
 
-	altTabPlist := home.PreferencesDir() + "/com.lwouis.alt-tab-macos.plist"
+	altTabPlist := filepath.Join(home.PreferencesDir(), "/com.lwouis.alt-tab-macos.plist")
 	copyFileFromEmbedFS("alt-tab/Settings.xml", altTabPlist)
 
 	// set up blacklist
@@ -476,13 +365,9 @@ func (i Installation) installIdeKeymap(home HomeDir, ide IDE) error {
 	var destDirs []string
 
 	if ide.multipleDirs {
-		a := home.IdeKeymapPaths(ide)
-
-		destDirs = a
+		destDirs = home.IdeKeymapPaths(ide)
 	} else {
-		destDirs = []string{
-			home.Path + "/" + ide.parentDir + "/" + ide.dir + "/" + ide.keymapsDir + "/" + ide.destKeymapsFile,
-		}
+		destDirs = []string{filepath.Join(home.Path, ide.parentDir, ide.dir, ide.keymapsDir, ide.destKeymapsFile)}
 	}
 
 	if len(destDirs) == 0 {
@@ -523,26 +408,6 @@ func findMatchingDirs(basePath, namePrefix, subDir, fileName string) ([]string, 
 	})
 
 	return result, err
-}
-
-func (home HomeDir) IdeKeymapPaths(ide IDE) []string {
-	return home.IdesKeymapPaths([]IDE{ide})
-}
-
-func (home HomeDir) IdesKeymapPaths(ide []IDE) []string {
-
-	var result []string
-
-	for _, e := range ide {
-
-		dirs, _ := findMatchingDirs(home.Path+e.parentDir, e.dir, e.keymapsDir, e.destKeymapsFile)
-
-		for _, e1 := range dirs {
-			result = append(result, e1)
-		}
-	}
-
-	return result
 }
 
 func (i Installation) applyRules(home HomeDir, file string) {

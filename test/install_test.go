@@ -15,7 +15,7 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 		AppLauncher:    "alfred",
 		Terminal:       "warp",
 		KeyboardLayout: "pc",
-		Ides:           []install.IDE{},
+		Ides:           []string{},
 		Blacklist:      []string{},
 		SystemSettings: []string{},
 	}
@@ -46,7 +46,7 @@ func TestInstallNoneDefaultNone(t *testing.T) {
 		AppLauncher:    "none",
 		Terminal:       "default",
 		KeyboardLayout: "none",
-		Ides:           []install.IDE{},
+		Ides:           []string{},
 		Blacklist:      []string{},
 		SystemSettings: []string{},
 	}
@@ -77,7 +77,7 @@ func TestInstallItermSpotlightMac(t *testing.T) {
 		AppLauncher:    "spotlight",
 		Terminal:       "iterm",
 		KeyboardLayout: "mac",
-		Ides:           []install.IDE{},
+		Ides:           []string{},
 		Blacklist:      []string{},
 		SystemSettings: []string{},
 	}
@@ -108,7 +108,7 @@ func TestInstallNoneLaunchpadPC(t *testing.T) {
 		AppLauncher:    "launchpad",
 		Terminal:       "warp",
 		KeyboardLayout: "pc",
-		Ides:           []install.IDE{},
+		Ides:           []string{},
 		Blacklist:      []string{},
 		SystemSettings: []string{},
 	}
@@ -139,18 +139,18 @@ func TestInstallAllKeymaps(t *testing.T) {
 		AppLauncher:    "none",
 		Terminal:       "none",
 		KeyboardLayout: "none",
-		Ides:           []install.IDE{install.IntelliJ(), install.IntelliJCE(), install.PyCharm(), install.GoLand(), install.Fleet()},
+		Ides:           install.IdeKeymapOptions(),
 		Blacklist:      []string{},
 		SystemSettings: []string{},
 	}
 
 	i, c, _ := runInstaller(t, params)
 
-	test_utils.AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJ()), i.IdeKeymapPaths(install.IntelliJ())[0])
-	test_utils.AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJ()), i.IdeKeymapPaths(install.IntelliJ())[1])
-	test_utils.AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.IntelliJCE()), i.IdeKeymapPaths(install.IntelliJCE())[0])
-	test_utils.AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.GoLand()), i.IdeKeymapPaths(install.GoLand())[0])
-	test_utils.AssertFilesEqual(t, "../configs/"+i.SourceKeymap(install.Fleet()), i.IdeKeymapPaths(install.Fleet())[0])
+	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(install.IntelliJ())), i.IdeKeymapPaths(install.IntelliJ())[0])
+	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(install.IntelliJ())), i.IdeKeymapPaths(install.IntelliJ())[1])
+	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(install.IntelliJCE())), i.IdeKeymapPaths(install.IntelliJCE())[0])
+	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(install.GoLand())), i.IdeKeymapPaths(install.GoLand())[0])
+	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(install.Fleet())), i.IdeKeymapPaths(install.Fleet())[0])
 	test_utils.AssertSlicesEqual(t, c.CommandsLog, []string{
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
@@ -171,7 +171,7 @@ func TestInstallEnableHomeAndEndKeys(t *testing.T) {
 		AppLauncher:    "none",
 		Terminal:       "none",
 		KeyboardLayout: "none",
-		Ides:           []install.IDE{},
+		Ides:           []string{},
 		Blacklist:      []string{},
 		SystemSettings: []string{"Enable Home & End keys"},
 	}
@@ -179,7 +179,7 @@ func TestInstallEnableHomeAndEndKeys(t *testing.T) {
 	homeDir, _, _ := runInstaller(t, params)
 
 	actual := "../configs/system/DefaultKeyBinding.dict"
-	expected := homeDir.LibraryDir() + "/KeyBindings/DefaultKeyBinding.dict"
+	expected := filepath.Join(homeDir.LibraryDir(), "KeyBindings/DefaultKeyBinding.dict")
 
 	test_utils.AssertFilesEqual(t, actual, expected)
 }
@@ -190,7 +190,7 @@ func TestInstallSystemSettings(t *testing.T) {
 		AppLauncher:    "none",
 		Terminal:       "none",
 		KeyboardLayout: "none",
-		Ides:           []install.IDE{},
+		Ides:           []string{},
 		Blacklist:      []string{},
 		SystemSettings: []string{
 			"Enable Dock auto-hide (2s delay)",
@@ -249,5 +249,5 @@ func tearDown(i install.HomeDir) {
 }
 
 func karabinerTestDefaultConfig(i install.HomeDir) string {
-	return i.KarabinerConfigDir() + "/karabiner-default.json"
+	return filepath.Join(i.KarabinerConfigDir(), "karabiner-default.json")
 }
