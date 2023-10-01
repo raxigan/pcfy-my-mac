@@ -115,7 +115,7 @@ func Fleet() IDE {
 }
 
 var IDEKeymaps = []IDE{IntelliJ(), IntelliJCE(), PyCharm(), GoLand(), Fleet()}
-var AdditionalOptions = []string{
+var SystemSettings = []string{
 	"Enable Dock auto-hide (2s delay)",
 	`Change Dock minimize animation to "scale"`,
 	"Enable Home & End keys",

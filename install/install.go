@@ -24,12 +24,12 @@ func copyFileFromEmbedFS(src, dst string) error {
 }
 
 type Params struct {
-	AppLauncher       string
-	Terminal          string
-	KeyboardLayout    string
-	Ides              []IDE
-	AdditionalOptions []string
-	Blacklist         []string
+	AppLauncher    string
+	Terminal       string
+	KeyboardLayout string
+	Ides           []IDE
+	SystemSettings []string
+	Blacklist      []string
 }
 
 type Installation struct {
@@ -39,13 +39,13 @@ type Installation struct {
 }
 
 type FileParams struct {
-	AppLauncher       *string `yaml:"app-launcher"`
-	Terminal          *string
-	KeyboardLayout    *string `yaml:"keyboard-layout"`
-	Ides              *[]string
-	AdditionalOptions *[]string `yaml:"additional-options"`
-	Blacklist         *[]string
-	Extra             map[string]string `yaml:",inline"`
+	AppLauncher    *string `yaml:"app-launcher"`
+	Terminal       *string
+	KeyboardLayout *string `yaml:"keyboard-layout"`
+	Ides           *[]string
+	SystemSettings *[]string `yaml:"system-settings"`
+	Blacklist      *[]string
+	Extra          map[string]string `yaml:",inline"`
 }
 
 func CollectYamlParams(yml string) (FileParams, error) {
@@ -89,7 +89,7 @@ func CollectYamlParams(yml string) (FileParams, error) {
 			return validateParamValues("ides", fp.Ides, append(IdeKeymapOptions(), []string{"all"}...))
 		},
 		func() error {
-			return validateParamValues("additional-options", fp.AdditionalOptions, AdditionalOptions)
+			return validateParamValues("system-settings", fp.SystemSettings, SystemSettings)
 		},
 	)
 
@@ -98,12 +98,12 @@ func CollectYamlParams(yml string) (FileParams, error) {
 	}
 
 	return FileParams{
-		AppLauncher:       fp.AppLauncher,
-		Terminal:          fp.Terminal,
-		KeyboardLayout:    fp.KeyboardLayout,
-		Ides:              fp.Ides,
-		AdditionalOptions: fp.AdditionalOptions,
-		Blacklist:         fp.Blacklist,
+		AppLauncher:    fp.AppLauncher,
+		Terminal:       fp.Terminal,
+		KeyboardLayout: fp.KeyboardLayout,
+		Ides:           fp.Ides,
+		SystemSettings: fp.SystemSettings,
+		Blacklist:      fp.Blacklist,
 	}, nil
 }
 
@@ -125,9 +125,9 @@ func makeSurvey(s MySurvey) string {
 }
 
 func makeMultiSelect(s survey.MultiSelect) []string {
-	var appLauncher []string
-	handleInterrupt(survey.AskOne(&s, &appLauncher))
-	return appLauncher
+	var opt []string
+	handleInterrupt(survey.AskOne(&s, &opt, survey.WithRemoveSelectAll(), survey.WithRemoveSelectNone()))
+	return opt
 }
 
 func RunInstaller(homeDir HomeDir, commander Commander, tp TimeProvider, params Params) error {
@@ -150,12 +150,12 @@ func CollectParams(params FileParams) Params {
 	var blacklist []string
 
 	appLauncherSurvey := MySurvey{
-		Message: "App Launcher (will be available with Win(⊞)/Opt(⌥) key):",
+		Message: "Your App Launcher (Win/Opt key):",
 		Options: []string{Spotlight.String(), Launchpad.String(), Alfred.String()},
 	}
 
 	terminalSurvey := MySurvey{
-		Message: "What is your terminal of choice (will be available with Ctrl+Alt+T/Ctrl+Cmd+T shortcut):",
+		Message: "Your Terminal (Ctrl+Alt+T/Ctrl+Cmd+T shortcut):",
 		Options: []string{Default.String(), iTerm.String(), Warp.String()},
 	}
 
@@ -218,7 +218,7 @@ func CollectParams(params FileParams) Params {
 	if params.Blacklist == nil {
 
 		msBlacklist := survey.MultiSelect{
-			Message: "Select apps to be blacklisted:",
+			Message: "Apps to blacklist:",
 			Options: []string{
 				"Spotify",
 				"Finder",
@@ -234,10 +234,10 @@ func CollectParams(params FileParams) Params {
 
 	var options []string
 
-	if params.AdditionalOptions == nil {
+	if params.SystemSettings == nil {
 
 		ms := survey.MultiSelect{
-			Message: "Select additional options:",
+			Message: "System settings:",
 			Options: []string{
 				"Enable Dock auto-hide (2s delay)",
 				`Change Dock minimize animation to "scale"`,
@@ -258,16 +258,16 @@ func CollectParams(params FileParams) Params {
 
 		options = makeMultiSelect(ms)
 	} else {
-		options = *params.AdditionalOptions
+		options = *params.SystemSettings
 	}
 
 	return Params{
-		AppLauncher:       app,
-		Terminal:          term,
-		KeyboardLayout:    kbType,
-		Ides:              idesToInstall,
-		AdditionalOptions: options,
-		Blacklist:         blacklist,
+		AppLauncher:    app,
+		Terminal:       term,
+		KeyboardLayout: kbType,
+		Ides:           idesToInstall,
+		SystemSettings: options,
+		Blacklist:      blacklist,
 	}
 }
 
@@ -324,7 +324,7 @@ func (i Installation) install(params Params, home HomeDir) error {
 					copyFileFromEmbedFS("alfred/prefs.plist", e)
 				}
 			} else {
-				printColored(YELLOW, fmt.Sprintf("Alfred app not found. Skipping..."))
+				printColored(Yellow, fmt.Sprintf("Alfred app not found. Skipping..."))
 			}
 		}
 	}
@@ -341,14 +341,14 @@ func (i Installation) install(params Params, home HomeDir) error {
 		if i.Exists("iTerm.app") {
 			i.applyRules(home, "iterm.json")
 		} else {
-			printColored(YELLOW, fmt.Sprintf("iTerm app not found. Skipping..."))
+			printColored(Yellow, fmt.Sprintf("iTerm app not found. Skipping..."))
 		}
 	case "warp":
 		{
 			if i.Exists("Warp.app") {
 				i.applyRules(home, "warp.json")
 			} else {
-				printColored(YELLOW, fmt.Sprintf("Warp app not found. Skipping..."))
+				printColored(Yellow, fmt.Sprintf("Warp app not found. Skipping..."))
 			}
 		}
 	}
@@ -395,7 +395,7 @@ func (i Installation) install(params Params, home HomeDir) error {
 	i.Run("open -a AltTab")
 
 	optionsMap := make(map[string]bool)
-	for _, value := range params.AdditionalOptions {
+	for _, value := range params.SystemSettings {
 		optionsMap[strings.ToLower(value)] = true
 	}
 
@@ -403,15 +403,19 @@ func (i Installation) install(params Params, home HomeDir) error {
 		i.Run("defaults write com.apple.dock autohide -bool true")
 		i.Run("defaults write com.apple.dock autohide-delay -float 2 && killall Dock")
 	}
+
 	if optionsMap[`change dock minimize animation to "scale"`] {
 		i.Run(`defaults write com.apple.dock "mineffect" -string "scale" && killall Dock`)
 	}
+
 	if optionsMap["enable home & end keys"] {
 		copyFileFromEmbedFS("system/DefaultKeyBinding.dict", home.LibraryDir()+"/KeyBindings/DefaultKeyBinding.dict")
 	}
+
 	if optionsMap["show hidden files in finder"] {
 		i.Run("defaults write com.apple.finder AppleShowAllFiles -bool true")
 	}
+
 	if optionsMap["show directories on top in finder"] {
 		i.Run("defaults write com.apple.finder _FXSortFoldersFirst -bool true")
 	}
@@ -419,7 +423,7 @@ func (i Installation) install(params Params, home HomeDir) error {
 		i.Run("defaults write com.apple.finder _FXShowPosixPathInTitle -bool true")
 	}
 
-	fmt.Println("SUCCESS")
+	printColored(Green, "PC'fied!")
 
 	return nil
 }
@@ -482,7 +486,7 @@ func (i Installation) installIdeKeymap(home HomeDir, ide IDE) error {
 	}
 
 	if len(destDirs) == 0 {
-		printColored(YELLOW, fmt.Sprintf("%s not found. Skipping...", ide.fullName))
+		printColored(Yellow, fmt.Sprintf("%s not found. Skipping...", ide.fullName))
 		return nil
 	}
 

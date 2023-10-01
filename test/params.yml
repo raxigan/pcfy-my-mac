@@ -3,5 +3,5 @@ terminal: warp
 keyboard-layout: pc
 ides:
   - Fleet
-additional-options: [ ]
+system-settings: [ ]
 blacklist: [ ]

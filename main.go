@@ -29,7 +29,7 @@ func main() {
 	params := install.CollectParams(fileParams)
 
 	handleError(
-		install.RunInstaller(install.DefaultHomeDir(), install.DefaultCommander{Verbose: *verbose}, install.DefaultTimeProvider{}, params),
+		install.RunInstaller(install.DefaultHomeDir(), install.NewDefaultCommander(*verbose), install.DefaultTimeProvider{}, params),
 	)
 }
 

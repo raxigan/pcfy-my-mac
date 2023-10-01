@@ -9,7 +9,14 @@ import (
 )
 
 type MockCommander struct {
-	CommandsLog []string
+	DefaultCommander *install.DefaultCommander
+	CommandsLog      []string
+}
+
+func NewMockCommander() *MockCommander {
+	return &MockCommander{
+		DefaultCommander: install.NewDefaultCommander(false),
+	}
 }
 
 func (c *MockCommander) Run(command string) {
@@ -20,7 +27,7 @@ func (c *MockCommander) Run(command string) {
 
 	switch cmd {
 	case "jq":
-		install.DefaultCommander{}.Run(command)
+		c.DefaultCommander.Run(command)
 	case "killall", "open", "clear", "defaults", "brew":
 		c.CommandsLog = append(c.CommandsLog, command)
 	case "plutil":

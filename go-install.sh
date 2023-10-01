@@ -32,7 +32,7 @@ install_brew() {
 
     exit 1
   else
-    echo "${GREEN}brew installed"
+    echo "${GREEN}brew installed${RESET}"
   fi
 }
 

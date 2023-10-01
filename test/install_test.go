@@ -12,12 +12,12 @@ import (
 func TestInstallWarpAlfredPC(t *testing.T) {
 
 	params := install.Params{
-		AppLauncher:       "alfred",
-		Terminal:          "warp",
-		KeyboardLayout:    "pc",
-		Ides:              []install.IDE{},
-		Blacklist:         []string{},
-		AdditionalOptions: []string{},
+		AppLauncher:    "alfred",
+		Terminal:       "warp",
+		KeyboardLayout: "pc",
+		Ides:           []install.IDE{},
+		Blacklist:      []string{},
+		SystemSettings: []string{},
 	}
 
 	i, c, _ := runInstaller(t, params)
@@ -43,12 +43,12 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 func TestInstallNoneDefaultNone(t *testing.T) {
 
 	params := install.Params{
-		AppLauncher:       "none",
-		Terminal:          "default",
-		KeyboardLayout:    "none",
-		Ides:              []install.IDE{},
-		Blacklist:         []string{},
-		AdditionalOptions: []string{},
+		AppLauncher:    "none",
+		Terminal:       "default",
+		KeyboardLayout: "none",
+		Ides:           []install.IDE{},
+		Blacklist:      []string{},
+		SystemSettings: []string{},
 	}
 
 	i, c, _ := runInstaller(t, params)
@@ -74,12 +74,12 @@ func TestInstallNoneDefaultNone(t *testing.T) {
 func TestInstallItermSpotlightMac(t *testing.T) {
 
 	params := install.Params{
-		AppLauncher:       "spotlight",
-		Terminal:          "iterm",
-		KeyboardLayout:    "mac",
-		Ides:              []install.IDE{},
-		Blacklist:         []string{},
-		AdditionalOptions: []string{},
+		AppLauncher:    "spotlight",
+		Terminal:       "iterm",
+		KeyboardLayout: "mac",
+		Ides:           []install.IDE{},
+		Blacklist:      []string{},
+		SystemSettings: []string{},
 	}
 
 	i, c, _ := runInstaller(t, params)
@@ -105,12 +105,12 @@ func TestInstallItermSpotlightMac(t *testing.T) {
 func TestInstallNoneLaunchpadPC(t *testing.T) {
 
 	params := install.Params{
-		AppLauncher:       "launchpad",
-		Terminal:          "warp",
-		KeyboardLayout:    "pc",
-		Ides:              []install.IDE{},
-		Blacklist:         []string{},
-		AdditionalOptions: []string{},
+		AppLauncher:    "launchpad",
+		Terminal:       "warp",
+		KeyboardLayout: "pc",
+		Ides:           []install.IDE{},
+		Blacklist:      []string{},
+		SystemSettings: []string{},
 	}
 
 	i, c, _ := runInstaller(t, params)
@@ -136,12 +136,12 @@ func TestInstallNoneLaunchpadPC(t *testing.T) {
 func TestInstallAllKeymaps(t *testing.T) {
 
 	params := install.Params{
-		AppLauncher:       "none",
-		Terminal:          "none",
-		KeyboardLayout:    "none",
-		Ides:              []install.IDE{install.IntelliJ(), install.IntelliJCE(), install.PyCharm(), install.GoLand(), install.Fleet()},
-		Blacklist:         []string{},
-		AdditionalOptions: []string{},
+		AppLauncher:    "none",
+		Terminal:       "none",
+		KeyboardLayout: "none",
+		Ides:           []install.IDE{install.IntelliJ(), install.IntelliJCE(), install.PyCharm(), install.GoLand(), install.Fleet()},
+		Blacklist:      []string{},
+		SystemSettings: []string{},
 	}
 
 	i, c, _ := runInstaller(t, params)
@@ -168,12 +168,12 @@ func TestInstallAllKeymaps(t *testing.T) {
 func TestInstallEnableHomeAndEndKeys(t *testing.T) {
 
 	params := install.Params{
-		AppLauncher:       "none",
-		Terminal:          "none",
-		KeyboardLayout:    "none",
-		Ides:              []install.IDE{},
-		Blacklist:         []string{},
-		AdditionalOptions: []string{"Enable Home & End keys"},
+		AppLauncher:    "none",
+		Terminal:       "none",
+		KeyboardLayout: "none",
+		Ides:           []install.IDE{},
+		Blacklist:      []string{},
+		SystemSettings: []string{"Enable Home & End keys"},
 	}
 
 	homeDir, _, _ := runInstaller(t, params)
@@ -184,7 +184,7 @@ func TestInstallEnableHomeAndEndKeys(t *testing.T) {
 	test_utils.AssertFilesEqual(t, actual, expected)
 }
 
-func TestInstallAdditionalOptions(t *testing.T) {
+func TestInstallSystemSettings(t *testing.T) {
 
 	params := install.Params{
 		AppLauncher:    "none",
@@ -192,7 +192,7 @@ func TestInstallAdditionalOptions(t *testing.T) {
 		KeyboardLayout: "none",
 		Ides:           []install.IDE{},
 		Blacklist:      []string{},
-		AdditionalOptions: []string{
+		SystemSettings: []string{
 			"Enable Dock auto-hide (2s delay)",
 			`Change Dock minimize animation to "scale"`,
 			"Enable Home & End keys",
@@ -225,7 +225,7 @@ func TestInstallAdditionalOptions(t *testing.T) {
 }
 
 func runInstaller(t *testing.T, params install.Params) (install.HomeDir, test_utils.MockCommander, error) {
-	commander := test_utils.MockCommander{}
+	commander := *test_utils.NewMockCommander()
 	homeDir := testHomeDir()
 	err := install.RunInstaller(homeDir, &commander, test_utils.FakeTimeProvider{}, params)
 	t.Cleanup(func() { tearDown(homeDir) })

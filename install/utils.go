@@ -3,6 +3,7 @@ package install
 import (
 	"errors"
 	"fmt"
+	"github.com/schollz/progressbar/v3"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -10,7 +11,10 @@ import (
 	"time"
 )
 
-const YELLOW = "\x1b[33m%s\x1b[0m"
+const Yellow = "\033[33m"
+const Red = "\033[31m"
+const Green = "\033[32m"
+const Reset = "\033[0m"
 
 type TimeProvider interface {
 	Now() time.Time
@@ -30,10 +34,19 @@ type Commander interface {
 }
 
 type DefaultCommander struct {
-	Verbose bool
+	Verbose  bool
+	Progress *progressbar.ProgressBar
 }
 
-func (c DefaultCommander) Run(command string) {
+func NewDefaultCommander(verbose bool) *DefaultCommander {
+	return &DefaultCommander{
+		Verbose:  verbose,
+		Progress: progressbar.NewOptions(100, progressbar.OptionSetWidth(60)),
+	}
+}
+
+func (c *DefaultCommander) Run(command string) {
+
 	c.tryPrint("Running: " + command)
 
 	out, err := exec.Command("/bin/bash", "-c", command).CombinedOutput()
@@ -50,7 +63,7 @@ func (c DefaultCommander) Run(command string) {
 	c.tryPrint(string(out))
 }
 
-func (c DefaultCommander) Exists(command string) bool {
+func (c *DefaultCommander) Exists(command string) bool {
 	if strings.HasSuffix(command, ".app") {
 		return fileExists(filepath.Join("/Applications", command))
 	} else {
@@ -59,13 +72,15 @@ func (c DefaultCommander) Exists(command string) bool {
 	}
 }
 
-func (c DefaultCommander) Exit(code int) {
+func (c *DefaultCommander) Exit(code int) {
 	os.Exit(code)
 }
 
-func (c DefaultCommander) tryPrint(output string) {
-	if c.Verbose {
-		fmt.Print(output)
+func (c *DefaultCommander) tryPrint(output string) {
+	if !c.Verbose {
+		c.Progress.Add(4)
+	} else if len(output) != 0 {
+		fmt.Println(output)
 	}
 }
 
@@ -75,7 +90,7 @@ func fileExists(filename string) bool {
 }
 
 func printColored(color, msg string) {
-	fmt.Println(fmt.Sprintf(color, msg))
+	fmt.Println(color + msg + Reset)
 }
 
 func replaceWordInFile(path, oldWord, newWord string) error {
