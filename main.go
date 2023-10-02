@@ -3,7 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/raxigan/pcfy-my-mac/install"
+	"github.com/raxigan/pcfy-my-mac/cmd"
+	"github.com/raxigan/pcfy-my-mac/cmd/common"
+	"github.com/raxigan/pcfy-my-mac/cmd/install"
+	"github.com/raxigan/pcfy-my-mac/cmd/param"
 	"log"
 	"os"
 )
@@ -14,22 +17,22 @@ func main() {
 	paramsFile := flag.String("params", "", "YAML file with installer parameters")
 	flag.Parse()
 
-	fileParams := install.FileParams{}
+	fileParams := param.FileParams{}
 
 	if *paramsFile != "" {
-		yamlStr, err := install.TextFromFile(*paramsFile)
+		yamlStr, err := common.TextFromFile(*paramsFile)
 
 		if err != nil {
 			log.Fatalf("Error: %s", err)
 		}
 
-		fileParams, _ = install.CollectYamlParams(yamlStr)
+		fileParams, _ = param.CollectYamlParams(yamlStr)
 	}
 
-	params := install.CollectParams(fileParams)
+	params := param.CollectParams(fileParams)
 
 	handleError(
-		install.RunInstaller(install.DefaultHomeDir(), install.NewDefaultCommander(*verbose), install.DefaultTimeProvider{}, params),
+		cmd.RunInstaller(install.DefaultHomeDir(), install.NewDefaultCommander(*verbose), install.DefaultTimeProvider{}, params),
 	)
 }
 

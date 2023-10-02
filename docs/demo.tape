@@ -6,9 +6,17 @@ Set LineHeight 1.6
 Set Width 1000
 Set Height 370
 
+# Switch dir
+Hide
+Type "cd .."
+Enter
+Type "clear"
+Enter
+Show
+
 # Run pcfy
 Sleep 1500ms
-Type "../pcfy-my-mac"
+Type "./pcfy-my-mac"
 Sleep 1000ms
 Enter
 Sleep 3000ms

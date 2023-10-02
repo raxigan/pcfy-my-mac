@@ -1,6 +1,8 @@
 package install
 
 import (
+	"github.com/raxigan/pcfy-my-mac/cmd/common"
+	"github.com/raxigan/pcfy-my-mac/cmd/param"
 	"os"
 	"path/filepath"
 	"time"
@@ -44,21 +46,21 @@ func (home HomeDir) LibraryDir() string {
 	return filepath.Join(home.Path, "Library")
 }
 
-func (home HomeDir) SourceKeymap(ide IDE) string {
-	return filepath.Join("keymaps/", ide.srcKeymapsFile)
+func (home HomeDir) SourceKeymap(ide param.IDE) string {
+	return filepath.Join("keymaps/", ide.SrcKeymapsFile)
 }
 
-func (home HomeDir) IdeKeymapPaths(ide IDE) []string {
-	return home.IdesKeymapPaths([]IDE{ide})
+func (home HomeDir) IdeKeymapPaths(ide param.IDE) []string {
+	return home.IdesKeymapPaths([]param.IDE{ide})
 }
 
-func (home HomeDir) IdesKeymapPaths(ide []IDE) []string {
+func (home HomeDir) IdesKeymapPaths(ide []param.IDE) []string {
 
 	var result []string
 
 	for _, e := range ide {
 
-		dirs, _ := findMatchingDirs(filepath.Join(home.Path, e.parentDir), e.dir, e.keymapsDir, e.destKeymapsFile)
+		dirs, _ := common.FindMatchingDirs(filepath.Join(home.Path, e.ParentDir), e.Dir, e.KeymapsDir, e.DestKeymapsFile)
 
 		for _, e1 := range dirs {
 			result = append(result, e1)

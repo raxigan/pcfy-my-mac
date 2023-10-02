@@ -1,27 +1,29 @@
-package install
+package param
 
-import "github.com/AlecAivazis/survey/v2"
+import (
+	"github.com/AlecAivazis/survey/v2"
+)
 
 var questions = []*survey.Question{
 	{
 		Name: "appLauncher",
 		Prompt: &survey.Select{
 			Message: "Your App Launcher (Win/Opt key):",
-			Options: []string{Spotlight.String(), Launchpad.String(), Alfred.String(), "None"},
+			Options: []string{Spotlight, Launchpad, Alfred, "None"},
 		},
 	},
 	{
 		Name: "terminal",
 		Prompt: &survey.Select{
 			Message: "Your Terminal (Ctrl+Alt+T/Ctrl+Cmd+T shortcut):",
-			Options: []string{Default.String(), iTerm.String(), Warp.String(), "None"},
+			Options: []string{Default, ITerm, Warp, "None"},
 		},
 	},
 	{
 		Name: "keyboardLayout",
 		Prompt: &survey.Select{
 			Message: "Your external keyboard layout:",
-			Options: []string{PC.String(), Mac.String(), "None"},
+			Options: []string{PC, Mac, "None"},
 		},
 	},
 	{

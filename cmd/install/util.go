@@ -3,6 +3,7 @@ package install
 import (
 	"errors"
 	"fmt"
+	"github.com/raxigan/pcfy-my-mac/cmd/common"
 	"github.com/schollz/progressbar/v3"
 	"os"
 	"os/exec"
@@ -43,25 +44,24 @@ func NewDefaultCommander(verbose bool) *DefaultCommander {
 
 func (c *DefaultCommander) Run(command string) {
 
-	c.TryPrint(Colored(Green, "RUN"), command)
+	c.TryPrint(common.Colored(common.Green, "RUN"), command)
 
 	out, err := exec.Command("/bin/bash", "-c", command).CombinedOutput()
 
 	if strings.Fields(command)[0] != "killall" && err != nil {
 		var exitErr *exec.ExitError
 		if errors.As(err, &exitErr) {
-			fmt.Printf("Command failed with error: %s\n", exitErr)
-			fmt.Printf("Stderr: %s", out)
+			c.TryPrint(common.Colored(common.Red, "STDERR"), string(out))
 			os.Exit(1)
 		}
 	}
 
-	c.TryPrint(Colored(Yellow, "SYSOUT"), string(out))
+	c.TryPrint(common.Colored(common.Yellow, "STDOUT"), string(out))
 }
 
 func (c *DefaultCommander) Exists(command string) bool {
 	if strings.HasSuffix(command, ".app") {
-		return fileExists(filepath.Join("/Applications", command))
+		return common.FileExists(filepath.Join("/Applications", command))
 	} else {
 		_, err := exec.LookPath(command)
 		return err == nil

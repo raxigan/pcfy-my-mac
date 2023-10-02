@@ -1,11 +1,20 @@
-package install
+package common
 
 import (
+	"github.com/raxigan/pcfy-my-mac/configs"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 )
+
+func CopyFileFromEmbedFS(src, dst string) error {
+	configs := &configs.Configs
+	data, _ := fs.ReadFile(configs, src)
+	os.MkdirAll(filepath.Dir(dst), 0755)
+	return os.WriteFile(dst, data, 0755)
+}
 
 func CopyFile(src, dst string) {
 	sourceFile, _ := os.Open(src)
@@ -17,12 +26,12 @@ func CopyFile(src, dst string) {
 	io.Copy(destFile, sourceFile)
 }
 
-func fileExists(filename string) bool {
+func FileExists(filename string) bool {
 	_, err := os.Stat(filename)
 	return !os.IsNotExist(err)
 }
 
-func findMatchingDirs(basePath, namePrefix, subDir, fileName string) ([]string, error) {
+func FindMatchingDirs(basePath, namePrefix, subDir, fileName string) ([]string, error) {
 
 	var result []string
 
@@ -33,7 +42,7 @@ func findMatchingDirs(basePath, namePrefix, subDir, fileName string) ([]string, 
 				return err
 			}
 
-			if fileExists(filepath.Join(basePath, info.Name())) {
+			if FileExists(filepath.Join(basePath, info.Name())) {
 				destDir := filepath.Join(path, subDir)
 				destFilePath := filepath.Join(destDir, fileName)
 				result = append(result, destFilePath)
@@ -46,7 +55,7 @@ func findMatchingDirs(basePath, namePrefix, subDir, fileName string) ([]string, 
 	return result, err
 }
 
-func replaceWordInFile(path, oldWord, newWord string) error {
+func ReplaceWordInFile(path, oldWord, newWord string) error {
 
 	content, err := os.ReadFile(path)
 	if err != nil {

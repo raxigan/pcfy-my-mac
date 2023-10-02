@@ -2,7 +2,8 @@ package test_utils
 
 import (
 	"fmt"
-	"github.com/raxigan/pcfy-my-mac/install"
+	"github.com/raxigan/pcfy-my-mac/cmd/common"
+	"github.com/raxigan/pcfy-my-mac/cmd/install"
 	"os"
 	"strings"
 	"time"
@@ -26,7 +27,7 @@ func (c *MockCommander) Run(command string) {
 
 	cmd := strings.Fields(command)[0]
 
-	fmt.Println(fmt.Sprintf("[%s] %s", install.Colored(install.Green, "RUN"), command))
+	fmt.Println(fmt.Sprintf("[%s] %s", common.Colored(common.Green, "RUN"), command))
 
 	switch cmd {
 	case "jq":

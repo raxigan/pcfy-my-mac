@@ -2,7 +2,10 @@ package install_test
 
 import (
 	"flag"
-	"github.com/raxigan/pcfy-my-mac/install"
+	"github.com/raxigan/pcfy-my-mac/cmd"
+	"github.com/raxigan/pcfy-my-mac/cmd/common"
+	"github.com/raxigan/pcfy-my-mac/cmd/install"
+	"github.com/raxigan/pcfy-my-mac/cmd/param"
 	"github.com/raxigan/pcfy-my-mac/test/test_utils"
 	"os"
 	"path/filepath"
@@ -11,7 +14,7 @@ import (
 
 func TestInstallWarpAlfredPC(t *testing.T) {
 
-	params := install.Params{
+	params := param.Params{
 		AppLauncher:    "alfred",
 		Terminal:       "warp",
 		KeyboardLayout: "pc",
@@ -42,7 +45,7 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 
 func TestInstallNoneDefaultNone(t *testing.T) {
 
-	params := install.Params{
+	params := param.Params{
 		AppLauncher:    "none",
 		Terminal:       "default",
 		KeyboardLayout: "none",
@@ -73,7 +76,7 @@ func TestInstallNoneDefaultNone(t *testing.T) {
 
 func TestInstallItermSpotlightMac(t *testing.T) {
 
-	params := install.Params{
+	params := param.Params{
 		AppLauncher:    "spotlight",
 		Terminal:       "iterm",
 		KeyboardLayout: "mac",
@@ -104,7 +107,7 @@ func TestInstallItermSpotlightMac(t *testing.T) {
 
 func TestInstallNoneLaunchpadPC(t *testing.T) {
 
-	params := install.Params{
+	params := param.Params{
 		AppLauncher:    "launchpad",
 		Terminal:       "warp",
 		KeyboardLayout: "pc",
@@ -135,22 +138,22 @@ func TestInstallNoneLaunchpadPC(t *testing.T) {
 
 func TestInstallAllKeymaps(t *testing.T) {
 
-	params := install.Params{
+	params := param.Params{
 		AppLauncher:    "none",
 		Terminal:       "none",
 		KeyboardLayout: "none",
-		Ides:           install.IdeKeymapOptions(),
+		Ides:           param.IdeKeymapOptions(),
 		Blacklist:      []string{},
 		SystemSettings: []string{},
 	}
 
 	i, c, _ := runInstaller(t, params)
 
-	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(install.IntelliJ())), i.IdeKeymapPaths(install.IntelliJ())[0])
-	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(install.IntelliJ())), i.IdeKeymapPaths(install.IntelliJ())[1])
-	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(install.IntelliJCE())), i.IdeKeymapPaths(install.IntelliJCE())[0])
-	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(install.GoLand())), i.IdeKeymapPaths(install.GoLand())[0])
-	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(install.Fleet())), i.IdeKeymapPaths(install.Fleet())[0])
+	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(param.IntelliJ())), i.IdeKeymapPaths(param.IntelliJ())[0])
+	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(param.IntelliJ())), i.IdeKeymapPaths(param.IntelliJ())[1])
+	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(param.IntelliJCE())), i.IdeKeymapPaths(param.IntelliJCE())[0])
+	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(param.GoLand())), i.IdeKeymapPaths(param.GoLand())[0])
+	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(param.Fleet())), i.IdeKeymapPaths(param.Fleet())[0])
 	test_utils.AssertSlicesEqual(t, c.CommandsLog, []string{
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
@@ -167,7 +170,7 @@ func TestInstallAllKeymaps(t *testing.T) {
 
 func TestInstallEnableHomeAndEndKeys(t *testing.T) {
 
-	params := install.Params{
+	params := param.Params{
 		AppLauncher:    "none",
 		Terminal:       "none",
 		KeyboardLayout: "none",
@@ -186,7 +189,7 @@ func TestInstallEnableHomeAndEndKeys(t *testing.T) {
 
 func TestInstallSystemSettings(t *testing.T) {
 
-	params := install.Params{
+	params := param.Params{
 		AppLauncher:    "none",
 		Terminal:       "none",
 		KeyboardLayout: "none",
@@ -224,10 +227,10 @@ func TestInstallSystemSettings(t *testing.T) {
 	})
 }
 
-func runInstaller(t *testing.T, params install.Params) (install.HomeDir, test_utils.MockCommander, error) {
+func runInstaller(t *testing.T, params param.Params) (install.HomeDir, test_utils.MockCommander, error) {
 	commander := *test_utils.NewMockCommander()
 	homeDir := testHomeDir()
-	err := install.RunInstaller(homeDir, &commander, test_utils.FakeTimeProvider{}, params)
+	err := cmd.RunInstaller(homeDir, &commander, test_utils.FakeTimeProvider{}, params)
 	t.Cleanup(func() { tearDown(homeDir) })
 	return homeDir, commander, err
 }
@@ -241,10 +244,10 @@ func testHomeDir() install.HomeDir {
 
 func tearDown(i install.HomeDir) {
 	test_utils.RemoveFiles(i.KarabinerConfigBackupFile(test_utils.FakeTimeProvider{}.Now()))
-	test_utils.RemoveFiles(i.IdesKeymapPaths(install.IDEKeymaps)...)
+	test_utils.RemoveFiles(i.IdesKeymapPaths(param.IDEKeymaps)...)
 	test_utils.RemoveFilesWithExt(i.LibraryDir(), "plist")
 	test_utils.RemoveFilesWithExt(i.LibraryDir(), "dict")
-	install.CopyFile(karabinerTestDefaultConfig(i), i.KarabinerConfigFile())
+	common.CopyFile(karabinerTestDefaultConfig(i), i.KarabinerConfigFile())
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError) // reset flags
 }
 

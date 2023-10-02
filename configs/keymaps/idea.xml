@@ -113,6 +113,7 @@
   </action>
   <action id="Generate">
     <keyboard-shortcut first-keystroke="alt HELP"/>
+    <keyboard-shortcut first-keystroke="alt ENTER"/>
   </action>
   <action id="EditorChooseLookupItemReplace">
     <keyboard-shortcut first-keystroke="TAB"/>
@@ -950,6 +951,7 @@
   </action>
   <action id="NewElement">
     <keyboard-shortcut first-keystroke="alt HELP"/>
+    <keyboard-shortcut first-keystroke="alt ENTER"/>
   </action>
   <action id="NewElementSamePlace">
     <keyboard-shortcut first-keystroke="control alt INSERT"/>
