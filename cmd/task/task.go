@@ -11,14 +11,14 @@ import (
 )
 
 type Task struct {
-	Name string
-	Exec func(i install.Installation) error
+	Name    string
+	Execute func(i install.Installation) error
 }
 
 func DownloadDependencies() Task {
 	return Task{
 		Name: "Install dependencies",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 
 			var notInstalled []string
 			var commands []string
@@ -59,15 +59,15 @@ func DownloadDependencies() Task {
 
 func CloseKarabiner() Task {
 	return Task{
-		Name: "Close Karabiner",
-		Exec: func(i install.Installation) error { i.Run("killall Karabiner-Elements"); return nil },
+		Name:    "Close Karabiner",
+		Execute: func(i install.Installation) error { i.Run("killall Karabiner-Elements"); return nil },
 	}
 }
 
 func BackupKarabinerConfig() Task {
 	return Task{
 		Name: "Do karabiner config backup",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			original := i.KarabinerConfigFile()
 			backupDest := i.KarabinerConfigBackupFile(i.InstallationTime)
 			common.CopyFile(original, backupDest)
@@ -79,7 +79,7 @@ func BackupKarabinerConfig() Task {
 func DeleteExistingKarabinerProfile() Task {
 	return Task{
 		Name: "Delete existing Karabiner profile",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			deleteProfileJqCmd := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" 'del(.profiles[] | select(.name == \"%s\"))' %s >tmp && mv tmp %s", i.ProfileName, i.ProfileName, i.KarabinerConfigFile(), i.KarabinerConfigFile())
 			i.Run(deleteProfileJqCmd)
 			return nil
@@ -90,7 +90,7 @@ func DeleteExistingKarabinerProfile() Task {
 func CreateKarabinerProfile() Task {
 	return Task{
 		Name: "Delete existing Karabiner profile",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			common.CopyFileFromEmbedFS("karabiner/karabiner-profile.json", "tmp")
 			addProfileJqCmd := fmt.Sprintf("jq '.profiles += $profile' %s --slurpfile profile tmp --indent 4 >INPUT.tmp && mv INPUT.tmp %s && rm tmp", i.KarabinerConfigFile(), i.KarabinerConfigFile())
 			i.Run(addProfileJqCmd)
@@ -102,7 +102,7 @@ func CreateKarabinerProfile() Task {
 func NameKarabinerProfile() Task {
 	return Task{
 		Name: "Delete existing Karabiner profile",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			common.CopyFileFromEmbedFS("karabiner/karabiner-profile.json", "tmp")
 			addProfileJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name == \"_PROFILE_NAME_\" then .name = \"%s\" else . end)' %s > tmp && mv tmp %s", i.ProfileName, i.KarabinerConfigFile(), i.KarabinerConfigFile())
 			i.Run(addProfileJqCmd)
@@ -114,7 +114,7 @@ func NameKarabinerProfile() Task {
 func UnselectOtherKarabinerProfiles() Task {
 	return Task{
 		Name: "Unselect other Karabiner profiles",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			unselectJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name != \"%s\" then .selected = false else . end)' %s > tmp && mv tmp %s", i.ProfileName, i.KarabinerConfigFile(), i.KarabinerConfigFile())
 			i.Run(unselectJqCmd)
 			return nil
@@ -125,7 +125,7 @@ func UnselectOtherKarabinerProfiles() Task {
 func ApplyMainKarabinerRules() Task {
 	return Task{
 		Name: "Apply main Karabiner rules",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			ApplyRules(i, "main.json")
 			ApplyRules(i, "finder.json")
 			return nil
@@ -136,7 +136,7 @@ func ApplyMainKarabinerRules() Task {
 func ApplyAppLauncherRules() Task {
 	return Task{
 		Name: "Apply app launcher rules",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			switch strings.ToLower(i.AppLauncher) {
 			case "spotlight":
 				ApplyRules(i, "spotlight.json")
@@ -171,7 +171,7 @@ func ApplyAppLauncherRules() Task {
 func ApplyKeyboardLayoutRules() Task {
 	return Task{
 		Name: "Apply keyboard layout rules",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			switch strings.ToLower(i.KeyboardLayout) {
 			case "mac":
 				jq := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" '.profiles |= map(if .name == \"%s\" then walk(if type == \"object\" and .conditions then del(.conditions[] | select(.identifiers[]?.is_built_in_keyboard)) else . end) else . end)' %s --indent 4 >tmp && mv tmp %s", i.ProfileName, i.ProfileName, i.KarabinerConfigFile(), i.KarabinerConfigFile())
@@ -185,7 +185,7 @@ func ApplyKeyboardLayoutRules() Task {
 func ApplyTerminalRules() Task {
 	return Task{
 		Name: "Apply terminal rules",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			switch strings.ToLower(i.Terminal) {
 			case "default":
 				ApplyRules(i, "apple-terminal.json")
@@ -213,7 +213,7 @@ func ApplyTerminalRules() Task {
 func ReformatKarabinerConfigFile() Task {
 	return Task{
 		Name: "Reformat Karabiner config file",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			i.Run(fmt.Sprintf("jq '.' %s > tmp && mv tmp %s", i.KarabinerConfigFile(), i.KarabinerConfigFile()))
 			return nil
 		},
@@ -223,7 +223,7 @@ func ReformatKarabinerConfigFile() Task {
 func OpenKarabiner() Task {
 	return Task{
 		Name: "Open Karabiner-Elements.app",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			i.Run("open -a Karabiner-Elements")
 			return nil
 		},
@@ -233,7 +233,7 @@ func OpenKarabiner() Task {
 func CopyIdeKeymaps() Task {
 	return Task{
 		Name: "Install IDE keymaps",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			for _, ide := range i.Ides {
 				name, _ := param.IdeKeymapByFullName(ide)
 				InstallIdeKeymap(i, name)
@@ -246,7 +246,7 @@ func CopyIdeKeymaps() Task {
 func CloseRectangle() Task {
 	return Task{
 		Name: "Close rectangle",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			i.Run("killall Rectangle")
 			return nil
 		},
@@ -256,7 +256,7 @@ func CloseRectangle() Task {
 func CopyRectanglePreferences() Task {
 	return Task{
 		Name: "Install Rectangle preferences",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			rectanglePlist := filepath.Join(i.PreferencesDir(), "com.knollsoft.Rectangle.plist")
 			common.CopyFileFromEmbedFS("rectangle/Settings.xml", rectanglePlist)
 
@@ -271,7 +271,7 @@ func CopyRectanglePreferences() Task {
 func OpenRectangle() Task {
 	return Task{
 		Name: "Open Rectangle.app",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			i.Run("open -a Rectangle")
 			return nil
 		},
@@ -281,7 +281,7 @@ func OpenRectangle() Task {
 func CloseAltTab() Task {
 	return Task{
 		Name: "Close AtlTab.app",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			i.Run("killall AltTab")
 			return nil
 		},
@@ -291,7 +291,7 @@ func CloseAltTab() Task {
 func InstallAltTabPreferences() Task {
 	return Task{
 		Name: "Install AltTab preferences",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			altTabPlist := filepath.Join(i.PreferencesDir(), "/com.lwouis.alt-tab-macos.plist")
 			common.CopyFileFromEmbedFS("alt-tab/Settings.xml", altTabPlist)
 
@@ -317,7 +317,7 @@ func InstallAltTabPreferences() Task {
 func OpenAltTab() Task {
 	return Task{
 		Name: "Open AtlTab.app",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			i.Run("open -a AltTab")
 			return nil
 		},
@@ -327,7 +327,7 @@ func OpenAltTab() Task {
 func ApplySystemSettings() Task {
 	return Task{
 		Name: "Apply system settings",
-		Exec: func(i install.Installation) error {
+		Execute: func(i install.Installation) error {
 			optionsMap := make(map[string]bool)
 			for _, value := range i.SystemSettings {
 				optionsMap[strings.ToLower(value)] = true

@@ -230,7 +230,7 @@ func TestInstallSystemSettings(t *testing.T) {
 func runInstaller(t *testing.T, params param.Params) (install.HomeDir, test_utils.MockCommander, error) {
 	commander := *test_utils.NewMockCommander()
 	homeDir := testHomeDir()
-	err := cmd.RunInstaller(homeDir, &commander, test_utils.FakeTimeProvider{}, params)
+	err := cmd.Launch(homeDir, &commander, test_utils.FakeTimeProvider{}, params)
 	t.Cleanup(func() { tearDown(homeDir) })
 	return homeDir, commander, err
 }

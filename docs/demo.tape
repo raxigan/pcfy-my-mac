@@ -30,6 +30,8 @@ Enter
 Sleep 2000ms
 
 # Terminal: iTerm
+Type "?"
+Sleep 2500ms
 Down
 Sleep 1500ms
 Enter

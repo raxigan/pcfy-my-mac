@@ -42,7 +42,7 @@ main() {
   install_brew
 
   if [ -f "main.go" ]; then
-    echo "Running local..."
+    echo "Running from local sources..."
     go build -ldflags "-w"
 
     if [ $? -eq 1 ]; then

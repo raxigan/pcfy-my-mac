@@ -1,13 +1,14 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/raxigan/pcfy-my-mac/cmd/common"
 	"github.com/raxigan/pcfy-my-mac/cmd/install"
 	"github.com/raxigan/pcfy-my-mac/cmd/param"
 	"github.com/raxigan/pcfy-my-mac/cmd/task"
 )
 
-func RunInstaller(homeDir install.HomeDir, commander install.Commander, tp install.TimeProvider, params param.Params) error {
+func Launch(homeDir install.HomeDir, commander install.Commander, tp install.TimeProvider, params param.Params) error {
 
 	installation := install.Installation{
 		Commander:        commander,
@@ -46,17 +47,17 @@ func Install(i install.Installation) error {
 		task.ApplySystemSettings(),
 	}
 
-	for _, task := range tasks {
-		i.Commander.TryPrint(common.Colored(common.Blue, "TASK"), task.Name)
+	for _, t := range tasks {
+		i.Commander.TryPrint(common.Colored(common.Blue, "TASK"), t.Name)
 
-		err := task.Exec(i)
+		err := t.Execute(i)
 
 		if err != nil {
 			return err
 		}
 	}
 
-	common.PrintlnColored(common.Cyan, "PC'fied!")
+	fmt.Println("PC'fied!")
 
 	return nil
 }

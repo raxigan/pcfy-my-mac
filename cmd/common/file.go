@@ -16,6 +16,12 @@ func CopyFileFromEmbedFS(src, dst string) error {
 	return os.WriteFile(dst, data, 0755)
 }
 
+func ReadFileFromEmbedFS(src string) (string, error) {
+	configs := &configs.Configs
+	data, _ := fs.ReadFile(configs, src)
+	return string(data), nil
+}
+
 func CopyFile(src, dst string) {
 	sourceFile, _ := os.Open(src)
 	defer sourceFile.Close()

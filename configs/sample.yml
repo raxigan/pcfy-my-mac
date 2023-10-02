@@ -1,0 +1,20 @@
+app-launcher: spotlight # or launchpad, alfred, none
+terminal: default # or iterm, warp, none
+keyboard-layout: pc # or mac, none
+system-settings: # or empty: []
+  - enable-dock-auto-hide-2s-delay
+  - change-Dock-minimize-animation-to-scale
+  - enable-Home-and-end-keys
+  - show-hidden-files-in-finder
+  - show-directories-on-top-in-finder
+  - show-full-posix-path-in-finder-window-title
+ides: # or empty: []
+  - idea
+  - idea-ce
+  - pycharm-ce
+  - goland
+  - fleet
+blacklist: # or empty: []
+  - com.spotify.client
+  - com.apple.finder
+  - com.googlecode.iterm2
