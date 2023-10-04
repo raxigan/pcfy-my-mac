@@ -297,8 +297,9 @@ func InstallAltTabPreferences() Task {
 
 			// set up blacklist
 			var mappedStrings []string
-			for _, s := range i.Blacklist {
-				mappedStrings = append(mappedStrings, fmt.Sprintf(`{"ignore":"0","bundleIdentifier":"%s","hide":"1"}`, s))
+			for _, app := range i.Blacklist {
+				bundle := param.AppToBundleMapping[strings.ToLower(app)]
+				mappedStrings = append(mappedStrings, fmt.Sprintf(`{"ignore":"0","bundleIdentifier":"%s","hide":"1"}`, bundle))
 			}
 
 			result := "[" + strings.Join(mappedStrings, ",") + "]"

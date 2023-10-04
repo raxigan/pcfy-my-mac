@@ -1,7 +1,7 @@
 package common
 
 import (
-	"github.com/raxigan/pcfy-my-mac/configs"
+	"github.com/raxigan/pcfy-my-mac/assets"
 	"io"
 	"io/fs"
 	"os"
@@ -10,14 +10,14 @@ import (
 )
 
 func CopyFileFromEmbedFS(src, dst string) error {
-	configs := &configs.Configs
-	data, _ := fs.ReadFile(configs, src)
+	assets := &assets.Assets
+	data, _ := fs.ReadFile(assets, src)
 	os.MkdirAll(filepath.Dir(dst), 0755)
 	return os.WriteFile(dst, data, 0755)
 }
 
 func ReadFileFromEmbedFS(src string) (string, error) {
-	configs := &configs.Configs
+	configs := &assets.Assets
 	data, _ := fs.ReadFile(configs, src)
 	return string(data), nil
 }

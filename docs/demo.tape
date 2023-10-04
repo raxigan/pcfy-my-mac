@@ -19,7 +19,7 @@ Sleep 1500ms
 Type "./pcfy-my-mac"
 Sleep 1000ms
 Enter
-Sleep 3000ms
+Sleep 2500ms
 
 # App launcher: Alfred
 Down

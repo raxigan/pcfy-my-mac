@@ -19,6 +19,14 @@ const (
 	None = "None"
 )
 
+var AppToBundleMapping = map[string]string{
+	"spotify":            "com.spotify.client",
+	"finder":             "com.apple.finder",
+	"system preferences": "com.apple.systempreferences",
+	"iterm":              "com.googlecode.iterm2",
+	"alttab":             "com.lwouis.alt-tab-macos",
+}
+
 type IDE struct {
 	ParentDir       string // relative to homedir
 	Dir             string // relative to parentDir

@@ -2,6 +2,7 @@ package install_test
 
 import (
 	"flag"
+	"fmt"
 	"github.com/raxigan/pcfy-my-mac/cmd"
 	"github.com/raxigan/pcfy-my-mac/cmd/common"
 	"github.com/raxigan/pcfy-my-mac/cmd/install"
@@ -23,9 +24,9 @@ func TestInstallWarpAlfredPC(t *testing.T) {
 		SystemSettings: []string{},
 	}
 
-	i, c, _ := runInstaller(t, params)
+	home, c, _ := runInstaller(t, params)
 
-	actual := i.KarabinerConfigFile()
+	actual := home.KarabinerConfigFile()
 	expected := "expected/karabiner-expected-alfred-warp-pc.json"
 
 	test_utils.AssertFilesEqual(t, actual, expected)
@@ -54,12 +55,9 @@ func TestInstallNoneDefaultNone(t *testing.T) {
 		SystemSettings: []string{},
 	}
 
-	i, c, _ := runInstaller(t, params)
+	home, c, _ := runInstaller(t, params)
 
-	actual := i.KarabinerConfigFile()
-	expected := "expected/karabiner-expected-none-default-none.json"
-
-	test_utils.AssertFilesEqual(t, actual, expected)
+	test_utils.AssertFilesEqual(t, home.KarabinerConfigFile(), "expected/karabiner-expected-none-default-none.json")
 	test_utils.AssertSlicesEqual(t, c.CommandsLog, []string{
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
@@ -85,12 +83,9 @@ func TestInstallItermSpotlightMac(t *testing.T) {
 		SystemSettings: []string{},
 	}
 
-	i, c, _ := runInstaller(t, params)
+	home, c, _ := runInstaller(t, params)
 
-	actual := i.KarabinerConfigFile()
-	expected := "expected/karabiner-expected-spotlight-iterm-mac.json"
-
-	test_utils.AssertFilesEqual(t, actual, expected)
+	test_utils.AssertFilesEqual(t, home.KarabinerConfigFile(), "expected/karabiner-expected-spotlight-iterm-mac.json")
 	test_utils.AssertSlicesEqual(t, c.CommandsLog, []string{
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
@@ -116,12 +111,9 @@ func TestInstallNoneLaunchpadPC(t *testing.T) {
 		SystemSettings: []string{},
 	}
 
-	i, c, _ := runInstaller(t, params)
+	home, c, _ := runInstaller(t, params)
 
-	actual := i.KarabinerConfigFile()
-	expected := "expected/karabiner-expected-launchpad-none-pc.json"
-
-	test_utils.AssertFilesEqual(t, actual, expected)
+	test_utils.AssertFilesEqual(t, home.KarabinerConfigFile(), "expected/karabiner-expected-launchpad-none-pc.json")
 	test_utils.AssertSlicesEqual(t, c.CommandsLog, []string{
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
@@ -147,13 +139,13 @@ func TestInstallAllKeymaps(t *testing.T) {
 		SystemSettings: []string{},
 	}
 
-	i, c, _ := runInstaller(t, params)
+	home, c, _ := runInstaller(t, params)
 
-	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(param.IntelliJ())), i.IdeKeymapPaths(param.IntelliJ())[0])
-	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(param.IntelliJ())), i.IdeKeymapPaths(param.IntelliJ())[1])
-	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(param.IntelliJCE())), i.IdeKeymapPaths(param.IntelliJCE())[0])
-	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(param.GoLand())), i.IdeKeymapPaths(param.GoLand())[0])
-	test_utils.AssertFilesEqual(t, filepath.Join("../configs", i.SourceKeymap(param.Fleet())), i.IdeKeymapPaths(param.Fleet())[0])
+	test_utils.AssertFilesEqual(t, filepath.Join("../assets", home.SourceKeymap(param.IntelliJ())), home.IdeKeymapPaths(param.IntelliJ())[0])
+	test_utils.AssertFilesEqual(t, filepath.Join("../assets", home.SourceKeymap(param.IntelliJ())), home.IdeKeymapPaths(param.IntelliJ())[1])
+	test_utils.AssertFilesEqual(t, filepath.Join("../assets", home.SourceKeymap(param.IntelliJCE())), home.IdeKeymapPaths(param.IntelliJCE())[0])
+	test_utils.AssertFilesEqual(t, filepath.Join("../assets", home.SourceKeymap(param.GoLand())), home.IdeKeymapPaths(param.GoLand())[0])
+	test_utils.AssertFilesEqual(t, filepath.Join("../assets", home.SourceKeymap(param.Fleet())), home.IdeKeymapPaths(param.Fleet())[0])
 	test_utils.AssertSlicesEqual(t, c.CommandsLog, []string{
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
@@ -179,12 +171,9 @@ func TestInstallEnableHomeAndEndKeys(t *testing.T) {
 		SystemSettings: []string{"Enable Home & End keys"},
 	}
 
-	homeDir, _, _ := runInstaller(t, params)
+	home, _, _ := runInstaller(t, params)
 
-	actual := "../configs/system/DefaultKeyBinding.dict"
-	expected := filepath.Join(homeDir.LibraryDir(), "KeyBindings/DefaultKeyBinding.dict")
-
-	test_utils.AssertFilesEqual(t, actual, expected)
+	test_utils.AssertFilesEqual(t, "../assets/system/DefaultKeyBinding.dict", filepath.Join(home.LibraryDir(), "KeyBindings/DefaultKeyBinding.dict"))
 }
 
 func TestInstallSystemSettings(t *testing.T) {
@@ -225,6 +214,25 @@ func TestInstallSystemSettings(t *testing.T) {
 		"defaults write com.apple.finder _FXSortFoldersFirst -bool true",
 		"defaults write com.apple.finder _FXShowPosixPathInTitle -bool true",
 	})
+}
+
+func TestInstallBlacklist(t *testing.T) {
+
+	params := param.Params{
+		AppLauncher:    "none",
+		Terminal:       "none",
+		KeyboardLayout: "none",
+		Ides:           []string{},
+		Blacklist:      []string{"Spotify", "Finder"},
+		SystemSettings: []string{},
+	}
+
+	home, c, _ := runInstaller(t, params)
+
+	fmt.Println(c)
+
+	test_utils.AssertFilesEqual(t, filepath.Join(home.PreferencesDir(), "com.knollsoft.Rectangle.plist"), "expected/com.knollsoft.Rectangle.plist")
+	test_utils.AssertFilesEqual(t, filepath.Join(home.PreferencesDir(), "com.lwouis.alt-tab-macos.plist"), "expected/com.lwouis.alt-tab-macos.plist")
 }
 
 func runInstaller(t *testing.T, params param.Params) (install.HomeDir, test_utils.MockCommander, error) {
