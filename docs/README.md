@@ -1,4 +1,5 @@
-### ***This is the old README, kept to show how everything started and to serve as a knowledge base.***
+> **Note**
+> This is the old README, kept to show how everything started and to serve as a knowledge base.
 
 # macOS PC mode
 

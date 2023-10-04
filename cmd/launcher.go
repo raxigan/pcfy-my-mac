@@ -18,7 +18,13 @@ func Launch(homeDir install.HomeDir, commander install.Commander, tp install.Tim
 		InstallationTime: tp.Now(),
 	}
 
-	return Install(installation)
+	err := Install(installation)
+
+	if err != nil {
+		commander.TryPrint(common.Colored(common.Red, "ERROR"), fmt.Sprintf("%s", err))
+	}
+
+	return err
 }
 
 func Install(i install.Installation) error {

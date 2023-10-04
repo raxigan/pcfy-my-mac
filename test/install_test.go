@@ -160,22 +160,6 @@ func TestInstallAllKeymaps(t *testing.T) {
 	})
 }
 
-func TestInstallEnableHomeAndEndKeys(t *testing.T) {
-
-	params := param.Params{
-		AppLauncher:    "none",
-		Terminal:       "none",
-		KeyboardLayout: "none",
-		Ides:           []string{},
-		Blacklist:      []string{},
-		SystemSettings: []string{"Enable Home & End keys"},
-	}
-
-	home, _, _ := runInstaller(t, params)
-
-	test_utils.AssertFilesEqual(t, "../assets/system/DefaultKeyBinding.dict", filepath.Join(home.LibraryDir(), "KeyBindings/DefaultKeyBinding.dict"))
-}
-
 func TestInstallSystemSettings(t *testing.T) {
 
 	params := param.Params{
@@ -186,16 +170,17 @@ func TestInstallSystemSettings(t *testing.T) {
 		Blacklist:      []string{},
 		SystemSettings: []string{
 			"Enable Dock auto-hide (2s delay)",
-			`Change Dock minimize animation to "scale"`,
-			"Enable Home & End keys",
+			"change-dock-minimize-animation-to-scale",
+			"Enable Home and End keys",
 			"Show hidden files in Finder",
 			"Show directories on top in Finder",
 			"Show full POSIX paths in Finder window title",
 		},
 	}
 
-	_, c, _ := runInstaller(t, params)
+	home, c, _ := runInstaller(t, params)
 
+	test_utils.AssertFilesEqual(t, "../assets/system/DefaultKeyBinding.dict", filepath.Join(home.LibraryDir(), "KeyBindings/DefaultKeyBinding.dict"))
 	test_utils.AssertSlicesEqual(t, c.CommandsLog, []string{
 		"killall Karabiner-Elements",
 		"open -a Karabiner-Elements",
@@ -223,7 +208,7 @@ func TestInstallBlacklist(t *testing.T) {
 		Terminal:       "none",
 		KeyboardLayout: "none",
 		Ides:           []string{},
-		Blacklist:      []string{"Spotify", "Finder"},
+		Blacklist:      []string{"Spotify", "FINDER", "com.apple.AppStore"},
 		SystemSettings: []string{},
 	}
 

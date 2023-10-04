@@ -1,6 +1,7 @@
 package task
 
 import (
+	"errors"
 	"fmt"
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/raxigan/pcfy-my-mac/cmd/common"
@@ -138,11 +139,12 @@ func ApplyAppLauncherRules() Task {
 		Name: "Apply app launcher rules",
 		Execute: func(i install.Installation) error {
 			switch strings.ToLower(i.AppLauncher) {
-			case "spotlight":
+			case strings.ToLower(param.None):
+			case strings.ToLower(param.Spotlight):
 				ApplyRules(i, "spotlight.json")
-			case "launchpad":
+			case strings.ToLower(param.Launchpad):
 				ApplyRules(i, "launchpad.json")
-			case "alfred":
+			case strings.ToLower(param.Alfred):
 				{
 					if i.Exists("Alfred 4.app") || i.Exists("Alfred 5.app") {
 
@@ -161,6 +163,8 @@ func ApplyAppLauncherRules() Task {
 						common.PrintColored(common.Yellow, fmt.Sprintf("Alfred app not found. Skipping..."))
 					}
 				}
+			default:
+				return errors.New("Unknown value app launcher: " + i.AppLauncher)
 			}
 
 			return nil
@@ -173,9 +177,12 @@ func ApplyKeyboardLayoutRules() Task {
 		Name: "Apply keyboard layout rules",
 		Execute: func(i install.Installation) error {
 			switch strings.ToLower(i.KeyboardLayout) {
-			case "mac":
+			case strings.ToLower(param.PC), strings.ToLower(param.None):
+			case strings.ToLower(param.Mac):
 				jq := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" '.profiles |= map(if .name == \"%s\" then walk(if type == \"object\" and .conditions then del(.conditions[] | select(.identifiers[]?.is_built_in_keyboard)) else . end) else . end)' %s --indent 4 >tmp && mv tmp %s", i.ProfileName, i.ProfileName, i.KarabinerConfigFile(), i.KarabinerConfigFile())
 				i.Run(jq)
+			default:
+				return errors.New("Unknown keyboard layout: " + i.KeyboardLayout)
 			}
 			return nil
 		},
@@ -186,16 +193,18 @@ func ApplyTerminalRules() Task {
 	return Task{
 		Name: "Apply terminal rules",
 		Execute: func(i install.Installation) error {
+
 			switch strings.ToLower(i.Terminal) {
-			case "default":
+			case strings.ToLower(param.None):
+			case strings.ToLower(param.Default):
 				ApplyRules(i, "apple-terminal.json")
-			case "iterm":
+			case strings.ToLower(param.ITerm):
 				if i.Exists("iTerm.app") {
 					ApplyRules(i, "iterm.json")
 				} else {
 					common.PrintColored(common.Yellow, fmt.Sprintf("iTerm app not found. Skipping..."))
 				}
-			case "warp":
+			case strings.ToLower(param.Warp):
 				{
 					if i.Exists("Warp.app") {
 						ApplyRules(i, "warp.json")
@@ -203,6 +212,8 @@ func ApplyTerminalRules() Task {
 						common.PrintColored(common.Yellow, fmt.Sprintf("Warp app not found. Skipping..."))
 					}
 				}
+			default:
+				return errors.New("Unknown terminal: " + i.Terminal)
 			}
 
 			return nil
@@ -295,10 +306,14 @@ func InstallAltTabPreferences() Task {
 			altTabPlist := filepath.Join(i.PreferencesDir(), "/com.lwouis.alt-tab-macos.plist")
 			common.CopyFileFromEmbedFS("alt-tab/Settings.xml", altTabPlist)
 
-			// set up blacklist
 			var mappedStrings []string
 			for _, app := range i.Blacklist {
-				bundle := param.AppToBundleMapping[strings.ToLower(app)]
+				bundle, exists := param.AppToBundleMapping[strings.ToLower(app)]
+
+				if !exists {
+					bundle = app
+				}
+
 				mappedStrings = append(mappedStrings, fmt.Sprintf(`{"ignore":"0","bundleIdentifier":"%s","hide":"1"}`, bundle))
 			}
 
@@ -329,34 +344,41 @@ func ApplySystemSettings() Task {
 	return Task{
 		Name: "Apply system settings",
 		Execute: func(i install.Installation) error {
-			optionsMap := make(map[string]bool)
 			for _, value := range i.SystemSettings {
-				optionsMap[strings.ToLower(value)] = true
+				loweredAndSnaked := strings.TrimSpace(strings.ReplaceAll(strings.ToLower(value), " ", "-"))
+				noBrackets := strings.ReplaceAll(strings.ReplaceAll(loweredAndSnaked, "(", ""), ")", "")
+				noQuotes := strings.ReplaceAll(noBrackets, "\"", "")
+
+				switch noQuotes {
+				case "enable-dock-auto-hide-2s-delay":
+					{
+						i.Run("defaults write com.apple.dock autohide -bool true")
+						i.Run("defaults write com.apple.dock autohide-delay -float 2 && killall Dock")
+					}
+				case "change-dock-minimize-animation-to-scale":
+					{
+						i.Run(`defaults write com.apple.dock "mineffect" -string "scale" && killall Dock`)
+					}
+				case "enable-home-and-end-keys":
+					{
+						common.CopyFileFromEmbedFS("system/DefaultKeyBinding.dict", filepath.Join(i.LibraryDir(), "/KeyBindings/DefaultKeyBinding.dict"))
+					}
+				case "show-hidden-files-in-finder":
+					{
+						i.Run("defaults write com.apple.finder AppleShowAllFiles -bool true")
+					}
+				case "show-directories-on-top-in-finder":
+					{
+						i.Run("defaults write com.apple.finder _FXSortFoldersFirst -bool true")
+					}
+				case "show-full-posix-paths-in-finder-window-title":
+					{
+						i.Run("defaults write com.apple.finder _FXShowPosixPathInTitle -bool true")
+					}
+
+				}
 			}
 
-			if optionsMap["enable dock auto-hide (2s delay)"] {
-				i.Run("defaults write com.apple.dock autohide -bool true")
-				i.Run("defaults write com.apple.dock autohide-delay -float 2 && killall Dock")
-			}
-
-			if optionsMap[`change dock minimize animation to "scale"`] {
-				i.Run(`defaults write com.apple.dock "mineffect" -string "scale" && killall Dock`)
-			}
-
-			if optionsMap["enable home & end keys"] {
-				common.CopyFileFromEmbedFS("system/DefaultKeyBinding.dict", filepath.Join(i.LibraryDir(), "/KeyBindings/DefaultKeyBinding.dict"))
-			}
-
-			if optionsMap["show hidden files in finder"] {
-				i.Run("defaults write com.apple.finder AppleShowAllFiles -bool true")
-			}
-
-			if optionsMap["show directories on top in finder"] {
-				i.Run("defaults write com.apple.finder _FXSortFoldersFirst -bool true")
-			}
-			if optionsMap["show full posix paths in finder window title"] {
-				i.Run("defaults write com.apple.finder _FXShowPosixPathInTitle -bool true")
-			}
 			return nil
 		},
 	}

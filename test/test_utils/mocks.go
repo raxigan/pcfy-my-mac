@@ -15,6 +15,7 @@ type MockCommander struct {
 }
 
 func (c *MockCommander) TryPrint(prefix, text string) {
+	c.DefaultCommander.TryPrint(prefix, text)
 }
 
 func NewMockCommander() *MockCommander {
@@ -27,14 +28,14 @@ func (c *MockCommander) Run(command string) {
 
 	cmd := strings.Fields(command)[0]
 
-	fmt.Println(fmt.Sprintf("[%s] %s", common.Colored(common.Green, "RUN"), command))
-
 	switch cmd {
 	case "jq":
 		c.DefaultCommander.Run(command)
 	case "killall", "open", "clear", "defaults", "brew":
+		fmt.Println(fmt.Sprintf("[%s] %s", common.Colored(common.Green, "RUN"), command))
 		c.CommandsLog = append(c.CommandsLog, command)
 	case "plutil":
+		fmt.Println(fmt.Sprintf("[%s] %s", common.Colored(common.Green, "RUN"), command))
 		pwd, _ := os.Getwd()
 		c.CommandsLog = append(c.CommandsLog, strings.ReplaceAll(command, pwd, ""))
 	default:

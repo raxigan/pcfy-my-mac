@@ -17,14 +17,19 @@ const (
 	PC   = "PC"
 	Mac  = "Mac"
 	None = "None"
+
+	Spotify           = "Spotify"
+	Finder            = "Finder"
+	SystemPreferences = "System Preferences"
+	AltTab            = "AltTab"
 )
 
 var AppToBundleMapping = map[string]string{
-	"spotify":            "com.spotify.client",
-	"finder":             "com.apple.finder",
-	"system preferences": "com.apple.systempreferences",
-	"iterm":              "com.googlecode.iterm2",
-	"alttab":             "com.lwouis.alt-tab-macos",
+	strings.ToLower(Spotify):           "com.spotify.client",
+	strings.ToLower(Finder):            "com.apple.finder",
+	strings.ToLower(SystemPreferences): "com.apple.systempreferences",
+	strings.ToLower(ITerm):             "com.googlecode.iterm2",
+	strings.ToLower(AltTab):            "com.lwouis.alt-tab-macos",
 }
 
 type IDE struct {
@@ -100,7 +105,7 @@ var IDEKeymaps = []IDE{IntelliJ(), IntelliJCE(), PyCharm(), GoLand(), Fleet()}
 var SystemSettings = []string{
 	"Enable Dock auto-hide (2s delay)",
 	`Change Dock minimize animation to "scale"`,
-	"Enable Home & End keys",
+	"Enable Home and End keys",
 	"Show hidden files in Finder",
 	"Show directories on top in Finder",
 	"Show full POSIX paths in Finder window title",

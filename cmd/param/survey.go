@@ -42,11 +42,11 @@ var questions = []*survey.Question{
 		Prompt: &survey.MultiSelect{
 			Message: "Apps to blacklist:",
 			Options: []string{
-				"Spotify",
-				"Finder",
-				"System Preferences",
-				"iTerm",
-				"AltTab",
+				Spotify,
+				Finder,
+				SystemPreferences,
+				ITerm,
+				AltTab,
 			},
 			Help: "Apps to be blacklisted e.g. they won't be appearing in the windows switcher to keep it clean. " +
 				"Open Alt-Tab to add more apps",
