@@ -2,9 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [ "feature/installation_script" ]
+    branches: [ "*" ]
   pull_request:
-    branches: [ "feature/installation_script" ]
+    branches: [ "*" ]
 
 jobs:
   build:
