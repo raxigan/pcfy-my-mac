@@ -1,0 +1,13 @@
+builds:
+  - id: "pcfy-my-mac"
+    main: "./main.go"
+    goarch:
+      - amd64
+      - arm64
+    goos:
+      - darwin
+archives:
+  - name_template: "{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+    format: binary
+    files:
+      - none*
