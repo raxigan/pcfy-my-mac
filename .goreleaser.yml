@@ -11,3 +11,5 @@ archives:
     format: binary
     files:
       - none*
+checksum:
+  disable: true
