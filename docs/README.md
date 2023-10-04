@@ -1,3 +1,5 @@
+### ***This is the old README, kept to show how everything started and to serve as a knowledge base.***
+
 # macOS PC mode
 
 All-in-one project to help you to get PC-like experience (known from Windows or Linux systems) on your macOS. Mostly for developers & other IT guys, but everyone is welcome. 
