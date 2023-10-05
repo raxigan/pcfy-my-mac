@@ -32,7 +32,11 @@ func main() {
 			log.Fatalf("Error: %s", err)
 		}
 
-		fileParams, _ = param.CollectYamlParams(yamlStr)
+		fileParams, err = param.CollectYamlParams(yamlStr)
+
+		if err != nil {
+			log.Fatalf("Error: %s", err)
+		}
 	}
 
 	params := param.CollectParams(fileParams)
@@ -44,7 +48,8 @@ func main() {
 
 func sampleYaml() {
 	yaml, _ := common.ReadFileFromEmbedFS("sample.yml")
-	yaml = "  " + strings.ReplaceAll(yaml, "\n", "\n  ")
+	tabbedNewLine := "\n  "
+	yaml = "  " + strings.ReplaceAll(yaml, "\n", tabbedNewLine)
 	fmt.Println(fmt.Sprintf("\n  This is a sample YAML-based config. Copy it, adjust and then use in --param flag.\n\n%s", yaml))
 }
 
