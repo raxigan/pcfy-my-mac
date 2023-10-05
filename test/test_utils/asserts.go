@@ -43,11 +43,11 @@ func AssertSlicesEqual(t *testing.T, slice1, slice2 []string) bool {
 
 func AssertErrorContains(t *testing.T, err error, expected string) {
 	if err == nil {
-		t.Fatalf("")
+		t.Fatalf("Expected error, but there's none")
 	}
 
 	if !strings.Contains(err.Error(), Trim(expected)) {
-		t.Fatalf(`EXPECTED: "%s" ACTUAL: "%s"`, err, expected)
+		t.Fatalf(`EXPECTED: "%s" ACTUAL: "%s"`, expected, err)
 	}
 }
 

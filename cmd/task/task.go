@@ -140,6 +140,7 @@ func ApplyAppLauncherRules() Task {
 		Execute: func(i install.Installation) error {
 			switch strings.ToLower(i.AppLauncher) {
 			case strings.ToLower(param.None):
+				ApplyRules(i, "app-launcher-none.json")
 			case strings.ToLower(param.Spotlight):
 				ApplyRules(i, "spotlight.json")
 			case strings.ToLower(param.Launchpad):
@@ -177,8 +178,8 @@ func ApplyKeyboardLayoutRules() Task {
 		Name: "Apply keyboard layout rules",
 		Execute: func(i install.Installation) error {
 			switch strings.ToLower(i.KeyboardLayout) {
-			case strings.ToLower(param.PC), strings.ToLower(param.None):
-			case strings.ToLower(param.Mac):
+			case strings.ToLower(param.PC):
+			case strings.ToLower(param.Mac), strings.ToLower(param.None):
 				jq := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" '.profiles |= map(if .name == \"%s\" then walk(if type == \"object\" and .conditions then del(.conditions[] | select(.identifiers[]?.is_built_in_keyboard)) else . end) else . end)' %s --indent 4 >tmp && mv tmp %s", i.ProfileName, i.ProfileName, i.KarabinerConfigFile(), i.KarabinerConfigFile())
 				i.Run(jq)
 			default:

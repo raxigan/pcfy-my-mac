@@ -1494,20 +1494,10 @@
             ]
           },
           {
-            "description": "Opt & Cmd swap (Launchpad)",
+            "description": "Opt & Cmd swap (Spotlight)",
             "manipulators": [
               {
-                "conditions": [
-                  {
-                    "type": "device_if",
-                    "identifiers": [
-                      {
-                        "is_built_in_keyboard": true,
-                        "description": "MacBook built-in keyboard"
-                      }
-                    ]
-                  }
-                ],
+                "conditions": [],
                 "from": {
                   "key_code": "left_option",
                   "modifiers": {
@@ -1521,25 +1511,10 @@
                     "key_code": "left_command"
                   }
                 ],
-                "to_if_alone": [
-                  {
-                    "apple_vendor_keyboard_key_code": "launchpad"
-                  }
-                ],
                 "type": "basic"
               },
               {
-                "conditions": [
-                  {
-                    "type": "device_if",
-                    "identifiers": [
-                      {
-                        "is_built_in_keyboard": true,
-                        "description": "MacBook built-in keyboard"
-                      }
-                    ]
-                  }
-                ],
+                "conditions": [],
                 "from": {
                   "key_code": "left_command",
                   "modifiers": {
@@ -1556,17 +1531,7 @@
                 "type": "basic"
               },
               {
-                "conditions": [
-                  {
-                    "type": "device_if",
-                    "identifiers": [
-                      {
-                        "is_built_in_keyboard": true,
-                        "description": "MacBook built-in keyboard"
-                      }
-                    ]
-                  }
-                ],
+                "conditions": [],
                 "from": {
                   "key_code": "right_option",
                   "modifiers": {
@@ -1580,25 +1545,10 @@
                     "key_code": "right_command"
                   }
                 ],
-                "to_if_alone": [
-                  {
-                    "apple_vendor_keyboard_key_code": "launchpad"
-                  }
-                ],
                 "type": "basic"
               },
               {
-                "conditions": [
-                  {
-                    "type": "device_if",
-                    "identifiers": [
-                      {
-                        "is_built_in_keyboard": true,
-                        "description": "MacBook built-in keyboard"
-                      }
-                    ]
-                  }
-                ],
+                "conditions": [],
                 "from": {
                   "key_code": "right_command",
                   "modifiers": {
@@ -1617,7 +1567,7 @@
             ]
           },
           {
-            "description": "Win (Open Launchpad)",
+            "description": "Win (Open Spotlight)",
             "manipulators": [
               {
                 "from": {
@@ -1629,34 +1579,6 @@
                 "to": [
                   {
                     "key_code": "left_command"
-                  }
-                ],
-                "to_if_alone": [
-                  {
-                    "apple_vendor_keyboard_key_code": "launchpad"
-                  }
-                ],
-                "type": "basic"
-              }
-            ]
-          },
-          {
-            "description": "Ctrl + Alt + T (Open Warp)",
-            "manipulators": [
-              {
-                "from": {
-                  "key_code": "t",
-                  "modifiers": {
-                    "mandatory": [
-                      "control",
-                      "option"
-                    ],
-                    "optional": []
-                  }
-                },
-                "to": [
-                  {
-                    "shell_command": "open -a Warp"
                   }
                 ],
                 "type": "basic"

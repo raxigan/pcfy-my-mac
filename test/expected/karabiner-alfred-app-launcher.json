@@ -1494,7 +1494,7 @@
             ]
           },
           {
-            "description": "Opt & Cmd swap (Spotlight)",
+            "description": "Opt & Cmd swap (Alfred)",
             "manipulators": [
               {
                 "conditions": [],
@@ -1513,7 +1513,10 @@
                 ],
                 "to_if_alone": [
                   {
-                    "apple_vendor_keyboard_key_code": "spotlight"
+                    "key_code": "spacebar",
+                    "modifiers": [
+                      "option"
+                    ]
                   }
                 ],
                 "type": "basic"
@@ -1552,7 +1555,10 @@
                 ],
                 "to_if_alone": [
                   {
-                    "apple_vendor_keyboard_key_code": "spotlight"
+                    "key_code": "spacebar",
+                    "modifiers": [
+                      "option"
+                    ]
                   }
                 ],
                 "type": "basic"
@@ -1577,7 +1583,7 @@
             ]
           },
           {
-            "description": "Win (Open Spotlight)",
+            "description": "Win (Open Alfred)",
             "manipulators": [
               {
                 "from": {
@@ -1593,30 +1599,10 @@
                 ],
                 "to_if_alone": [
                   {
-                    "apple_vendor_keyboard_key_code": "spotlight"
-                  }
-                ],
-                "type": "basic"
-              }
-            ]
-          },
-          {
-            "description": "Ctrl + Alt + T (Open iTerm)",
-            "manipulators": [
-              {
-                "from": {
-                  "key_code": "t",
-                  "modifiers": {
-                    "mandatory": [
-                      "control",
+                    "key_code": "spacebar",
+                    "modifiers": [
                       "option"
-                    ],
-                    "optional": []
-                  }
-                },
-                "to": [
-                  {
-                    "shell_command": "open -a iTerm"
+                    ]
                   }
                 ],
                 "type": "basic"
