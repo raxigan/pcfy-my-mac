@@ -13,3 +13,14 @@ archives:
       - none*
 checksum:
   disable: true
+brews:
+  - name: name
+    description: Get the PC-way of doing things on macOS
+    homepage: https://github.com/raxigan/pcfy-my-mac
+    tap:
+      owner: raxigan
+      name: homebrew-pcfy-my-mac
+    commit_author:
+      name: goreleaser
+      email: goreleaser@example.com
+    folder: Formula
