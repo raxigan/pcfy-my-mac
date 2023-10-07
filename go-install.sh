@@ -43,7 +43,7 @@ main() {
 
   if [ -f "main.go" ]; then
     echo "Running from local sources..."
-    go build -ldflags "-w"
+    go build -ldflags '-w'
 
     if [ $? -eq 1 ]; then
       echo "Compilation error"

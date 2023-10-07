@@ -8,7 +8,7 @@ builds:
       - darwin
 archives:
   - name_template: "{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
-    format: binary
+    format: tar.gz
     files:
       - none*
 checksum:

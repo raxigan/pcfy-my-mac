@@ -22,14 +22,30 @@ func ReadFileFromEmbedFS(src string) (string, error) {
 	return string(data), nil
 }
 
-func CopyFile(src, dst string) {
-	sourceFile, _ := os.Open(src)
+func CopyFile(src, dst string) error {
+	sourceFile, err := os.Open(src)
+
+	if err != nil {
+		return err
+	}
+
 	defer sourceFile.Close()
 
-	destFile, _ := os.Create(dst)
+	destFile, err := os.Create(dst)
+
+	if err != nil {
+		return err
+	}
+
 	defer destFile.Close()
 
-	io.Copy(destFile, sourceFile)
+	_, err = io.Copy(destFile, sourceFile)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func FileExists(filename string) bool {

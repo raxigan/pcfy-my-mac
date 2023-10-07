@@ -6,10 +6,16 @@ import (
 	"strings"
 )
 
-func RemoveFiles(paths ...string) {
+func RemoveFiles(paths ...string) error {
 	for _, path := range paths {
-		os.Remove(path)
+		err := os.RemoveAll(path)
+
+		if err != nil {
+			return err
+		}
 	}
+
+	return nil
 }
 
 func RemoveFilesWithExt(path, ext string) {

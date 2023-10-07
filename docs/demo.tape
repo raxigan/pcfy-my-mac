@@ -10,6 +10,8 @@ Set Height 370
 Hide
 Type "cd .."
 Enter
+Type "go build -ldflags '-w'"
+Enter
 Type "clear"
 Enter
 Show

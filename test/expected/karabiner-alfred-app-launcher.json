@@ -1467,33 +1467,6 @@
             ]
           },
           {
-            "description": "Backspace to go to previous directory in Finder",
-            "manipulators": [
-              {
-                "type": "basic",
-                "from": {
-                  "key_code": "delete_or_backspace"
-                },
-                "to": [
-                  {
-                    "key_code": "open_bracket",
-                    "modifiers": [
-                      "left_command"
-                    ]
-                  }
-                ],
-                "conditions": [
-                  {
-                    "type": "frontmost_application_if",
-                    "bundle_identifiers": [
-                      "^com.apple.finder"
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          {
             "description": "Opt & Cmd swap (Alfred)",
             "manipulators": [
               {

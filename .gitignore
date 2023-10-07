@@ -4,11 +4,8 @@
 pkg
 test/homedir/Library/**/keymaps/*
 test/homedir/Library/Preferences/*.plist
-test/homedir/.config/karabiner/karabiner-*.json
-test/homedir/.config/karabiner/assets/complex_modifications/*.json
+test/homedir/.config/**
 test/homedir/.fleet/**
-!test/homedir/.config/karabiner/karabiner.json
-!test/homedir/.config/karabiner/karabiner-default.json
 !.gitkeep
 custom-params.yml
 /pcfy-my-mac

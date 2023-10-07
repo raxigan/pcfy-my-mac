@@ -18,7 +18,7 @@ var questions = []*survey.Question{
 		Prompt: &survey.Select{
 			Message: "Your Terminal (Ctrl+Alt+T/Ctrl+Cmd+T shortcut):",
 			Options: []string{Default, ITerm, Warp, None},
-			Help:    `On Linux systems Ctrl+Alt+T typically starts the default terminal. Let me take care of that or select "None"`,
+			Help:    `On Linux systems Ctrl+Alt+T starts the default terminal. Let me take care of that or select "None"`,
 		},
 	},
 	{

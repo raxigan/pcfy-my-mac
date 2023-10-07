@@ -7,6 +7,7 @@ import (
 	"github.com/raxigan/pcfy-my-mac/cmd/common"
 	"github.com/raxigan/pcfy-my-mac/cmd/install"
 	"github.com/raxigan/pcfy-my-mac/cmd/param"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -71,7 +72,20 @@ func BackupKarabinerConfig() Task {
 		Execute: func(i install.Installation) error {
 			original := i.KarabinerConfigFile()
 			backupDest := i.KarabinerConfigBackupFile(i.InstallationTime)
-			common.CopyFile(original, backupDest)
+
+			configExists := common.FileExists(i.KarabinerConfigFile())
+
+			if !configExists {
+				os.MkdirAll(i.KarabinerComplexModificationsDir(), 0755)
+				common.CopyFileFromEmbedFS(filepath.Join("karabiner", "default.json"), original)
+			}
+
+			err := common.CopyFile(original, backupDest)
+
+			if err != nil {
+				return err
+			}
+
 			return nil
 		},
 	}
