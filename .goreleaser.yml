@@ -11,15 +11,13 @@ archives:
     format: tar.gz
     files:
       - none*
-checksum:
-  disable: true
 brews:
-  - name: name
+  - name: pcfy-my-mac
     description: Get the PC-way of doing things on macOS
     homepage: https://github.com/raxigan/pcfy-my-mac
-    tap:
+    repository:
       owner: raxigan
-      name: homebrew-pcfy-my-mac
+      name: homebrew-tap
     commit_author:
       name: goreleaser
       email: goreleaser@example.com
