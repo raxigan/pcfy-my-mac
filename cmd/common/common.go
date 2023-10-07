@@ -34,10 +34,6 @@ func PrintColored(color, msg string) {
 	fmt.Print(Colored(color, msg))
 }
 
-func PrintlnColored(color, msg string) {
-	fmt.Println(Colored(color, msg))
-}
-
 func Colored(color, msg string) string {
 	return color + msg + Reset
 }
