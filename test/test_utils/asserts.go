@@ -10,6 +10,12 @@ import (
 	"testing"
 )
 
+func AssertEquals(t *testing.T, actual, expected string) {
+	if actual != expected {
+		t.Fatalf("%s not equal to %s", actual, expected)
+	}
+}
+
 func AssertFilesEqual(t *testing.T, path1, path2 string) {
 
 	keymapsEqual, err := compareFilesBySHASum(path1, path2)

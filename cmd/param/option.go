@@ -125,7 +125,7 @@ func IdeKeymapOptions() []string {
 func IdeKeymapByFullName(fullName string) (IDE, error) {
 
 	for _, e := range IDEKeymaps {
-		if strings.ToLower(e.FullName) == strings.ToLower(fullName) {
+		if ToSimpleParamName(e.FullName) == ToSimpleParamName(fullName) {
 			return e, nil
 		}
 	}

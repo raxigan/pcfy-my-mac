@@ -9,16 +9,13 @@ func ValidateParamValues(param string, values *[]string, validValues []string) e
 
 	if values != nil && len(*values) != 0 {
 
-		vals := toLowerSlice(*values)
-		valids := toLowerSlice(validValues)
-
 		validMap := make(map[string]bool)
-		for _, v := range valids {
+		for _, v := range toLowerSlice(validValues) {
 			validMap[v] = true
 		}
 
 		var invalidValues []string
-		for _, val := range vals {
+		for _, val := range toLowerSlice(*values) {
 			if !validMap[val] {
 				invalidValues = append(invalidValues, val)
 			}
@@ -35,7 +32,7 @@ func ValidateParamValues(param string, values *[]string, validValues []string) e
 
 func toLowerSlice(slice []string) []string {
 	for i, s := range slice {
-		slice[i] = strings.ToLower(s)
+		slice[i] = ToSimpleParamName(s)
 	}
 	return slice
 }

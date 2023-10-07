@@ -360,11 +360,9 @@ func ApplySystemSettings() Task {
 		Name: "Apply system settings",
 		Execute: func(i install.Installation) error {
 			for _, value := range i.SystemSettings {
-				loweredAndSnaked := strings.TrimSpace(strings.ReplaceAll(strings.ToLower(value), " ", "-"))
-				noBrackets := strings.ReplaceAll(strings.ReplaceAll(loweredAndSnaked, "(", ""), ")", "")
-				noQuotes := strings.ReplaceAll(noBrackets, "\"", "")
+				simpleParamName := param.ToSimpleParamName(value)
 
-				switch noQuotes {
+				switch simpleParamName {
 				case "enable-dock-auto-hide-2s-delay":
 					{
 						i.Run("defaults write com.apple.dock autohide -bool true")

@@ -7,7 +7,6 @@ import (
 	"github.com/raxigan/pcfy-my-mac/cmd/common"
 	"github.com/raxigan/pcfy-my-mac/cmd/install"
 	"github.com/raxigan/pcfy-my-mac/cmd/param"
-	"log"
 	"os"
 	"strings"
 )
@@ -23,26 +22,15 @@ func main() {
 		os.Exit(0)
 	}
 
-	fileParams := param.FileParams{}
+	params, err := param.CollectParams(*paramsFile)
 
-	if *paramsFile != "" {
-		yamlStr, err := common.TextFromFile(*paramsFile)
-
-		if err != nil {
-			log.Fatalf("Error: %s", err)
-		}
-
-		fileParams, err = param.CollectYamlParams(yamlStr)
-
-		if err != nil {
-			log.Fatalf("Error: %s", err)
-		}
-	}
-
-	params := param.CollectParams(fileParams)
-
-	handleError(
-		cmd.Launch(install.DefaultHomeDir(), install.NewDefaultCommander(*verbose), install.DefaultTimeProvider{}, params),
+	handleError(err)
+	handleError(cmd.Launch(
+		install.DefaultHomeDir(),
+		install.NewDefaultCommander(*verbose),
+		install.DefaultTimeProvider{},
+		params,
+	),
 	)
 }
 

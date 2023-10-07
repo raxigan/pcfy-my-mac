@@ -6,6 +6,7 @@ import (
 	"github.com/raxigan/pcfy-my-mac/cmd/common"
 	"gopkg.in/yaml.v3"
 	"slices"
+	"strings"
 )
 
 type Params struct {
@@ -25,6 +26,26 @@ type FileParams struct {
 	SystemSettings *[]string `yaml:"system-settings"`
 	Blacklist      *[]string
 	Extra          map[string]string `yaml:",inline"`
+}
+
+func CollectParams(paramsFile string) (Params, error) {
+	fileParams := FileParams{}
+
+	if paramsFile != "" {
+		yamlStr, err := common.TextFromFile(paramsFile)
+
+		if err != nil {
+			return Params{}, err
+		}
+
+		fileParams, err = CollectYamlParams(yamlStr)
+
+		if err != nil {
+			return Params{}, err
+		}
+	}
+
+	return CollectSurveyParams(fileParams), nil
 }
 
 func CollectYamlParams(yml string) (FileParams, error) {
@@ -86,7 +107,7 @@ func CollectYamlParams(yml string) (FileParams, error) {
 	}, nil
 }
 
-func CollectParams(fileParams FileParams) Params {
+func CollectSurveyParams(fileParams FileParams) Params {
 
 	questionsToAsk := questions
 
@@ -117,4 +138,10 @@ func CollectParams(fileParams FileParams) Params {
 		Blacklist:      common.GetOrDefaultSlice(fp.Blacklist, fileParams.Blacklist),
 		SystemSettings: common.GetOrDefaultSlice(fp.SystemSettings, fileParams.SystemSettings),
 	}
+}
+
+func ToSimpleParamName(name string) string {
+	loweredAndSnaked := strings.TrimSpace(strings.ReplaceAll(strings.ToLower(name), " ", "-"))
+	noBrackets := strings.ReplaceAll(strings.ReplaceAll(loweredAndSnaked, "(", ""), ")", "")
+	return strings.ReplaceAll(noBrackets, "\"", "")
 }

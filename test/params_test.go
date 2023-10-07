@@ -63,3 +63,29 @@ func TestInstallInvalidKeyboardLayout(t *testing.T) {
 		pc
 		mac`)
 }
+
+func TestReadParamsFromYmlFile(t *testing.T) {
+
+	params, _ := param.CollectParams("params.yml")
+
+	test_utils.AssertEquals(t, params.AppLauncher, "alfred")
+	test_utils.AssertEquals(t, params.Terminal, "warp")
+	test_utils.AssertEquals(t, params.KeyboardLayout, "pc")
+	test_utils.AssertSlicesEqual(t, params.Ides, []string{"fleet"})
+	test_utils.AssertSlicesEqual(t, params.Blacklist, []string{
+		"Spotify",
+		"FINDER",
+		"com.apple.AppStore"},
+	)
+	test_utils.AssertSlicesEqual(t, params.SystemSettings, []string{
+		"enable-dock-auto-hide-2s-delay",
+		"change-dock-minimize-animation-to-scale"},
+	)
+}
+
+func TestReadParamsFromNonexistentFile(t *testing.T) {
+
+	_, err := param.CollectParams("i-do-not-exist.yml")
+
+	test_utils.AssertErrorContains(t, err, "open i-do-not-exist.yml: no such file or directory")
+}
