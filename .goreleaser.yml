@@ -1,6 +1,6 @@
 builds:
   - id: "pcfy-my-mac"
-    main: "./main.go"
+    main: "./pcfy.go"
     goarch:
       - amd64
       - arm64
