@@ -21,19 +21,21 @@ install_brew() {
     case ${opt:u} in
     Y* | "") /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" ;;
     N*)
-      echo "brew is required. Exiting."
+      echo "brew is required. Quitting..."
       return
       ;;
     *)
-      echo "Invalid choice. Shell change skipped."
+      echo "Invalid choice. Quitting..."
       return
       ;;
     esac
 
     exit 1
-  else
-    echo "${GREEN}brew installed${RESET}"
   fi
+}
+
+get_latest_release() {
+  curl --silent "https://api.github.com/repos/raxigan/pcfy-my-mac/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
 }
 
 main() {
@@ -41,8 +43,8 @@ main() {
   setup_color
   install_brew
 
-  if [ -f "main.go" ]; then
-    echo "Running from local sources..."
+  if [ -f "pcfy.go" ]; then
+    echo "Running from sources..."
     go build -ldflags '-w'
 
     if [ $? -eq 1 ]; then
@@ -52,9 +54,21 @@ main() {
 
     ./pcfy-my-mac "$@"
   else
-    echo "Running from remote package..."
-#     get it from releases packages instead
-    curl -fsSL -o my_binary https://raw.githubusercontent.com/raxigan/macos-pc-mode/feature/test-golang/tools/macos-pc-mode && chmod +x my_binary && ./my_binary && rm my_binary
+    latest=$(get_latest_release)
+    arch=$(uname -m)
+
+    if [[ "$arch" == "x86_64" ]]; then
+      arch="amd64"
+    fi
+
+    url="https://github.com/raxigan/pcfy-my-mac/releases/download/${latest}/pcfy-my-mac-${latest}-darwin-${arch}.tar.gz"
+
+    echo "Installing ${latest} release..."
+
+    curl -L $url | tar xz
+    chmod +x pcfy-my-mac
+    clear
+    ./pcfy-my-mac
   fi
 }
 
