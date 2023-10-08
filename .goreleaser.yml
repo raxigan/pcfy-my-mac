@@ -15,7 +15,7 @@ checksum:
   name_template: "{{ .ProjectName }}-checksums.txt"
 brews:
   - name: pcfy-my-mac
-    description: Get the PC-way of doing things on macOS
+    description: Get the PC-like experience on macOS
     homepage: https://github.com/raxigan/pcfy-my-mac
     repository:
       owner: raxigan

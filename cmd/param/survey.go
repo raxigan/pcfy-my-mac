@@ -30,11 +30,11 @@ var questions = []*survey.Question{
 		},
 	},
 	{
-		Name: "ides",
+		Name: "keymaps",
 		Prompt: &survey.MultiSelect{
-			Message: "IDE keymaps to install:",
+			Message: "Keymaps to install:",
 			Options: IdeKeymapOptions(),
-			Help:    "IDEs/tools to apply the PC keymaps for",
+			Help:    "IDEs/tools to apply the PC keymaps to",
 		},
 	},
 	{

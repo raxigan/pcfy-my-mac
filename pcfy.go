@@ -8,7 +8,6 @@ import (
 	"github.com/raxigan/pcfy-my-mac/cmd/install"
 	"github.com/raxigan/pcfy-my-mac/cmd/param"
 	"os"
-	"strings"
 )
 
 func main() {
@@ -17,10 +16,7 @@ func main() {
 	paramsFile := flag.String("params", "", "Path to a YAML file containing installer parameters")
 	flag.Parse()
 
-	if *showSampleYaml {
-		sampleYaml()
-		os.Exit(0)
-	}
+	handleSampleYamlParam(showSampleYaml)
 
 	params, err := param.CollectParams(*paramsFile)
 	commander := install.NewDefaultCommander(*verbose)
@@ -35,11 +31,16 @@ func main() {
 	)
 }
 
-func sampleYaml() {
+func handleSampleYamlParam(showSampleYaml *bool) {
+	if *showSampleYaml {
+		printSampleYaml()
+		os.Exit(0)
+	}
+}
+
+func printSampleYaml() {
 	yaml, _ := common.ReadFileFromEmbedFS("sample.yml")
-	tabbedNewLine := "\n  "
-	yaml = "  " + strings.ReplaceAll(yaml, "\n", tabbedNewLine)
-	fmt.Println(fmt.Sprintf("\n  This is a sample YAML-based config. Copy it, adjust and then use in --param flag.\n\n%s", yaml))
+	fmt.Println(fmt.Sprintf("This is a sample YAML-based config. Copy it, adjust and then use in --param flag.\n\n%s", yaml))
 }
 
 func handleError(err error, commander install.Commander) {

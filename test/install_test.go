@@ -18,7 +18,7 @@ func TestInstallWithMacKeyboardLayout(t *testing.T) {
 		AppLauncher:    "none",
 		Terminal:       "none",
 		KeyboardLayout: "mac",
-		Ides:           []string{},
+		Keymaps:        []string{},
 		Blacklist:      []string{},
 		SystemSettings: []string{},
 	}
@@ -37,7 +37,7 @@ func TestInstallWithNoneKeyboardLayout(t *testing.T) {
 		AppLauncher:    "none",
 		Terminal:       "none",
 		KeyboardLayout: "none",
-		Ides:           []string{},
+		Keymaps:        []string{},
 		Blacklist:      []string{},
 		SystemSettings: []string{},
 	}
@@ -56,7 +56,7 @@ func TestInstallWithPcKeyboardLayout(t *testing.T) {
 		AppLauncher:    "none",
 		Terminal:       "none",
 		KeyboardLayout: "pc",
-		Ides:           []string{},
+		Keymaps:        []string{},
 		Blacklist:      []string{},
 		SystemSettings: []string{},
 	}
@@ -75,7 +75,7 @@ func TestInstallWithUnknownKeyboardLayout(t *testing.T) {
 		AppLauncher:    "none",
 		Terminal:       "none",
 		KeyboardLayout: "unknown",
-		Ides:           []string{},
+		Keymaps:        []string{},
 		Blacklist:      []string{},
 		SystemSettings: []string{},
 	}
@@ -96,7 +96,7 @@ func TestInstallWithSpotlightAppLauncher(t *testing.T) {
 		AppLauncher:    "spotlight",
 		Terminal:       "none",
 		KeyboardLayout: "none",
-		Ides:           []string{},
+		Keymaps:        []string{},
 		Blacklist:      []string{},
 		SystemSettings: []string{},
 	}
@@ -115,7 +115,7 @@ func TestInstallWithLaunchpadAppLauncher(t *testing.T) {
 		AppLauncher:    "launchpad",
 		Terminal:       "none",
 		KeyboardLayout: "none",
-		Ides:           []string{},
+		Keymaps:        []string{},
 		Blacklist:      []string{},
 		SystemSettings: []string{},
 	}
@@ -134,7 +134,7 @@ func TestInstallWithAlfredAppLauncher(t *testing.T) {
 		AppLauncher:    "alfred",
 		Terminal:       "none",
 		KeyboardLayout: "none",
-		Ides:           []string{},
+		Keymaps:        []string{},
 		Blacklist:      []string{},
 		SystemSettings: []string{},
 	}
@@ -153,7 +153,7 @@ func TestInstallWithUnknownAppLauncher(t *testing.T) {
 		AppLauncher:    "unknown",
 		Terminal:       "none",
 		KeyboardLayout: "none",
-		Ides:           []string{},
+		Keymaps:        []string{},
 		Blacklist:      []string{},
 		SystemSettings: []string{},
 	}
@@ -169,7 +169,7 @@ func TestInstallWithDefaultTerminal(t *testing.T) {
 		AppLauncher:    "none",
 		Terminal:       "default",
 		KeyboardLayout: "none",
-		Ides:           []string{},
+		Keymaps:        []string{},
 		Blacklist:      []string{},
 		SystemSettings: []string{},
 	}
@@ -188,7 +188,7 @@ func TestInstallWithItermTerminal(t *testing.T) {
 		AppLauncher:    "none",
 		Terminal:       "iterm",
 		KeyboardLayout: "none",
-		Ides:           []string{},
+		Keymaps:        []string{},
 		Blacklist:      []string{},
 		SystemSettings: []string{},
 	}
@@ -207,7 +207,7 @@ func TestInstallWithWarpTerminal(t *testing.T) {
 		AppLauncher:    "none",
 		Terminal:       "warp",
 		KeyboardLayout: "none",
-		Ides:           []string{},
+		Keymaps:        []string{},
 		Blacklist:      []string{},
 		SystemSettings: []string{},
 	}
@@ -226,7 +226,7 @@ func TestInstallMany(t *testing.T) {
 		AppLauncher:    "alfred",
 		Terminal:       "warp",
 		KeyboardLayout: "pc",
-		Ides:           param.IdeKeymapOptions(),
+		Keymaps:        param.IdeKeymapOptions(),
 		Blacklist:      []string{"Spotify", "FINDER", "com.apple.AppStore"},
 		SystemSettings: []string{
 			"Enable Dock auto-hide (2s delay)",

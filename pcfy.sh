@@ -38,6 +38,24 @@ get_latest_release() {
   curl --silent "https://api.github.com/repos/raxigan/pcfy-my-mac/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
 }
 
+run_latest_release() {
+  latest=$(get_latest_release)
+  arch=$(uname -m)
+
+  if [[ "$arch" == "x86_64" ]]; then
+    arch="amd64"
+  fi
+
+  url="https://github.com/raxigan/pcfy-my-mac/releases/download/${latest}/pcfy-my-mac-${latest}-darwin-${arch}.tar.gz"
+
+  echo "Installing ${latest} release..."
+
+  curl -L $url | tar xz
+  chmod +x pcfy-my-mac
+  clear
+  ./pcfy-my-mac
+}
+
 main() {
   clear
   setup_color
@@ -54,21 +72,7 @@ main() {
 
     ./pcfy-my-mac "$@"
   else
-    latest=$(get_latest_release)
-    arch=$(uname -m)
-
-    if [[ "$arch" == "x86_64" ]]; then
-      arch="amd64"
-    fi
-
-    url="https://github.com/raxigan/pcfy-my-mac/releases/download/${latest}/pcfy-my-mac-${latest}-darwin-${arch}.tar.gz"
-
-    echo "Installing ${latest} release..."
-
-    curl -L $url | tar xz
-    chmod +x pcfy-my-mac
-    clear
-    ./pcfy-my-mac
+    run_latest_release
   fi
 }
 
