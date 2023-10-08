@@ -23,14 +23,15 @@ func main() {
 	}
 
 	params, err := param.CollectParams(*paramsFile)
+	commander := install.NewDefaultCommander(*verbose)
 
-	handleError(err)
+	handleError(err, commander)
 	handleError(cmd.Launch(
 		install.DefaultHomeDir(),
-		install.NewDefaultCommander(*verbose),
+		commander,
 		install.DefaultTimeProvider{},
 		params,
-	),
+	), commander,
 	)
 }
 
@@ -41,9 +42,9 @@ func sampleYaml() {
 	fmt.Println(fmt.Sprintf("\n  This is a sample YAML-based config. Copy it, adjust and then use in --param flag.\n\n%s", yaml))
 }
 
-func handleError(err error) {
+func handleError(err error, commander install.Commander) {
 	if err != nil {
-		fmt.Printf("Error: %s", err)
+		commander.TryLog(install.ErrMsg, fmt.Sprintf("%s", err))
 		os.Exit(1)
 	}
 }

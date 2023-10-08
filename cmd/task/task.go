@@ -175,11 +175,11 @@ func ApplyAppLauncherRules() Task {
 							common.CopyFileFromEmbedFS("alfred/prefs.plist", e)
 						}
 					} else {
-						common.PrintColored(common.Yellow, fmt.Sprintf("Alfred app not found. Skipping..."))
+						i.TryLog(install.WarnMsg, "Alfred app not found. Skipping...")
 					}
 				}
 			default:
-				return errors.New("Unknown value app launcher: " + i.AppLauncher)
+				return errors.New("Unknown app launcher: " + i.AppLauncher)
 			}
 
 			return nil
@@ -414,7 +414,7 @@ func InstallIdeKeymap(i install.Installation, ide param.IDE) error {
 	}
 
 	if len(destDirs) == 0 {
-		common.PrintColored(common.Yellow, fmt.Sprintf("%s not found. Skipping...", ide.FullName))
+		i.TryLog(install.WarnMsg, fmt.Sprintf("%s not found. Skipping...", ide.FullName))
 		return nil
 	}
 

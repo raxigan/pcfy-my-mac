@@ -9,5 +9,21 @@
 </a>
 </p>
 
-
 <img src="docs/demo.gif" alt="demo" width="100%"/>
+
+## Installation
+
+### [Homebrew](https://brew.sh/)
+
+```shell
+brew tap raxigan/tap
+brew install pcfy-my-mac
+```
+
+### Script
+Requires special terminal permissions
+```shell
+curl -s https://raw.githubusercontent.com/raxigan/pcfy-my-mac/main/install.sh | sudo bash
+```
+
+![terminal_permissions.png](docs/terminal_permissions.png)

@@ -14,8 +14,8 @@ type MockCommander struct {
 	CommandsLog      []string
 }
 
-func (c *MockCommander) TryPrint(prefix, text string) {
-	c.DefaultCommander.TryPrint(prefix, text)
+func (c *MockCommander) TryLog(prefix install.LogMessage, text string) {
+	c.DefaultCommander.TryLog(prefix, text)
 }
 
 func NewMockCommander() *MockCommander {
@@ -32,7 +32,7 @@ func (c *MockCommander) Run(command string) {
 	case "jq":
 		c.DefaultCommander.Run(command)
 	case "killall", "open", "clear", "defaults", "brew":
-		fmt.Println(fmt.Sprintf("[%s] %s", common.Colored(common.Green, "RUN"), command))
+		c.DefaultCommander.TryLog(install.CmdMsg, command)
 		c.CommandsLog = append(c.CommandsLog, command)
 	case "plutil":
 		fmt.Println(fmt.Sprintf("[%s] %s", common.Colored(common.Green, "RUN"), command))

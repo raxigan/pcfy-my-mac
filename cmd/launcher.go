@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/raxigan/pcfy-my-mac/cmd/common"
 	"github.com/raxigan/pcfy-my-mac/cmd/install"
 	"github.com/raxigan/pcfy-my-mac/cmd/param"
 	"github.com/raxigan/pcfy-my-mac/cmd/task"
@@ -18,13 +17,7 @@ func Launch(homeDir install.HomeDir, commander install.Commander, tp install.Tim
 		InstallationTime: tp.Now(),
 	}
 
-	err := Install(installation)
-
-	if err != nil {
-		commander.TryPrint(common.Colored(common.Red, "ERROR"), fmt.Sprintf("%s", err))
-	}
-
-	return err
+	return Install(installation)
 }
 
 func Install(i install.Installation) error {
@@ -54,7 +47,7 @@ func Install(i install.Installation) error {
 	}
 
 	for _, t := range tasks {
-		i.Commander.TryPrint(common.Colored(common.Blue, "TASK"), t.Name)
+		i.Commander.TryLog(install.TaskMsg, t.Name)
 
 		err := t.Execute(i)
 

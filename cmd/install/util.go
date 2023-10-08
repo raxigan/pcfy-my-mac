@@ -27,7 +27,7 @@ type Commander interface {
 	Run(command string)
 	Exists(command string) bool
 	Exit(code int)
-	TryPrint(prefix, text string)
+	TryLog(msgType LogMessage, text string)
 }
 
 type DefaultCommander struct {
@@ -44,19 +44,19 @@ func NewDefaultCommander(verbose bool) *DefaultCommander {
 
 func (c *DefaultCommander) Run(command string) {
 
-	c.TryPrint(common.Colored(common.Green, "RUN"), command)
+	c.TryLog(CmdMsg, command)
 
 	out, err := exec.Command("/bin/bash", "-c", command).CombinedOutput()
 
 	if strings.Fields(command)[0] != "killall" && err != nil {
 		var exitErr *exec.ExitError
 		if errors.As(err, &exitErr) {
-			c.TryPrint(common.Colored(common.Red, "STDERR"), string(out))
+			c.TryLog(StdErrMsg, string(out))
 			os.Exit(1)
 		}
 	}
 
-	c.TryPrint(common.Colored(common.Yellow, "STDOUT"), string(out))
+	c.TryLog(StdOutMsg, string(out))
 }
 
 func (c *DefaultCommander) Exists(command string) bool {
@@ -72,10 +72,32 @@ func (c *DefaultCommander) Exit(code int) {
 	os.Exit(code)
 }
 
-func (c *DefaultCommander) TryPrint(prefix, output string) {
-	if !c.Verbose && c.Progress != nil {
+var (
+	TaskMsg   = LogMessage{"TASK", common.Blue}
+	CmdMsg    = LogMessage{"CMD", common.Green}
+	WarnMsg   = LogMessage{"WARN", common.Yellow}
+	StdOutMsg = LogMessage{"STDOUT", common.Purple}
+
+	ErrMsg    = LogMessage{"ERROR", common.Red}
+	StdErrMsg = LogMessage{"STDERR", common.Red}
+)
+
+type LogMessage struct {
+	msgType string
+	color   string
+}
+
+func (c *DefaultCommander) TryLog(logMsg LogMessage, output string) {
+
+	if logMsg.msgType == "ERROR" || logMsg.msgType == "STDERR" {
+		log(logMsg, output)
+	} else if !c.Verbose && c.Progress != nil {
 		c.Progress.Add(4)
 	} else if len(output) != 0 {
-		fmt.Println(fmt.Sprintf("[%s] %s", prefix, output))
+		log(logMsg, output)
 	}
+}
+
+func log(msg LogMessage, output string) {
+	fmt.Println(fmt.Sprintf("[%s] %s", common.Colored(msg.color, msg.msgType), output))
 }

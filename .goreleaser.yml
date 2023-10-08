@@ -11,6 +11,8 @@ archives:
     format: tar.gz
     files:
       - none*
+checksum:
+  name_template: "{{ .ProjectName }}-checksums.txt"
 brews:
   - name: pcfy-my-mac
     description: Get the PC-way of doing things on macOS

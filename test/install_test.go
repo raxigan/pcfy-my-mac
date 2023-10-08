@@ -160,7 +160,7 @@ func TestInstallWithUnknownAppLauncher(t *testing.T) {
 
 	_, _, err := runInstaller(t, params)
 
-	test_utils.AssertErrorContains(t, err, "Unknown value app launcher: unknown")
+	test_utils.AssertErrorContains(t, err, "Unknown app launcher: unknown")
 }
 
 func TestInstallWithDefaultTerminal(t *testing.T) {

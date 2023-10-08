@@ -12,6 +12,7 @@ const Red = "\033[31m"
 const Blue = "\033[34m"
 const Green = "\033[32m"
 const Cyan = "\033[36m"
+const Purple = "\033[35m"
 const Reset = "\033[0m"
 
 func GetOrDefaultString(launcher string, launcher2 *string) string {
