@@ -89,7 +89,7 @@ type LogMessage struct {
 
 func (c *DefaultCommander) TryLog(logMsg LogMessage, output string) {
 
-	if logMsg.msgType == "ERROR" || logMsg.msgType == "STDERR" {
+	if logMsg.msgType == ErrMsg.msgType || logMsg.msgType == StdErrMsg.msgType {
 		log(logMsg, output)
 	} else if !c.Verbose && c.Progress != nil {
 		c.Progress.Add(4)

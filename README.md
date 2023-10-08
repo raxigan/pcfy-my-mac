@@ -9,6 +9,8 @@
 </a>
 </p>
 
+All-in-one project to help you to get PC-like experience (known from Windows or Linux systems) on your macOS. Mostly for tech guys, but everyone is welcome.
+
 <img src="docs/demo.gif" alt="demo" width="100%"/>
 
 ## Installation
@@ -16,8 +18,7 @@
 ### [Homebrew](https://brew.sh/)
 
 ```shell
-brew tap raxigan/tap
-brew install pcfy-my-mac
+brew install raxigan/tap/pcfy-my-mac
 ```
 
 ### Script
