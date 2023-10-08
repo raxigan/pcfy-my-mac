@@ -1,4 +1,5 @@
 Output demo.gif
+Set Theme "Afterglow"
 Set Padding 14
 Set TypingSpeed 100ms
 Set FontSize 14
