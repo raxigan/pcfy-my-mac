@@ -215,6 +215,10 @@
     {
       "key": "cmd-shift-f",
       "trigger": "-find-in-path"
+    },
+    {
+      "key": "shift-f10",
+      "trigger": "run/current-file"
     }
   ]
 }

@@ -1,3 +1,11 @@
 *.iml
 .idea
 .gitconfig
+pkg
+test/homedir/Library/**/keymaps/*
+test/homedir/Library/Preferences/*.plist
+test/homedir/.config/**
+test/homedir/.fleet/**
+!.gitkeep
+custom-params.yml
+/pcfy-my-mac

@@ -1,0 +1,26 @@
+builds:
+  - id: "pcfy-my-mac"
+    main: "./pcfy.go"
+    goarch:
+      - amd64
+      - arm64
+    goos:
+      - darwin
+archives:
+  - name_template: "{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+    format: tar.gz
+    files:
+      - none*
+checksum:
+  name_template: "{{ .ProjectName }}-checksums.txt"
+brews:
+  - name: pcfy-my-mac
+    description: Get the PC-way of doing things on macOS
+    homepage: https://github.com/raxigan/pcfy-my-mac
+    repository:
+      owner: raxigan
+      name: homebrew-tap
+    commit_author:
+      name: goreleaser
+      email: goreleaser@example.com
+    folder: Formula

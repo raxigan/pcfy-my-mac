@@ -15,5 +15,5 @@
  /* Shift + Ctrl + Home Button */
 "$^\UF729" = "moveToBeginningOfDocumentAndModifySelection:";
 /* Shift + Ctrl + End Button*/
-"$^\UF72B" = "moveToEndOfDocumentAndModifySelection:";
+"$^\UF72B" = "moveToEndOfDocumentAndModifySelection:"; 
 }

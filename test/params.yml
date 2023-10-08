@@ -1,0 +1,9 @@
+app-launcher: alfred
+terminal: warp
+keyboard-layout: pc
+ides:
+  - Fleet
+blacklist: [ "Spotify", "FINDER", "com.apple.AppStore" ]
+system-settings:
+  - "Enable Dock auto-hide (2s delay)"
+  - "change-dock-minimize-animation-to-scale"
