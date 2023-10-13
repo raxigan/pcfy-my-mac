@@ -44,13 +44,13 @@ brew install raxigan/tap/pcfy-my-mac
 Requires [special terminal permissions](#Terminal-dev-permissions)
 
 ```shell
-curl -s https://raw.githubusercontent.com/raxigan/pcfy-my-mac/main/pcfy.sh | sudo bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/raxigan/pcfy-my-mac/main/pcfy.sh)"
 ```
 
 ### Go binary
 
 ```shell
-go install github.com/raxigan/pcfy-my-mac@latest 
+go install github.com/raxigan/pcfy-my-mac@latest
 ```
 
 ### From sources
