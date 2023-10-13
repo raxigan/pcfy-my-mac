@@ -57,12 +57,12 @@ run_latest_release() {
 }
 
 main() {
-  clear
+
   setup_color
   install_brew
 
   if [ -f "pcfy.go" ]; then
-    echo "Running from sources..."
+    echo "Found pcfy.go file, running from sources..."
     go build -ldflags '-w'
 
     if [ $? -eq 1 ]; then

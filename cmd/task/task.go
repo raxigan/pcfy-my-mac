@@ -284,7 +284,7 @@ func CopyRectanglePreferences() Task {
 		Name: "Install Rectangle preferences",
 		Execute: func(i install.Installation) error {
 			rectanglePlist := filepath.Join(i.PreferencesDir(), "com.knollsoft.Rectangle.plist")
-			common.CopyFileFromEmbedFS("rectangle/Settings.xml", rectanglePlist)
+			common.CopyFileFromEmbedFS("rectangle/settings.xml", rectanglePlist)
 
 			plutilCmdRectangle := fmt.Sprintf("plutil -convert binary1 %s", rectanglePlist)
 			i.Run(plutilCmdRectangle)
@@ -319,7 +319,7 @@ func InstallAltTabPreferences() Task {
 		Name: "Install AltTab preferences",
 		Execute: func(i install.Installation) error {
 			altTabPlist := filepath.Join(i.PreferencesDir(), "/com.lwouis.alt-tab-macos.plist")
-			common.CopyFileFromEmbedFS("alt-tab/Settings.xml", altTabPlist)
+			common.CopyFileFromEmbedFS("alt-tab/settings.xml", altTabPlist)
 
 			var mappedStrings []string
 			for _, app := range i.Blacklist {
