@@ -1122,6 +1122,30 @@
             ]
           },
           {
+            "description": "Alt + F4",
+            "manipulators": [
+              {
+                "from": {
+                  "key_code": "f4",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "q",
+                    "modifiers": [
+                      "left_command"
+                    ]
+                  }
+                ],
+                "type": "basic"
+              }
+            ]
+          },
+          {
             "description": "Win + L (Lock Screen)",
             "manipulators": [
               {

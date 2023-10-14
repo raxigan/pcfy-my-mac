@@ -1,6 +1,6 @@
 <div align="center">
 
-<div align="center" style="width: 60%; padding: 5px; margin: auto;">
+<div align="center" style="width: 40%; padding: 5px; margin: auto;">
 
 # PC'fy my mac
 
