@@ -44,6 +44,11 @@ func NewDefaultCommander(verbose bool) *DefaultCommander {
 
 func (c *DefaultCommander) Run(command string) {
 
+	if command == "clear" {
+		clearConsole()
+		return
+	}
+
 	c.TryLog(CmdMsg, command)
 
 	out, err := exec.Command("/bin/bash", "-c", command).CombinedOutput()
@@ -57,6 +62,12 @@ func (c *DefaultCommander) Run(command string) {
 	}
 
 	c.TryLog(StdOutMsg, string(out))
+}
+
+func clearConsole() {
+	cmd := exec.Command("clear")
+	cmd.Stdout = os.Stdout
+	cmd.Run()
 }
 
 func (c *DefaultCommander) Exists(command string) bool {
@@ -88,7 +99,6 @@ type LogMessage struct {
 }
 
 func (c *DefaultCommander) TryLog(logMsg LogMessage, output string) {
-
 	if logMsg.msgType == ErrMsg.msgType || logMsg.msgType == StdErrMsg.msgType {
 		log(logMsg, output)
 	} else if !c.Verbose && c.Progress != nil {

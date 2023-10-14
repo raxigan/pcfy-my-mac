@@ -70,7 +70,16 @@ var questions = []*survey.Question{
 				}
 				return ""
 			},
-			Help:     "Additional macOS settings to make your life better",
+			Help: `
+Additional macOS settings to make your life better
+
+• Enable Dock auto-hide (2s delay) - partially disable Dock
+• Change Dock minimize animation to "scale" - if you don't like animations
+• Enable Home & End keys - they have no action assigned by default
+• Show hidden files in Finder - always show dot-files
+• Show directories on top in Finder - show directories on top
+• Show full POSIX paths in Finder - show full path instead of current directory name
+`,
 			PageSize: 15,
 		},
 	},

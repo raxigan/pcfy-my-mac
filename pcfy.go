@@ -18,8 +18,9 @@ func main() {
 
 	handleSampleYamlParam(showSampleYaml)
 
-	params, err := param.CollectParams(*paramsFile)
 	commander := install.NewDefaultCommander(*verbose)
+	commander.Run("clear")
+	params, err := param.CollectParams(*paramsFile)
 
 	handleError(err, commander)
 	handleError(cmd.Launch(
