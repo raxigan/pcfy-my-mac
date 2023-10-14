@@ -1,3 +1,7 @@
+<div align="center">
+
+<div align="center" style="width: 60%; padding: 5px; margin: auto;">
+
 # PC'fy my mac
 
 <p>
@@ -9,15 +13,21 @@
 </a>
 </p>
 
-All-in-one project to help you to get PC-like experience (known from Windows or Linux systems) on your macOS.
+
+All-in-one project to help you get **PC**-like experience (known from Windows or Linux systems) on your **macOS**.
+
+</div>
+</div>
 
 ---
 
 This is a set of configuration files for applications
 like [Karabiner-Elements](https://karabiner-elements.pqrs.org/), [AltTab](https://alt-tab-macos.netlify.app/)
 and [Rectangle](https://rectangleapp.com/)
-wrapped into an easy-to-use CLI tool that automates the whole setup process. It’s an ideal solution for those new to
-macOS or for users who frequently switch between macOS and Windows or Linux.
+wrapped into an easy-to-use CLI tool that automates the whole setup process. It’s an ideal solution for 
+those who are new to macOS or for users who frequently switch between macOS and Windows or Linux.
+This tool is also for you if macOS workspace management is not your cup of tea.
+
 You can think of this project as [Kinto](https://github.com/rbreaves/kinto), but in reverse.
 
 ## Features
@@ -99,6 +109,7 @@ List of shortcuts available immediately after installation.
   Win + L                     # Lock screen
   F2                          # Rename file in Finder
   F3/Shift + F3               # Move to next/previous ocurrence in text
+  Alt + F4                    # Quit application
   F5                          # Reload page in browser
   Win                         # Open preferred application launcher
   Ctrl + Alt + T              # Open preferred terminal
@@ -112,18 +123,25 @@ List of shortcuts available immediately after installation.
 the following permissions
 for your terminal. Just go to *System Settings* > *Privacy & Security* > *Developer Tools* and enable it:
 
-![terminal_permissions.png](docs/terminal_permissions.png)
+![terminal_permissions.png](docs/terminal-permissions.png)
 
 ## Troubleshooting
 
-TBD
+- Shortcuts from [the list](#shortcuts-list) do not work
+
+Verify the **PCfy** profile is selected in Karabiner-Elements:
+
+![karabiner-profile.png](docs/karabiner-profile.png)
+
+Check if ***Modify events*** options for your keyboard is enabled in *Karabiner-Elements* > *Settings* > *Devices*:
+
+![device-enabled.png](docs/device-enabled.png)
 
 ## Missing things:
 
 - Finder and Fleet keymaps are incomplete
-- Select files using Opt+LMB instead of Ctrl like you would on PC
+- Select files using Opt + LMB instead of Ctrl like you would on PC
 - Multicursor shortcut (2xCtrl in JetBrains tools on PC) is under 2xCmd
-- There's no Alt/Cmd+F4, use Win/Opt+Q instead - it's easy to add (I'm kind of used to it though)
 
 ## Acknowledgments
 
