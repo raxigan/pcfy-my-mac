@@ -13,7 +13,7 @@ type Params struct {
 	AppLauncher    string
 	Terminal       string
 	KeyboardLayout string
-	Ides           []string
+	Keymaps        []string
 	SystemSettings []string
 	Blacklist      []string
 }
@@ -22,7 +22,7 @@ type FileParams struct {
 	AppLauncher    *string `yaml:"app-launcher"`
 	Terminal       *string
 	KeyboardLayout *string `yaml:"keyboard-layout"`
-	Ides           *[]string
+	Keymaps        *[]string
 	SystemSettings *[]string `yaml:"system-settings"`
 	Blacklist      *[]string
 	Extra          map[string]string `yaml:",inline"`
@@ -86,7 +86,7 @@ func CollectYamlParams(yml string) (FileParams, error) {
 			return nil
 		},
 		func() error {
-			return ValidateParamValues("ides", fp.Ides, append(IdeKeymapOptions(), []string{"all"}...))
+			return ValidateParamValues("ides", fp.Keymaps, append(IdeKeymapOptions(), []string{"all"}...))
 		},
 		func() error {
 			return ValidateParamValues("system-settings", fp.SystemSettings, SystemSettings)
@@ -101,7 +101,7 @@ func CollectYamlParams(yml string) (FileParams, error) {
 		AppLauncher:    fp.AppLauncher,
 		Terminal:       fp.Terminal,
 		KeyboardLayout: fp.KeyboardLayout,
-		Ides:           fp.Ides,
+		Keymaps:        fp.Keymaps,
 		SystemSettings: fp.SystemSettings,
 		Blacklist:      fp.Blacklist,
 	}, nil
@@ -117,7 +117,7 @@ func CollectSurveyParams(fileParams FileParams) Params {
 		"appLauncher":    fileParams.AppLauncher != nil,
 		"terminal":       fileParams.Terminal != nil,
 		"keyboardLayout": fileParams.KeyboardLayout != nil,
-		"ides":           fileParams.Ides != nil,
+		"keymaps":        fileParams.Keymaps != nil,
 		"blacklist":      fileParams.Blacklist != nil,
 		"systemSettings": fileParams.SystemSettings != nil,
 	}
@@ -134,7 +134,7 @@ func CollectSurveyParams(fileParams FileParams) Params {
 		AppLauncher:    common.GetOrDefaultString(fp.AppLauncher, fileParams.AppLauncher),
 		Terminal:       common.GetOrDefaultString(fp.Terminal, fileParams.Terminal),
 		KeyboardLayout: common.GetOrDefaultString(fp.KeyboardLayout, fileParams.KeyboardLayout),
-		Ides:           common.GetOrDefaultSlice(fp.Ides, fileParams.Ides),
+		Keymaps:        common.GetOrDefaultSlice(fp.Keymaps, fileParams.Keymaps),
 		Blacklist:      common.GetOrDefaultSlice(fp.Blacklist, fileParams.Blacklist),
 		SystemSettings: common.GetOrDefaultSlice(fp.SystemSettings, fileParams.SystemSettings),
 	}

@@ -6,16 +6,19 @@ builds:
       - arm64
     goos:
       - darwin
+
 archives:
   - name_template: "{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
     format: tar.gz
     files:
       - none*
+
 checksum:
-  name_template: "{{ .ProjectName }}-checksums.txt"
+  name_template: "checksums.txt"
+
 brews:
   - name: pcfy-my-mac
-    description: Get the PC-way of doing things on macOS
+    description: Get the PC-like experience on macOS
     homepage: https://github.com/raxigan/pcfy-my-mac
     repository:
       owner: raxigan
@@ -24,3 +27,7 @@ brews:
       name: goreleaser
       email: goreleaser@example.com
     folder: Formula
+
+changelog:
+  filters:
+    include: [ ".*" ]

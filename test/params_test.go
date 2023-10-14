@@ -71,7 +71,7 @@ func TestReadParamsFromYmlFile(t *testing.T) {
 	test_utils.AssertEquals(t, params.AppLauncher, "alfred")
 	test_utils.AssertEquals(t, params.Terminal, "warp")
 	test_utils.AssertEquals(t, params.KeyboardLayout, "pc")
-	test_utils.AssertSlicesEqual(t, params.Ides, []string{"fleet"})
+	test_utils.AssertSlicesEqual(t, params.Keymaps, []string{"fleet"})
 	test_utils.AssertSlicesEqual(t, params.Blacklist, []string{
 		"Spotify",
 		"FINDER",

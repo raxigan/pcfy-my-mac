@@ -14,6 +14,7 @@ Type "go build -ldflags '-w'"
 Enter
 Type "clear"
 Enter
+Sleep 500ms
 Show
 
 # Run pcfy

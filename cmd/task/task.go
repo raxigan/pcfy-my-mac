@@ -68,7 +68,7 @@ func CloseKarabiner() Task {
 
 func BackupKarabinerConfig() Task {
 	return Task{
-		Name: "Do karabiner config backup",
+		Name: "Backup karabiner config",
 		Execute: func(i install.Installation) error {
 			original := i.KarabinerConfigFile()
 			backupDest := i.KarabinerConfigBackupFile(i.InstallationTime)
@@ -104,7 +104,7 @@ func DeleteExistingKarabinerProfile() Task {
 
 func CreateKarabinerProfile() Task {
 	return Task{
-		Name: "Delete existing Karabiner profile",
+		Name: "Create new Karabiner profile",
 		Execute: func(i install.Installation) error {
 			common.CopyFileFromEmbedFS("karabiner/karabiner-profile.json", "tmp")
 			addProfileJqCmd := fmt.Sprintf("jq '.profiles += $profile' %s --slurpfile profile tmp --indent 4 >INPUT.tmp && mv INPUT.tmp %s && rm tmp", i.KarabinerConfigFile(), i.KarabinerConfigFile())
@@ -116,7 +116,7 @@ func CreateKarabinerProfile() Task {
 
 func NameKarabinerProfile() Task {
 	return Task{
-		Name: "Delete existing Karabiner profile",
+		Name: "Rename new Karabiner profile",
 		Execute: func(i install.Installation) error {
 			common.CopyFileFromEmbedFS("karabiner/karabiner-profile.json", "tmp")
 			addProfileJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name == \"_PROFILE_NAME_\" then .name = \"%s\" else . end)' %s > tmp && mv tmp %s", i.ProfileName, i.KarabinerConfigFile(), i.KarabinerConfigFile())
@@ -260,8 +260,8 @@ func CopyIdeKeymaps() Task {
 	return Task{
 		Name: "Install IDE keymaps",
 		Execute: func(i install.Installation) error {
-			for _, ide := range i.Ides {
-				name, _ := param.IdeKeymapByFullName(ide)
+			for _, keymap := range i.Keymaps {
+				name, _ := param.IdeKeymapByFullName(keymap)
 				InstallIdeKeymap(i, name)
 			}
 			return nil
@@ -284,7 +284,7 @@ func CopyRectanglePreferences() Task {
 		Name: "Install Rectangle preferences",
 		Execute: func(i install.Installation) error {
 			rectanglePlist := filepath.Join(i.PreferencesDir(), "com.knollsoft.Rectangle.plist")
-			common.CopyFileFromEmbedFS("rectangle/Settings.xml", rectanglePlist)
+			common.CopyFileFromEmbedFS("rectangle/settings.xml", rectanglePlist)
 
 			plutilCmdRectangle := fmt.Sprintf("plutil -convert binary1 %s", rectanglePlist)
 			i.Run(plutilCmdRectangle)
@@ -319,7 +319,7 @@ func InstallAltTabPreferences() Task {
 		Name: "Install AltTab preferences",
 		Execute: func(i install.Installation) error {
 			altTabPlist := filepath.Join(i.PreferencesDir(), "/com.lwouis.alt-tab-macos.plist")
-			common.CopyFileFromEmbedFS("alt-tab/Settings.xml", altTabPlist)
+			common.CopyFileFromEmbedFS("alt-tab/settings.xml", altTabPlist)
 
 			var mappedStrings []string
 			for _, app := range i.Blacklist {

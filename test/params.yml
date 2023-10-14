@@ -1,7 +1,7 @@
 app-launcher: alfred
 terminal: warp
 keyboard-layout: pc
-ides:
+keymaps:
   - Fleet
 blacklist: [ "Spotify", "FINDER", "com.apple.AppStore" ]
 system-settings:

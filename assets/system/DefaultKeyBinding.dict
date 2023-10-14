@@ -1,19 +1,18 @@
 {
-/* Remap Home / End keys */
-/* Home Button*/
+/* Home */
 "\UF729" = "moveToBeginningOfLine:";
-/* End Button */
+/* End  */
 "\UF72B" = "moveToEndOfLine:";
-/* Shift + Home Button */
+/* Shift + Home */
 "$\UF729" = "moveToBeginningOfLineAndModifySelection:";
-/* Shift + End Button */
+/* Shift + End */
 "$\UF72B" = "moveToEndOfLineAndModifySelection:";
-/* Ctrl + Home Button */
+/* Ctrl + Home */
 "^\UF729" = "moveToBeginningOfDocument:";
-/* Ctrl + End Button */
+/* Ctrl + End */
 "^\UF72B" = "moveToEndOfDocument:";
- /* Shift + Ctrl + Home Button */
+/* Shift + Ctrl + Home */
 "$^\UF729" = "moveToBeginningOfDocumentAndModifySelection:";
-/* Shift + Ctrl + End Button*/
+/* Shift + Ctrl + End */
 "$^\UF72B" = "moveToEndOfDocumentAndModifySelection:"; 
 }
