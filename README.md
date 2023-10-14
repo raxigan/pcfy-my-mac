@@ -122,7 +122,7 @@ TBD
 
 - Finder and Fleet keymaps are incomplete
 - Select files using Opt+LMB instead of Ctrl like you would on PC
-- Multicursor shortcut (2xCtrl in Jetbrains tools on PC) is under 2xCmd
+- Multicursor shortcut (2xCtrl in JetBrains tools on PC) is under 2xCmd
 - There's no Alt/Cmd+F4, use Win/Opt+Q instead - it's easy to add (I'm kind of used to it though)
 
 ## Acknowledgments

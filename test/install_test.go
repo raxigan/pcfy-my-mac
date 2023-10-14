@@ -241,7 +241,7 @@ func TestInstallMany(t *testing.T) {
 	home, c, _ := runInstaller(t, params)
 
 	actual := home.KarabinerConfigFile()
-	expected := "expected/karabiner-expected-alfred-warp-pc.json"
+	expected := "expected/karabiner-alfred-warp-pc.json"
 
 	test_utils.AssertFilesEqual(t, actual, expected)
 
@@ -279,7 +279,7 @@ func runInstaller(t *testing.T, params param.Params) (install.HomeDir, test_util
 	homeDir := testHomeDir()
 	test_utils.RemoveFiles(filepath.Join(homeDir.Path, ".config"))
 	err := cmd.Launch(homeDir, &commander, test_utils.FakeTimeProvider{}, params)
-	t.Cleanup(func() { tearDown(homeDir) })
+	//t.Cleanup(func() { tearDown(homeDir) })
 	return homeDir, commander, err
 }
 

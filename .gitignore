@@ -9,3 +9,5 @@ test/homedir/.fleet/**
 !.gitkeep
 custom-params.yml
 /pcfy-my-mac
+**/DefaultKeyBinding.dict
+**/prefs.plist

@@ -68,7 +68,7 @@ func CloseKarabiner() Task {
 
 func BackupKarabinerConfig() Task {
 	return Task{
-		Name: "Do karabiner config backup",
+		Name: "Backup karabiner config",
 		Execute: func(i install.Installation) error {
 			original := i.KarabinerConfigFile()
 			backupDest := i.KarabinerConfigBackupFile(i.InstallationTime)
@@ -104,7 +104,7 @@ func DeleteExistingKarabinerProfile() Task {
 
 func CreateKarabinerProfile() Task {
 	return Task{
-		Name: "Delete existing Karabiner profile",
+		Name: "Create new Karabiner profile",
 		Execute: func(i install.Installation) error {
 			common.CopyFileFromEmbedFS("karabiner/karabiner-profile.json", "tmp")
 			addProfileJqCmd := fmt.Sprintf("jq '.profiles += $profile' %s --slurpfile profile tmp --indent 4 >INPUT.tmp && mv INPUT.tmp %s && rm tmp", i.KarabinerConfigFile(), i.KarabinerConfigFile())
@@ -116,7 +116,7 @@ func CreateKarabinerProfile() Task {
 
 func NameKarabinerProfile() Task {
 	return Task{
-		Name: "Delete existing Karabiner profile",
+		Name: "Rename new Karabiner profile",
 		Execute: func(i install.Installation) error {
 			common.CopyFileFromEmbedFS("karabiner/karabiner-profile.json", "tmp")
 			addProfileJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name == \"_PROFILE_NAME_\" then .name = \"%s\" else . end)' %s > tmp && mv tmp %s", i.ProfileName, i.KarabinerConfigFile(), i.KarabinerConfigFile())
