@@ -63,7 +63,7 @@ main() {
 
   if [ -f "pcfy.go" ]; then
     echo "Found pcfy.go file, running from sources..."
-    go build -ldflags '-w'
+    go build -ldflags "-w -X main.buildTime=$(date -u '+%Y-%m-%d_%I:%M:%S%p') -X main.commit=$(git rev-parse HEAD)"
 
     if [ $? -eq 1 ]; then
       echo "Compilation error"
