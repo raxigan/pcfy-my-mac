@@ -8,7 +8,7 @@ var questions = []*survey.Question{
 	{
 		Name: "appLauncher",
 		Prompt: &survey.Select{
-			Message: "Your App Launcher (Win/Opt key):",
+			Message: "Assign Win/Opt key action (open app launcher):",
 			Options: []string{Spotlight, Launchpad, Alfred, None},
 			Help:    `Select you application launcher which will be available under Win/Opt. Select "None" if you don't use any'`,
 		},
@@ -16,7 +16,7 @@ var questions = []*survey.Question{
 	{
 		Name: "terminal",
 		Prompt: &survey.Select{
-			Message: "Your Terminal (Ctrl+Alt+T/Ctrl+Cmd+T shortcut):",
+			Message: "Assign Ctrl+Alt+T/Ctrl+Cmd+T shortcut action (open terminal):",
 			Options: []string{Default, ITerm, Warp, None},
 			Help:    `On Linux systems Ctrl+Alt+T starts the default terminal. Let me take care of that or select "None"`,
 		},
@@ -24,7 +24,7 @@ var questions = []*survey.Question{
 	{
 		Name: "keyboardLayout",
 		Prompt: &survey.Select{
-			Message: "Your external keyboard layout:",
+			Message: "Specify the layout of your external keyboard:",
 			Options: []string{PC, Mac, None},
 			Help:    `The layout of your external keyboard to help adjust the setup. If you do not use any, just select "None"`,
 		},
@@ -32,7 +32,7 @@ var questions = []*survey.Question{
 	{
 		Name: "keymaps",
 		Prompt: &survey.MultiSelect{
-			Message: "Keymaps to install:",
+			Message: "Select keymaps to install:",
 			Options: IdeKeymapOptions(),
 			Help:    "IDEs/tools to apply the PC keymaps to",
 		},
@@ -40,7 +40,7 @@ var questions = []*survey.Question{
 	{
 		Name: "blacklist",
 		Prompt: &survey.MultiSelect{
-			Message: "Apps to blacklist:",
+			Message: "Select apps to be excluded from Alt-Tab switcher:",
 			Options: []string{
 				Spotify,
 				Finder,
@@ -48,14 +48,14 @@ var questions = []*survey.Question{
 				ITerm,
 				AltTab,
 			},
-			Help: "Apps to be blacklisted e.g. they won't be appearing in the windows switcher to keep it clean. " +
-				"Open Alt-Tab to add more apps",
+			Help: "Apps to be excluded (e.g. they won't appear in the Alt-Tab switcher) to keep the window list short and clean. " +
+				"Open Alt-Tab app to add more exclusions.",
 		},
 	},
 	{
 		Name: "systemSettings",
 		Prompt: &survey.MultiSelect{
-			Message: "System settings:",
+			Message: "Select additional system settings to apply:",
 			Options: []string{
 				"Enable Dock auto-hide (2s delay)",
 				`Change Dock minimize animation to "scale"`,

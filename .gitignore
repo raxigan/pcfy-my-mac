@@ -2,12 +2,8 @@
 .idea
 .gitconfig
 pkg
-test/homedir/Library/**/keymaps/*
-test/homedir/Library/Preferences/*.plist
-test/homedir/.config/**
-test/homedir/.fleet/**
+test/homedir/**
 !.gitkeep
 custom-params.yml
 /pcfy-my-mac
 **/DefaultKeyBinding.dict
-**/prefs.plist

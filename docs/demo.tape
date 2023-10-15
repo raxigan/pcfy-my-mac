@@ -4,7 +4,7 @@ Set TypingSpeed 100ms
 Set FontSize 14
 Set LineHeight 1.6
 Set Width 1000
-Set Height 370
+Set Height 390
 
 # Switch dir
 Hide
