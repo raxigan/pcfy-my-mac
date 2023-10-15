@@ -2,7 +2,7 @@
 
 <div align="center" style="width: 40%; padding: 5px; margin: auto;">
 
-# PC'fy my mac
+# PC'fy my Mac
 
 <p>
 <a href="https://github.com/raxigan/pcfy-my-mac/actions">
@@ -25,19 +25,19 @@ This is a set of configuration files for applications
 like [Karabiner-Elements](https://karabiner-elements.pqrs.org/), [AltTab](https://alt-tab-macos.netlify.app/)
 and [Rectangle](https://rectangleapp.com/)
 wrapped into an easy-to-use CLI tool that automates the whole setup process. It’s an ideal solution for 
-those who are new to macOS or for users who frequently switch between macOS and Windows or Linux.
-This tool is also for you if macOS workspace management is not your cup of tea.
+those who are new to macOS and for users who frequently switch between macOS and Windows or Linux.
+This is also perfect for you if macOS out-of-the-box workspace management isn’t really your thing.
 
-You can think of this project as [Kinto](https://github.com/rbreaves/kinto), but in reverse.
+You can think of this project as [Kinto](https://github.com/rbreaves/kinto), but in reverse and with more features.
 
 ## Features
 
-- **Keyboard shortcuts:** for system, Finder and browser (Chromium-based) actions
-- **JetBrains tools keymaps:** Keymaps for JetBrains tools
-- **Quick application launching:** Launch applications quickly using a single Win/Opt key
-- **Window Snapping:** Easily snap windows using Win/Opt + ←/→ keys
-- **Better window switcher**: Move between windows with Alt+Tab shortcut
-- **Everything works on any keyboard layout (you can use built-in mac and external PC keyboard in same time)**
+- **Keyboard shortcuts:** keyboard shortcuts mappings for system, Finder and browser (Chromium-based) actions
+- **JetBrains tools keymaps:** battle-tested keymaps for JetBrains tools
+- **Quick application launching:** launch (or switch) applications quickly using just Win/Opt key
+- **Window snapping:** snap windows using Win/Opt + ←/→ keys
+- **Better window switcher**: move between windows with Alt+Tab shortcut
+- **Everything works on any keyboard layout (you can use built-in Mac and external PC keyboard in same time)**
 
 <img src="docs/demo.gif" alt="demo" width="100%"/>
 
@@ -72,11 +72,14 @@ go run pcfy.go
 ## Shortcuts list
 
 List of shortcuts available immediately after installation.
+Shortcuts from tools' keymaps are not mentioned here. If you use Mac keyboard layout the Win is Opt and Alt is Cmd for you.
 
 <details>
   <summary>Click to expand</summary>
 
   ```txt
+  Alt + Tab                   # Switch to next window
+  Alt + Shift                 # Switch to previous window (only when switcher is opened)
   Win + Left/Right            # Snap window to left/right
   Win + Up/Down               # Maximixe/almost maximize window
   Ctrl + Left/Right           # Move to previous/next word
