@@ -14,14 +14,14 @@
 </p>
 
 
-All-in-one project to help you get **PC**-like experience (known from Windows or Linux systems) on your **macOS**.
+All-in-one project to help you get **PC**-like experience (known from **Windows** or **Linux** systems) on your **macOS**.
 
 </div>
 </div>
 
 ---
 
-This is a set of configuration files for applications
+This is a set of configuration files for open source applications
 like [Karabiner-Elements](https://karabiner-elements.pqrs.org/), [AltTab](https://alt-tab-macos.netlify.app/)
 and [Rectangle](https://rectangleapp.com/)
 wrapped into an easy-to-use CLI tool that automates the whole setup process. It’s an ideal solution for 
@@ -34,9 +34,9 @@ You can think of this project as [Kinto](https://github.com/rbreaves/kinto), but
 
 - **Keyboard shortcuts:** keyboard shortcuts mappings for system, Finder and browser (Chromium-based) actions
 - **JetBrains tools keymaps:** battle-tested keymaps for JetBrains tools
-- **Quick application launching:** launch (or switch) applications quickly using just Win/Opt key
+- **Quick application launching:** launch (or switch) applications quickly with just the Win/Opt key
 - **Window snapping:** snap windows using Win/Opt + ←/→ keys
-- **Better window switcher**: move between windows with Alt+Tab shortcut
+- **Better window switcher**: move between windows with Alt + Tab shortcut
 - **Everything works on any keyboard layout (you can use built-in Mac and external PC keyboard in same time)**
 
 <img src="docs/demo.gif" alt="demo" width="100%"/>
@@ -44,38 +44,40 @@ You can think of this project as [Kinto](https://github.com/rbreaves/kinto), but
 ## Installation
 
 ### [Homebrew](https://brew.sh/)
-
 ```shell
 brew install raxigan/tap/pcfy-my-mac
+pcfy-my-mac
 ```
 
 ### Script
-
-Requires [special terminal permissions](#Terminal-dev-permissions)
+May require [special terminal permissions](#Terminal-dev-permissions)
 
 ```shell
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/raxigan/pcfy-my-mac/main/pcfy.sh)"
 ```
 
 ### Go binary
-
 ```shell
 go install github.com/raxigan/pcfy-my-mac@latest
+pcfy-my-mac
 ```
 
-### From sources
-
+### From source
 ```shell
+git clone https://github.com/raxigan/pcfy-my-mac
+cd pcfy-my-mac
 go run pcfy.go
 ```
 
-## Shortcuts list
+## Shortcut list
+The following shortcuts are available right after installation. Note that shortcuts from the tools' keymaps are not listed here.
 
-List of shortcuts available immediately after installation.
-Shortcuts from tools' keymaps are not mentioned here. If you use Mac keyboard layout the Win is Opt and Alt is Cmd for you.
+For Mac keyboard layout:
+- The **Win** key corresponds to **Opt**
+- The **Alt** key corresponds to **Cmd**
 
 <details>
-  <summary>Click to expand</summary>
+  <summary><b>Shortcut list - click to expand</b></summary>
 
   ```txt
   Alt + Tab                   # Switch to next window
@@ -120,11 +122,18 @@ Shortcuts from tools' keymaps are not mentioned here. If you use Mac keyboard la
 
 </details>
 
+## Additional notes
+- Only tools that have been installed via the JetBrains Toolbox are supported
+- Ensure that the Ctrl and Cmd keys have not been swapped
+- Ensure that the function keys are enabled in the system settings to use shortcuts based on function keys:
+
+![function-keys.png](docs/resources/f-keys.png)
+
 ### Terminal dev permissions
 
-**Necessary only if you install it by shell script**. The binary is not signed, so macOS won't let you run it without
-the following permissions
-for your terminal. Just go to *System Settings* > *Privacy & Security* > *Developer Tools* and enable it:
+**Necessary only if you install it by shell script**. The binary is not signed, so macOS may not let you run it without
+the following permissions  for your terminal. Just go to *System Settings* > *Privacy & Security* > *Developer Tools* 
+and enable it:
 
 ![terminal_permissions.png](docs/terminal-permissions.png)
 
