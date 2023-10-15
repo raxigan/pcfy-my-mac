@@ -56,7 +56,17 @@ func Install(i install.Installation) error {
 		}
 	}
 
-	fmt.Println("PC'fied!")
+	fmt.Println("PC'fied")
+	i.Commander.Run("clear")
+	fmt.Println(`
+Almost ready! 
+
+1. Restart the tools (if any) you installed the keymaps for, and then select 
+   the new keymap "PCfy" in settings.
+2. Grant appropriate system permissions to the following tools when prompted:
+ • Karabiner-Elements
+ • Alt-Tab
+ • Rectangle`)
 
 	return nil
 }

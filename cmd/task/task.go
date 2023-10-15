@@ -73,7 +73,7 @@ func BackupKarabinerConfig() Task {
 			original := i.KarabinerConfigFile()
 			backupDest := i.KarabinerConfigBackupFile(i.InstallationTime)
 
-			configExists := common.FileExists(i.KarabinerConfigFile())
+			configExists := common.FileExists(original)
 
 			if !configExists {
 				os.MkdirAll(i.KarabinerComplexModificationsDir(), 0755)

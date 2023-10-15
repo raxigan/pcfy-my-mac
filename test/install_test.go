@@ -220,6 +220,29 @@ func TestInstallWithWarpTerminal(t *testing.T) {
 	test_utils.AssertFilesEqual(t, actual, expected)
 }
 
+func TestInstallAndDoNotCreateNewKarabinerConfigIfItAlreadyExists(t *testing.T) {
+
+	params := param.Params{
+		AppLauncher:    "none",
+		Terminal:       "none",
+		KeyboardLayout: "pc",
+		Keymaps:        []string{},
+		Blacklist:      []string{},
+		SystemSettings: []string{},
+	}
+
+	homeDir := testHomeDir()
+	os.MkdirAll(homeDir.KarabinerConfigDir(), 0755)
+	common.CopyFile("assets/custom.json", homeDir.KarabinerConfigFile())
+
+	home, _, _ := runInstaller(t, params)
+
+	actual := home.KarabinerConfigFile()
+	expected := "expected/karabiner-pc-keyboard-layout-with-custom.json"
+
+	test_utils.AssertFilesEqual(t, actual, expected)
+}
+
 func TestInstallMany(t *testing.T) {
 
 	params := param.Params{
@@ -271,13 +294,13 @@ func TestInstallMany(t *testing.T) {
 		"defaults write com.apple.finder AppleShowAllFiles -bool true",
 		"defaults write com.apple.finder _FXSortFoldersFirst -bool true",
 		"defaults write com.apple.finder _FXShowPosixPathInTitle -bool true",
+		"clear",
 	})
 }
 
 func runInstaller(t *testing.T, params param.Params) (install.HomeDir, test_utils.MockCommander, error) {
 	commander := *test_utils.NewMockCommander()
 	homeDir := testHomeDir()
-	test_utils.RemoveFiles(filepath.Join(homeDir.Path, ".config"))
 	err := cmd.Launch(homeDir, &commander, test_utils.FakeTimeProvider{}, params)
 	t.Cleanup(func() { tearDown(homeDir) })
 	return homeDir, commander, err
@@ -290,12 +313,13 @@ func testHomeDir() install.HomeDir {
 	}
 }
 
-func tearDown(i install.HomeDir) {
-	test_utils.RemoveFiles(i.KarabinerConfigBackupFile(test_utils.FakeTimeProvider{}.Now()))
-	test_utils.RemoveFiles(i.IdesKeymapPaths(param.IDEKeymaps)...)
-	test_utils.RemoveFilesWithExt(i.LibraryDir(), "plist")
-	test_utils.RemoveFilesWithExt(i.LibraryDir(), "dict")
-	common.CopyFile(karabinerTestDefaultConfig(i), i.KarabinerConfigFile())
+func tearDown(homeDir install.HomeDir) {
+	test_utils.RemoveFiles(filepath.Join(homeDir.Path, ".config"))
+	test_utils.RemoveFiles(homeDir.KarabinerConfigBackupFile(test_utils.FakeTimeProvider{}.Now()))
+	test_utils.RemoveFiles(homeDir.IdesKeymapPaths(param.IDEKeymaps)...)
+	test_utils.RemoveFilesWithExt(homeDir.LibraryDir(), "plist")
+	test_utils.RemoveFilesWithExt(homeDir.LibraryDir(), "dict")
+	common.CopyFile(karabinerTestDefaultConfig(homeDir), homeDir.KarabinerConfigFile())
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError) // reset flags
 }
 

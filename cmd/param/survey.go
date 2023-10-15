@@ -24,7 +24,7 @@ var questions = []*survey.Question{
 	{
 		Name: "keyboardLayout",
 		Prompt: &survey.Select{
-			Message: "Specify the layout of your external keyboard:",
+			Message: "Specify the layout of your external keyboard (if any):",
 			Options: []string{PC, Mac, None},
 			Help:    `The layout of your external keyboard to help adjust the setup. If you do not use any, just select "None"`,
 		},
