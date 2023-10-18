@@ -12,7 +12,7 @@
   </a>
   </p>
   
-  All-in-one project to help you get **PC**-like experience (known from **Windows** or **Linux** systems) on your **macOS**.
+  All-in-one project to help you get a **PC**-like experience (known from **Windows** or **Linux** systems) on your **macOS**.
   
   </div>
 </div>
@@ -20,11 +20,11 @@
 ---
 
 This is a set of configuration files for open source applications
-like [Karabiner-Elements](https://karabiner-elements.pqrs.org/), [AltTab](https://alt-tab-macos.netlify.app/)
+like [Karabiner-Elements](https://karabiner-elements.pqrs.org/), [AltTab](https://alt-tab-macos.netlify.app/),
 and [Rectangle](https://rectangleapp.com/)
 wrapped into an easy-to-use CLI tool that automates the whole setup process. It’s an ideal solution for 
 those who are new to macOS and for users who frequently switch between macOS and Windows or Linux.
-This is also perfect for you if macOS out-of-the-box workspace management isn’t really your thing.
+This is also perfect for you if the macOS out-of-the-box workspace management isn’t really your thing.
 
 You can think of this project as [Kinto](https://github.com/rbreaves/kinto), but in reverse and with more features.
 
@@ -35,7 +35,7 @@ You can think of this project as [Kinto](https://github.com/rbreaves/kinto), but
 - **Quick application launching:** launch (or switch) applications quickly with just the Win/Opt key
 - **Window snapping:** snap windows using Win/Opt + ←/→ keys
 - **Better window switcher**: move between windows with Alt + Tab shortcut
-- **Everything works on any keyboard layout (you can use built-in Mac and external PC keyboard in same time)**
+- **Everything works on any keyboard layout (you can use both the built-in Mac and external PC keyboards at the same time)**
 
 <img src="docs/demo.gif" alt="demo" width="100%"/>
 
