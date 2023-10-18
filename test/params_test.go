@@ -66,7 +66,7 @@ func TestInstallInvalidKeyboardLayout(t *testing.T) {
 
 func TestReadParamsFromYmlFile(t *testing.T) {
 
-	params, _ := param.CollectParams("params.yml")
+	params, _ := param.CollectParams("assets/params.yml")
 
 	test_utils.AssertEquals(t, params.AppLauncher, "alfred")
 	test_utils.AssertEquals(t, params.Terminal, "warp")
