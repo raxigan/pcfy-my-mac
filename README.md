@@ -1,22 +1,20 @@
 <div align="center">
-
-<div align="center" style="width: 40%; padding: 5px; margin: auto;">
-
-# PC'fy my Mac
-
-<p>
-<a href="https://github.com/raxigan/pcfy-my-mac/actions">
-    <img src="https://github.com/raxigan/pcfy-my-mac/actions/workflows/go.yml/badge.svg?branch=feature/installation_script" alt="Build Status">
-</a>
-<a href="https://github.com/raxigan/pcfy-my-mac/releases">
-    <img src="https://img.shields.io/github/release/raxigan/pcfy-my-mac.svg" alt="Latest Release">
-</a>
-</p>
-
-
-All-in-one project to help you get **PC**-like experience (known from **Windows** or **Linux** systems) on your **macOS**.
-
-</div>
+  <div align="center" style="width: 50%; padding: 5px; margin: auto;">
+  
+  # PC'fy my Mac
+  
+  <p>
+  <a href="https://github.com/raxigan/pcfy-my-mac/actions">
+      <img src="https://github.com/raxigan/pcfy-my-mac/actions/workflows/go.yml/badge.svg?branch=feature/installation_script" alt="Build Status">
+  </a>
+  <a href="https://github.com/raxigan/pcfy-my-mac/releases">
+      <img src="https://img.shields.io/github/release/raxigan/pcfy-my-mac.svg" alt="Latest Release">
+  </a>
+  </p>
+  
+  All-in-one project to help you get **PC**-like experience (known from **Windows** or **Linux** systems) on your **macOS**.
+  
+  </div>
 </div>
 
 ---
@@ -139,13 +137,13 @@ and enable it:
 
 ## Troubleshooting
 
-- Shortcuts from [the list](#shortcuts-list) do not work
+**Problem**: Shortcuts from [the list](#shortcut-list) do not work
 
-Verify the **PCfy** profile is selected in Karabiner-Elements:
+**Solution**: Verify the **PCfy** profile is selected in Karabiner-Elements:
 
 ![karabiner-profile.png](docs/karabiner-profile.png)
 
-Check if ***Modify events*** options for your keyboard is enabled in *Karabiner-Elements* > *Settings* > *Devices*:
+Also check if **Modify events** option for your keyboard is enabled in *Karabiner-Elements* > *Settings* > *Devices*:
 
 ![device-enabled.png](docs/device-enabled.png)
 
