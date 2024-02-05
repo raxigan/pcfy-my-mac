@@ -16,7 +16,7 @@
 ---
 
 This is a set of configuration files for open source applications
-like [Karabiner-Elements](https://karabiner-elements.pqrs.org/), [AltTab](https://alt-tab-macos.netlify.app/),
+like [Karabiner-Elements](https://karabiner-elements.pqrs.org/), [AltTab](https://alt-tab-macos.netlify.app/)
 and [Rectangle](https://rectangleapp.com/)
 wrapped into an easy-to-use CLI tool that automates the whole setup process. It’s an ideal solution for 
 those who are new to macOS and for users who frequently switch between macOS and Windows or Linux.
