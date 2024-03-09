@@ -1059,7 +1059,9 @@
                   {
                     "bundle_identifiers": [
                       "^com\\.brave\\.Browser",
-                      "^com\\.google\\.Chrome"
+                      "^com\\.google\\.Chrome",
+                      "^com\\.tinyspeck\\.slackmacgap",
+                      "^com\\.microsoft\\.teams2"
                     ],
                     "type": "frontmost_application_if"
                   }
@@ -1095,7 +1097,9 @@
                   {
                     "bundle_identifiers": [
                       "^com\\.brave\\.Browser",
-                      "^com\\.google\\.Chrome"
+                      "^com\\.google\\.Chrome",
+                      "^com\\.tinyspeck\\.slackmacgap",
+                      "^com\\.microsoft\\.teams2"
                     ],
                     "type": "frontmost_application_if"
                   }
