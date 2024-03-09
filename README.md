@@ -84,6 +84,7 @@ For Mac keyboard layout:
   Ctrl + Home/End             # Move to beginning/end of document
   Shift + Home/End            # Move to beginning/end of line with selection
   Ctrl + Shift + Home/End     # Move to beginning/end of document with selection
+  Ctrl + +/-                  # Zoom in/out in browser, Slack, Teams
   Ctrl + A                    # Select all
   Ctrl + B                    # Bold
   Ctrl + C                    # Copy item, interrupt current process in terminal
