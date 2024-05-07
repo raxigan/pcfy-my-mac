@@ -117,12 +117,28 @@
       "trigger": "copy"
     },
     {
+      "key": "cmd-c",
+      "trigger": "-copy-from-terminal"
+    },
+    {
+      "key": "ctrl-c",
+      "trigger": "copy-from-terminal"
+    },
+    {
       "key": "cmd-v",
       "trigger": "-paste"
     },
     {
       "key": "ctrl-v",
       "trigger": "paste"
+    },
+    {
+      "key": "cmd-shift-v",
+      "trigger": "-paste-to-terminal"
+    },
+    {
+      "key": "shift-ctrl-v",
+      "trigger": "paste-to-terminal"
     },
     {
       "key": "alt-up",
@@ -219,6 +235,150 @@
     {
       "key": "shift-f10",
       "trigger": "run/current-file"
+    },
+    {
+      "key": "cmd-s",
+      "trigger": "-save-file"
+    },
+    {
+      "key": "ctrl-s",
+      "trigger": "save-file"
+    },
+    {
+      "key": "cmd-x",
+      "trigger": "-cut"
+    },
+    {
+      "key": "ctrl-x",
+      "trigger": "cut"
+    },
+    {
+      "key": "ctrl-v",
+      "trigger": "-page-down"
+    },
+    {
+      "key": "ctrl-v",
+      "trigger": "-page-down"
+    },
+    {
+      "key": "cmd-d",
+      "trigger": "-select-next-occurrence"
+    },
+    {
+      "key": "alt-j",
+      "trigger": "select-next-occurrence"
+    },
+    {
+      "key": "cmd-shift-l",
+      "trigger": "-select-all-occurrences"
+    },
+    {
+      "key": "shift-ctrl-alt-j",
+      "trigger": "select-all-occurrences"
+    },
+    {
+      "key": "cmd-slash",
+      "trigger": "-comment-line"
+    },
+    {
+      "key": "ctrl-slash",
+      "trigger": "comment-line"
+    },
+    {
+      "key": "cmd-return",
+      "trigger": "-new-line"
+    },
+    {
+      "key": "shift-return",
+      "trigger": "new-line"
+    },
+    {
+      "key": "alt-shift-f",
+      "trigger": "-reformat-code"
+    },
+    {
+      "key": "ctrl-alt-l",
+      "trigger": "reformat-code"
+    },
+    {
+      "key": "cmd-e",
+      "trigger": "-next-error"
+    },
+    {
+      "key": "f2",
+      "trigger": "next-error"
+    },
+    {
+      "key": "cmd-shift-e",
+      "trigger": "-prev-error"
+    },
+    {
+      "key": "shift-f2",
+      "trigger": "prev-error"
+    },
+    {
+      "key": "ctrl-d",
+      "trigger": "-delete-forward"
+    },
+    {
+      "key": "ctrl-r",
+      "trigger": "-rename"
+    },
+    {
+      "key": "shift-f6",
+      "trigger": "rename"
+    },
+    {
+      "key": "ctrl-r",
+      "trigger": "-workspace-tree/rename-file"
+    },
+    {
+      "key": "shift-f6",
+      "trigger": "workspace-tree/rename-file"
+    },
+    {
+      "key": "shift-return",
+      "trigger": "-wrap-line"
+    },
+    {
+      "key": "cmd-alt-v",
+      "trigger": "-extract-variable"
+    },
+    {
+      "key": "ctrl-alt-v",
+      "trigger": "extract-variable"
+    },
+    {
+      "key": "cmd-alt-m",
+      "trigger": "-extract-function"
+    },
+    {
+      "key": "ctrl-alt-m",
+      "trigger": "extract-function"
+    },
+    {
+      "key": "cmd-b",
+      "trigger": "-go-to-declaration"
+    },
+    {
+      "key": "f4",
+      "trigger": "go-to-declaration"
+    },
+    {
+      "key": "f4",
+      "trigger": "-navigate"
+    },
+    {
+      "key": "cmd-backspace",
+      "trigger": "-workspace-tree/delete-file"
+    },
+    {
+      "key": "cmd-delete",
+      "trigger": "-workspace-tree/delete-file"
+    },
+    {
+      "key": "delete",
+      "trigger": "workspace-tree/delete-file"
     }
   ]
 }
