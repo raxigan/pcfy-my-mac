@@ -1,6 +1,6 @@
 module github.com/raxigan/pcfy-my-mac
 
-go 1.21.0
+go 1.22.3
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.7
