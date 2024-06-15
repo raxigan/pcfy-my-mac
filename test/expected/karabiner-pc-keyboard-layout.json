@@ -1002,6 +1002,8 @@
                       "^com\\.jetbrains",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.apple\\.Terminal$",
+                      "^dev\\.warp\\.Warp-Stable$",
+                      "Fleet.app",
                       "^com\\.google\\.android\\.studio$"
                     ],
                     "type": "frontmost_application_unless"
