@@ -379,6 +379,58 @@
     {
       "key": "delete",
       "trigger": "workspace-tree/delete-file"
+    },
+    {
+      "key": "cmd-z",
+      "trigger": "-undo"
+    },
+    {
+      "key": "ctrl-z",
+      "trigger": "undo"
+    },
+    {
+      "key": "cmd-shift-z",
+      "trigger": "-redo"
+    },
+    {
+      "key": "shift-ctrl-z",
+      "trigger": "redo"
+    },
+    {
+      "key": "cmd-leftbracket",
+      "trigger": "-back"
+    },
+    {
+      "key": "ctrl-alt-left",
+      "trigger": "back"
+    },
+    {
+      "key": "mouse4",
+      "trigger": "-back"
+    },
+    {
+      "key": "mouse4",
+      "trigger": "-back"
+    },
+    {
+      "key": "cmd-rightbracket",
+      "trigger": "-forward"
+    },
+    {
+      "key": "ctrl-alt-right",
+      "trigger": "forward"
+    },
+    {
+      "key": "cmd-rightbracket",
+      "trigger": "-forward"
+    },
+    {
+      "key": "ctrl-alt-right",
+      "trigger": "forward"
+    },
+    {
+      "key": "mouse5",
+      "trigger": "-forward"
     }
   ]
 }
