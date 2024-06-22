@@ -276,7 +276,7 @@ func TestInstallMany(t *testing.T) {
 	test_utils.AssertFilesEqual(t, filepath.Join("../assets", home.SourceKeymap(param.GoLand())), home.IdeKeymapPaths(param.GoLand())[0])
 	test_utils.AssertFilesEqual(t, filepath.Join("../assets", home.SourceKeymap(param.Fleet())), home.IdeKeymapPaths(param.Fleet())[0])
 
-	test_utils.AssertFilesEqual(t, "../assets/system/com.github.pcfy.plist", filepath.Join(home.LaunchAgents(), "com.github.pcfy.plist"))
+	test_utils.AssertFilesEqual(t, "../assets/system/com.github.pcfy-my-mac.plist", filepath.Join(home.LaunchAgents(), "com.github.pcfy-my-mac.plist"))
 
 	test_utils.AssertSlicesEqual(t, c.CommandsLog, []string{
 		"killall Karabiner-Elements",

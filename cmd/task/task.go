@@ -429,14 +429,27 @@ func InstallIdeKeymap(i install.Installation, ide param.IDE) error {
 	return nil
 }
 
+func CopyHidutilRemappingFile() Task {
+	return Task{
+		Name: "Copy hidutil remapping file",
+		Execute: func(i install.Installation) error {
+			copy("system/com.github.pcfy-my-mac.plist", filepath.Join(i.LaunchAgents(), "com.github.pcfy-my-mac.plist"), i)
+			return nil
+		},
+	}
+}
+
 func ExecuteHidutil() Task {
 	return Task{
 		Name: "Execute hidutil command",
 		Execute: func(i install.Installation) error {
-			remappingFile, _ := common.ReadFileFromEmbedFS("system/com.github.pcfy.plist")
+			remappingFile, _ := common.ReadFileFromEmbedFS("system/com.github.pcfy-my-mac.plist")
 			start := strings.Index(remappingFile, "<array>")
 			end := strings.Index(remappingFile, "</array>")
 			arrayContent := remappingFile[start+len("<array>") : end]
+
+			arrayContent = strings.ReplaceAll(arrayContent, "<string>{\"", "<string>'{\"")
+			arrayContent = strings.ReplaceAll(arrayContent, "]}</string>", "]}'</string>")
 
 			arrayContent = strings.ReplaceAll(arrayContent, "<string>", "")
 			arrayContent = strings.ReplaceAll(arrayContent, "</string>", "")
@@ -445,18 +458,10 @@ func ExecuteHidutil() Task {
 			command = strings.Join(strings.Fields(command), " ")
 			command = strings.ReplaceAll(command, "/usr/bin/hidutil", "hidutil")
 
+			fmt.Println(command)
+
 			i.Run(command)
 
-			return nil
-		},
-	}
-}
-
-func CopyHidutilRemappingFile() Task {
-	return Task{
-		Name: "Copy hidutil remapping file",
-		Execute: func(i install.Installation) error {
-			copy("system/com.github.pcfy.plist", filepath.Join(i.LaunchAgents(), "com.github.pcfy.plist"), i)
 			return nil
 		},
 	}
