@@ -77,7 +77,7 @@ func BackupKarabinerConfig() Task {
 
 			if !configExists {
 				os.MkdirAll(i.KarabinerComplexModificationsDir(), 0755)
-				common.CopyFileFromEmbedFS(filepath.Join("karabiner", "default.json"), original)
+				copy(filepath.Join("karabiner", "default.json"), original, i)
 			}
 
 			err := common.CopyFile(original, backupDest)
@@ -106,7 +106,7 @@ func CreateKarabinerProfile() Task {
 	return Task{
 		Name: "Create new Karabiner profile",
 		Execute: func(i install.Installation) error {
-			common.CopyFileFromEmbedFS("karabiner/karabiner-profile.json", "tmp")
+			copy("karabiner/karabiner-profile.json", "tmp", i)
 			addProfileJqCmd := fmt.Sprintf("jq '.profiles += $profile' %s --slurpfile profile tmp --indent 4 >INPUT.tmp && mv INPUT.tmp %s && rm tmp", i.KarabinerConfigFile(), i.KarabinerConfigFile())
 			i.Run(addProfileJqCmd)
 			return nil
@@ -118,7 +118,7 @@ func NameKarabinerProfile() Task {
 	return Task{
 		Name: "Rename new Karabiner profile",
 		Execute: func(i install.Installation) error {
-			common.CopyFileFromEmbedFS("karabiner/karabiner-profile.json", "tmp")
+			copy("karabiner/karabiner-profile.json", "tmp", i)
 			addProfileJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name == \"_PROFILE_NAME_\" then .name = \"%s\" else . end)' %s > tmp && mv tmp %s", i.ProfileName, i.KarabinerConfigFile(), i.KarabinerConfigFile())
 			i.Run(addProfileJqCmd)
 			return nil
@@ -165,14 +165,14 @@ func ApplyAppLauncherRules() Task {
 
 						ApplyRules(i, "alfred.json")
 
-						dirs, err := common.FindMatchingDirs(i.ApplicationSupportDir()+"/Alfred/Alfred.alfredpreferences/preferences/local", "", "hotkey", "prefs.plist")
+						paths, err := common.FindMatchingPaths(i.ApplicationSupportDir()+"/Alfred/Alfred.alfredpreferences/preferences/local", "", "hotkey", "prefs.plist")
 
 						if err != nil {
 							return err
 						}
 
-						for _, e := range dirs {
-							common.CopyFileFromEmbedFS("alfred/prefs.plist", e)
+						for _, path := range paths {
+							copy("alfred/prefs.plist", path, i)
 						}
 					} else {
 						i.TryLog(install.WarnMsg, "Alfred app not found. Skipping...")
@@ -284,7 +284,7 @@ func CopyRectanglePreferences() Task {
 		Name: "Install Rectangle preferences",
 		Execute: func(i install.Installation) error {
 			rectanglePlist := filepath.Join(i.PreferencesDir(), "com.knollsoft.Rectangle.plist")
-			common.CopyFileFromEmbedFS("rectangle/settings.xml", rectanglePlist)
+			copy("rectangle/com.knollsoft.Rectangle.plist", rectanglePlist, i)
 
 			plutilCmdRectangle := fmt.Sprintf("plutil -convert binary1 %s", rectanglePlist)
 			i.Run(plutilCmdRectangle)
@@ -318,8 +318,8 @@ func InstallAltTabPreferences() Task {
 	return Task{
 		Name: "Install AltTab preferences",
 		Execute: func(i install.Installation) error {
-			altTabPlist := filepath.Join(i.PreferencesDir(), "/com.lwouis.alt-tab-macos.plist")
-			common.CopyFileFromEmbedFS("alt-tab/settings.xml", altTabPlist)
+			altTabPlist := filepath.Join(i.PreferencesDir(), "com.lwouis.alt-tab-macos.plist")
+			copy("alt-tab/com.lwouis.alt-tab-macos.plist", altTabPlist, i)
 
 			var mappedStrings []string
 			for _, app := range i.Blacklist {
@@ -374,7 +374,7 @@ func ApplySystemSettings() Task {
 					}
 				case "enable-home-and-end-keys":
 					{
-						common.CopyFileFromEmbedFS("system/DefaultKeyBinding.dict", filepath.Join(i.LibraryDir(), "/KeyBindings/DefaultKeyBinding.dict"))
+						copy("system/DefaultKeyBinding.dict", filepath.Join(i.LibraryDir(), "/KeyBindings/DefaultKeyBinding.dict"), i)
 					}
 				case "show-hidden-files-in-finder":
 					{
@@ -398,7 +398,7 @@ func ApplySystemSettings() Task {
 }
 
 func ApplyRules(i install.Installation, file string) {
-	common.CopyFileFromEmbedFS(filepath.Join("karabiner", file), filepath.Join(i.KarabinerComplexModificationsDir(), file))
+	copy(filepath.Join("karabiner", file), filepath.Join(i.KarabinerComplexModificationsDir(), file), i)
 	jq := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" '(.profiles[] | select(.name == \"%s\") | .complex_modifications.rules) += $rules[].rules' %s --slurpfile rules %s/%s >tmp && mv tmp %s", i.ProfileName, i.ProfileName, i.KarabinerConfigFile(), i.KarabinerComplexModificationsDir(), file, i.KarabinerConfigFile())
 	i.Run(jq)
 }
@@ -419,7 +419,7 @@ func InstallIdeKeymap(i install.Installation, ide param.IDE) error {
 	}
 
 	for _, d := range destDirs {
-		err := common.CopyFileFromEmbedFS(i.SourceKeymap(ide), d)
+		err := copy(i.SourceKeymap(ide), d, i)
 
 		if err != nil {
 			return err
@@ -427,4 +427,44 @@ func InstallIdeKeymap(i install.Installation, ide param.IDE) error {
 	}
 
 	return nil
+}
+
+func ExecuteHidutil() Task {
+	return Task{
+		Name: "Execute hidutil command",
+		Execute: func(i install.Installation) error {
+			remappingFile, _ := common.ReadFileFromEmbedFS("system/com.github.pcfy.plist")
+			start := strings.Index(remappingFile, "<array>")
+			end := strings.Index(remappingFile, "</array>")
+			arrayContent := remappingFile[start+len("<array>") : end]
+
+			arrayContent = strings.ReplaceAll(arrayContent, "<string>", "")
+			arrayContent = strings.ReplaceAll(arrayContent, "</string>", "")
+
+			command := strings.TrimSpace(arrayContent)
+			command = strings.Join(strings.Fields(command), " ")
+			command = strings.ReplaceAll(command, "/usr/bin/hidutil", "hidutil")
+
+			i.Run(command)
+
+			return nil
+		},
+	}
+}
+
+func CopyHidutilRemappingFile() Task {
+	return Task{
+		Name: "Copy hidutil remapping file",
+		Execute: func(i install.Installation) error {
+			copy("system/com.github.pcfy.plist", filepath.Join(i.LaunchAgents(), "com.github.pcfy.plist"), i)
+			return nil
+		},
+	}
+}
+
+func copy(src, dst string, i install.Installation) error {
+	loggedSrc := strings.ReplaceAll(src, i.HomeDir.Path, "~")
+	loggedDst := strings.ReplaceAll(dst, i.HomeDir.Path, "~")
+	i.TryLog(install.FileMsg, fmt.Sprintf("Copy file %s to %s", loggedSrc, loggedDst))
+	return common.CopyFileFromEmbedFS(src, dst)
 }

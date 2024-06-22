@@ -88,6 +88,7 @@ var (
 	CmdMsg    = LogMessage{"CMD", common.Green}
 	WarnMsg   = LogMessage{"WARN", common.Yellow}
 	StdOutMsg = LogMessage{"STDOUT", common.Purple}
+	FileMsg   = LogMessage{"FILE", common.Cyan}
 
 	ErrMsg    = LogMessage{"ERROR", common.Red}
 	StdErrMsg = LogMessage{"STDERR", common.Red}

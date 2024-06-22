@@ -9,7 +9,7 @@
 		<key>keyCode</key>
 		<integer>125</integer>
 		<key>modifierFlags</key>
-		<integer>1048576</integer>
+		<integer>262144</integer>
 	</dict>
 	<key>almostMaximizeHeight</key>
 	<real>0.0</real>
@@ -92,14 +92,14 @@
 		<key>keyCode</key>
 		<integer>123</integer>
 		<key>modifierFlags</key>
-		<integer>1048576</integer>
+		<integer>262144</integer>
 	</dict>
 	<key>maximize</key>
 	<dict>
 		<key>keyCode</key>
 		<integer>126</integer>
 		<key>modifierFlags</key>
-		<integer>1048576</integer>
+		<integer>262144</integer>
 	</dict>
 	<key>maximizeHeight</key>
 	<dict/>
@@ -143,7 +143,7 @@
 		<key>keyCode</key>
 		<integer>124</integer>
 		<key>modifierFlags</key>
-		<integer>1048576</integer>
+		<integer>262144</integer>
 	</dict>
 	<key>screenEdgeGapBottom</key>
 	<real>0.0</real>
