@@ -9,10 +9,6 @@
       "trigger": "-move-line-down"
     },
     {
-      "key": "shift-ctrl-down",
-      "trigger": "move-line-down"
-    },
-    {
       "key": "alt-shift-up",
       "trigger": "-move-line-up"
     },
@@ -21,7 +17,7 @@
       "trigger": "-move-line-up"
     },
     {
-      "key": "shift-ctrl-up",
+      "key": "shift-cmd-up",
       "trigger": "move-line-up"
     },
     {
@@ -323,6 +319,30 @@
     {
       "key": "cmd-shift-left",
       "trigger": "-shift-home"
+    },
+    {
+      "key": "alt-down",
+      "trigger": "-move-line-down"
+    },
+    {
+      "key": "alt-up",
+      "trigger": "-move-line-up"
+    },
+    {
+      "key": "shift-cmd-down",
+      "trigger": "move-line-down"
+    },
+    {
+      "key": "alt-down",
+      "trigger": "go-to-next-symbol"
+    },
+    {
+      "key": "alt-up",
+      "trigger": "go-to-prev-symbol"
+    },
+    {
+      "key": "alt-up",
+      "trigger": "go-to-prev-symbol"
     }
   ]
 }
