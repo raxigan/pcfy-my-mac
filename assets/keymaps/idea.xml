@@ -609,7 +609,7 @@
     <keyboard-shortcut first-keystroke="meta F1"/>
   </action>
   <action id="EditorContextInfo">
-    <keyboard-shortcut first-keystroke="control Q"/>
+    <keyboard-shortcut first-keystroke="alt Q"/>
   </action>
   <action id="NextDiff">
     <keyboard-shortcut first-keystroke="F7"/>
