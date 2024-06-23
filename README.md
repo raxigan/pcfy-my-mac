@@ -1,15 +1,16 @@
 <div align="center">
   <div align="center" style="width: 50%; padding: 5px; margin: auto;">
-  
-  # PC'fy my Mac
-  
+
+# PC'fy my Mac
+
   <p>
   <a href="https://github.com/raxigan/pcfy-my-mac/actions"><img src="https://github.com/raxigan/pcfy-my-mac/actions/workflows/go.yml/badge.svg?branch=feature/installation_script" alt="Build Status"></a>
   <a href="https://github.com/raxigan/pcfy-my-mac/releases"><img src="https://img.shields.io/github/release/raxigan/pcfy-my-mac.svg" alt="Latest Release"></a>
   </p>
-  
-  All-in-one project to help you get a **PC**-like experience (known from **Windows** or **Linux** systems) on your **macOS**.
-  
+
+All-in-one project to help you get a **PC**-like experience (known from **Windows** or **Linux** systems) on your *
+*macOS**.
+
   </div>
 </div>
 
@@ -18,7 +19,7 @@
 This is a set of configuration files for open source applications
 like [Karabiner-Elements](https://karabiner-elements.pqrs.org/), [AltTab](https://alt-tab-macos.netlify.app/)
 and [Rectangle](https://rectangleapp.com/)
-wrapped into an easy-to-use CLI tool that automates the whole setup process. It’s an ideal solution for 
+wrapped into an easy-to-use CLI tool that automates the whole setup process. It’s an ideal solution for
 those who are new to macOS and for users who frequently switch between macOS and Windows or Linux.
 This is also perfect for you if the macOS out-of-the-box workspace management isn’t really your thing.
 
@@ -31,19 +32,24 @@ You can think of this project as [Kinto](https://github.com/rbreaves/kinto), but
 - **Quick application launching:** launch (or switch) applications quickly with just the Win/Opt key
 - **Window snapping:** snap windows using Win/Opt + ←/→ keys
 - **Better window switcher**: move between windows with Alt + Tab shortcut
-- **Everything works on any keyboard layout (you can use both the built-in Mac and external PC keyboards at the same time)**
+- **Everything works on any keyboard layout (you can use both the built-in Mac and external PC keyboards at the same
+  time)**
 
 <img src="docs/demo.gif" alt="demo" width="100%"/>
 
 ## Installation
 
 ### [Homebrew](https://brew.sh/)
+
 ```shell
 brew install raxigan/tap/pcfy-my-mac
 pcfy-my-mac
 ```
 
+> Remember about executing the binary after every **_brew upgrade_** in order to apply the changes from new release.
+
 ### Script
+
 May require [special terminal permissions](#Terminal-dev-permissions)
 
 ```shell
@@ -51,22 +57,37 @@ May require [special terminal permissions](#Terminal-dev-permissions)
 ```
 
 ### Go binary
+
 ```shell
 go install github.com/raxigan/pcfy-my-mac@latest
 pcfy-my-mac
 ```
 
 ### From source
+
 ```shell
 git clone https://github.com/raxigan/pcfy-my-mac
 cd pcfy-my-mac
 go run pcfy.go
 ```
 
+## Options
+
+| Flag                      | Description                                                                                                                                        |
+|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| **--help**                | Show usage                                                                                                                                         |
+| **--params** <params.yml> | Path to your YAML file containing installation parameters. Allows to run the tool in non-interactive mode. Use below option to see the file format |
+| **--show-sample-yaml**    | Show sample yaml config which can be used as the input for above flag                                                                              |
+| **--verbose**             | Enable verbose mode. All performed operations will be logged out to console                                                                        |
+| **--version**             | Show version information                                                                                                                           |
+
 ## Shortcut list
-The following shortcuts are available right after installation. Note that shortcuts from the tools' keymaps are not listed here.
+
+The following shortcuts are available right after installation. Note that shortcuts from the tools' keymaps are not
+listed here.
 
 For Mac keyboard layout:
+
 - The **Win** key corresponds to **Opt**
 - The **Alt** key corresponds to **Cmd**
 
@@ -84,6 +105,8 @@ For Mac keyboard layout:
   Ctrl + Home/End             # Move to beginning/end of document
   Shift + Home/End            # Move to beginning/end of line with selection
   Ctrl + Shift + Home/End     # Move to beginning/end of document with selection
+  Ctrl + LMB                  # Select item
+  Ctrl + Shift + LMB          # Select multiple items
   Ctrl + +/-                  # Zoom in/out in browser, Slack, Teams
   Ctrl + A                    # Select all
   Ctrl + B                    # Bold
@@ -118,16 +141,19 @@ For Mac keyboard layout:
 </details>
 
 ## Additional notes
-- Only tools that have been installed via the JetBrains Toolbox are supported
-- Ensure that the Ctrl and Cmd keys have not been swapped
-- Ensure that the function keys are enabled in the system settings to use shortcuts based on function keys:
+
+- Only tools that have been installed via the JetBrains Toolbox are supported **[JetBrains keymaps only]**
+- Ensure your modifier keys are set to default in _System Settings > Keyboard > Keyboard Shortcuts... > Modifier Keys_
+- Ensure the function keys are enabled in the system settings in order to use shortcuts based on them:
+- There is 1 alternative shortcut provided for Mac keyboard layout (as there is no **Insert** key):
+    - **Alt/Cmd + Insert** (New file in JB tools) → **Alt/Cmd + Enter**
 
 ![function-keys.png](docs/resources/f-keys.png)
 
 ### Terminal dev permissions
 
 **Necessary only if you install it by shell script**. The binary is not signed, so macOS may not let you run it without
-the following permissions  for your terminal. Just go to *System Settings* > *Privacy & Security* > *Developer Tools* 
+the following permissions for your terminal. Just go to *System Settings* > *Privacy & Security* > *Developer Tools*
 and enable it:
 
 ![terminal_permissions.png](docs/terminal-permissions.png)
@@ -146,9 +172,8 @@ Also check if **Modify events** option for your keyboard is enabled in *Karabine
 
 ## Missing things:
 
-- Finder and Fleet keymaps are incomplete
-- Select files using Opt + LMB instead of Ctrl like you would on PC
-- Multicursor shortcut (2xCtrl in JetBrains tools on PC) is under 2xCmd
+- Finder keymap might be incomplete
+- Multicursor shortcut (**2 x Ctrl** in JetBrains tools on PC) is under **2 x Alt/Cmd**
 
 ## Acknowledgments
 

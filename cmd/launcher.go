@@ -44,6 +44,8 @@ func Install(i install.Installation) error {
 		task.InstallAltTabPreferences(),
 		task.OpenAltTab(),
 		task.ApplySystemSettings(),
+		task.CopyHidutilRemappingFile(),
+		task.ExecuteHidutil(),
 	}
 
 	for _, t := range tasks {

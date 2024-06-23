@@ -15,7 +15,7 @@
           "to": [
             {
               "key_code": "o",
-              "modifiers": ["right_command"]
+              "modifiers": ["right_control"]
             }
           ],
           "conditions": [
@@ -116,7 +116,7 @@
           "to": [
             {
               "key_code": "delete_or_backspace",
-              "modifiers": ["left_command"]
+              "modifiers": ["left_control"]
             }
           ],
           "conditions": [

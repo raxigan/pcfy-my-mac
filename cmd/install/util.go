@@ -45,7 +45,9 @@ func NewDefaultCommander(verbose bool) *DefaultCommander {
 func (c *DefaultCommander) Run(command string) {
 
 	if command == "clear" {
-		clearConsole()
+		if !c.Verbose {
+			clearConsole()
+		}
 		return
 	}
 
@@ -88,6 +90,7 @@ var (
 	CmdMsg    = LogMessage{"CMD", common.Green}
 	WarnMsg   = LogMessage{"WARN", common.Yellow}
 	StdOutMsg = LogMessage{"STDOUT", common.Purple}
+	FileMsg   = LogMessage{"FILE", common.Cyan}
 
 	ErrMsg    = LogMessage{"ERROR", common.Red}
 	StdErrMsg = LogMessage{"STDERR", common.Red}

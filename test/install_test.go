@@ -267,8 +267,7 @@ func TestInstallMany(t *testing.T) {
 	expected := "expected/karabiner-alfred-warp-pc.json"
 
 	test_utils.AssertFilesEqual(t, actual, expected)
-
-	test_utils.AssertFilesEqual(t, filepath.Join(home.PreferencesDir(), "com.knollsoft.Rectangle.plist"), "expected/com.knollsoft.Rectangle.plist")
+	test_utils.AssertFilesEqual(t, filepath.Join(home.PreferencesDir(), "com.knollsoft.Rectangle.plist"), "../assets/rectangle/com.knollsoft.Rectangle.plist")
 	test_utils.AssertFilesEqual(t, filepath.Join(home.PreferencesDir(), "com.lwouis.alt-tab-macos.plist"), "expected/com.lwouis.alt-tab-macos.plist")
 
 	test_utils.AssertFilesEqual(t, filepath.Join("../assets", home.SourceKeymap(param.IntelliJ())), home.IdeKeymapPaths(param.IntelliJ())[0])
@@ -276,6 +275,8 @@ func TestInstallMany(t *testing.T) {
 	test_utils.AssertFilesEqual(t, filepath.Join("../assets", home.SourceKeymap(param.IntelliJCE())), home.IdeKeymapPaths(param.IntelliJCE())[0])
 	test_utils.AssertFilesEqual(t, filepath.Join("../assets", home.SourceKeymap(param.GoLand())), home.IdeKeymapPaths(param.GoLand())[0])
 	test_utils.AssertFilesEqual(t, filepath.Join("../assets", home.SourceKeymap(param.Fleet())), home.IdeKeymapPaths(param.Fleet())[0])
+
+	test_utils.AssertFilesEqual(t, "../assets/system/com.github.pcfy-my-mac.plist", filepath.Join(home.LaunchAgents(), "com.github.pcfy-my-mac.plist"))
 
 	test_utils.AssertSlicesEqual(t, c.CommandsLog, []string{
 		"killall Karabiner-Elements",
@@ -294,6 +295,7 @@ func TestInstallMany(t *testing.T) {
 		"defaults write com.apple.finder AppleShowAllFiles -bool true",
 		"defaults write com.apple.finder _FXSortFoldersFirst -bool true",
 		"defaults write com.apple.finder _FXShowPosixPathInTitle -bool true",
+		"hidutil property --set '{\"UserKeyMapping\":[ { \"HIDKeyboardModifierMappingSrc\": 0x7000000E0, \"HIDKeyboardModifierMappingDst\": 0x7000000E3 }, { \"HIDKeyboardModifierMappingSrc\": 0x7000000E3, \"HIDKeyboardModifierMappingDst\": 0x7000000E0 }, { \"HIDKeyboardModifierMappingSrc\": 0x7000000E4, \"HIDKeyboardModifierMappingDst\": 0x7000000E7 }, { \"HIDKeyboardModifierMappingSrc\": 0x7000000E7, \"HIDKeyboardModifierMappingDst\": 0x7000000E4 } ]}'",
 		"clear",
 	})
 }

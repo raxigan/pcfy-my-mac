@@ -1,10 +1,7 @@
 package test_utils
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
-	"io"
-	"log"
+	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -16,16 +13,20 @@ func AssertEquals(t *testing.T, actual, expected string) {
 	}
 }
 
-func AssertFilesEqual(t *testing.T, path1, path2 string) {
+func AssertFilesEqual(t *testing.T, actual, expected string) {
 
-	keymapsEqual, err := compareFilesBySHASum(path1, path2)
+	AssertFileExists(t, actual)
+	AssertFileExists(t, expected)
 
-	if err != nil {
-		t.Errorf("Error: %s", err)
-	}
+	actualFileContent := readFile(actual)
+	expectedFileContent := readFile(expected)
 
-	if !keymapsEqual {
-		t.Fatalf("Files %s are not equal", []string{path1, path2})
+	if strings.TrimSpace(actualFileContent) != strings.TrimSpace(expectedFileContent) {
+		fmt.Println("=== ACTUAL:")
+		fmt.Println(actualFileContent)
+		fmt.Println("=== EXPECTED:")
+		fmt.Println(expectedFileContent)
+		t.Fatalf("Files %s are not equal", []string{actual, expected})
 	}
 }
 
@@ -57,33 +58,19 @@ func AssertErrorContains(t *testing.T, err error, expected string) {
 	}
 }
 
-func computeSHA256(filepath string) (string, error) {
-	file, err := os.Open(filepath)
+func AssertFileExists(t *testing.T, filename string) {
+	_, err := os.Stat(filename)
 	if err != nil {
-		log.Fatalf("Error: %s", err)
+		if os.IsNotExist(err) {
+			t.Fatalf("File %s does not exist", filename)
+		}
 	}
-	defer file.Close()
-
-	hasher := sha256.New()
-	if _, err := io.Copy(hasher, file); err != nil {
-		return "", err
-	}
-
-	return hex.EncodeToString(hasher.Sum(nil)), nil
 }
 
-func compareFilesBySHASum(file1, file2 string) (bool, error) {
-	sha1, err := computeSHA256(file1)
-
+func readFile(filename string) string {
+	data, err := os.ReadFile(filename)
 	if err != nil {
-		return false, err
+		return ""
 	}
-
-	sha2, err := computeSHA256(file2)
-
-	if err != nil {
-		return false, err
-	}
-
-	return sha1 == sha2, nil
+	return string(data)
 }

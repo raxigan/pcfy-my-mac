@@ -46,6 +46,10 @@ func (home HomeDir) LibraryDir() string {
 	return filepath.Join(home.Path, "Library")
 }
 
+func (home HomeDir) LaunchAgents() string {
+	return filepath.Join(home.LibraryDir(), "LaunchAgents")
+}
+
 func (home HomeDir) SourceKeymap(ide param.IDE) string {
 	return filepath.Join("keymaps/", ide.SrcKeymapsFile)
 }
@@ -60,7 +64,7 @@ func (home HomeDir) IdesKeymapPaths(ide []param.IDE) []string {
 
 	for _, e := range ide {
 
-		dirs, _ := common.FindMatchingDirs(filepath.Join(home.Path, e.ParentDir), e.Dir, e.KeymapsDir, e.DestKeymapsFile)
+		dirs, _ := common.FindMatchingPaths(filepath.Join(home.Path, e.ParentDir), e.Dir, e.KeymapsDir, e.DestKeymapsFile)
 
 		for _, e1 := range dirs {
 			result = append(result, e1)

@@ -53,7 +53,7 @@ func FileExists(filename string) bool {
 	return !os.IsNotExist(err)
 }
 
-func FindMatchingDirs(basePath, namePrefix, subDir, fileName string) ([]string, error) {
+func FindMatchingPaths(basePath, namePrefix, subDir, fileName string) ([]string, error) {
 
 	var result []string
 

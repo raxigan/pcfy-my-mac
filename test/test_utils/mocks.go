@@ -31,7 +31,7 @@ func (c *MockCommander) Run(command string) {
 	switch cmd {
 	case "jq":
 		c.DefaultCommander.Run(command)
-	case "killall", "open", "clear", "defaults", "brew":
+	case "killall", "open", "clear", "defaults", "brew", "hidutil":
 		c.DefaultCommander.TryLog(install.CmdMsg, command)
 		c.CommandsLog = append(c.CommandsLog, command)
 	case "plutil":

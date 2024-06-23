@@ -11,7 +11,6 @@
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
                 "^com\\.apple\\.Terminal$",
-                "Fleet.app",
                 "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
@@ -50,7 +49,6 @@
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
                 "^com\\.apple\\.Terminal$",
-                "Fleet.app",
                 "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
@@ -91,7 +89,6 @@
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
                 "^com\\.apple\\.Terminal$",
-                "Fleet.app",
                 "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
@@ -130,7 +127,6 @@
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
                 "^com\\.apple\\.Terminal$",
-                "Fleet.app",
                 "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
@@ -162,741 +158,6 @@
       ]
     },
     {
-      "description": "Ctrl + A",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$",
-                "Fleet.app",
-                "^com\\.google\\.android\\.studio$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "a",
-            "modifiers": {
-              "mandatory": [
-                "control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "a",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl + B",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$",
-                "Fleet.app",
-                "^com\\.google\\.android\\.studio$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "b",
-            "modifiers": {
-              "mandatory": [
-                "control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "b",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl + C",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$",
-                "Fleet.app",
-                "^dev\\.warp\\.Warp-Stable$",
-                "^com\\.google\\.android\\.studio$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "c",
-            "modifiers": {
-              "mandatory": [
-                "left_control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "c",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl + F",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$",
-                "Fleet.app",
-                "^com\\.google\\.android\\.studio$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "f",
-            "modifiers": {
-              "mandatory": [
-                "control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "f",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl + I",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$",
-                "Fleet.app",
-                "^com\\.google\\.android\\.studio$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "i",
-            "modifiers": {
-              "mandatory": [
-                "control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "i",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl + L",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$",
-                "Fleet.app",
-                "^com\\.google\\.android\\.studio$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "l",
-            "modifiers": {
-              "mandatory": [
-                "control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "l",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl + N",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$",
-                "Fleet.app",
-                "^com\\.google\\.android\\.studio$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "n",
-            "modifiers": {
-              "mandatory": [
-                "control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "n",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl + O",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$",
-                "^dev\\.warp\\.Warp-Stable$",
-                "Fleet.app",
-                "^com\\.google\\.android\\.studio$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "o",
-            "modifiers": {
-              "mandatory": [
-                "control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "o",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl + R",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$",
-                "Fleet.app",
-                "^com\\.google\\.android\\.studio$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "r",
-            "modifiers": {
-              "mandatory": [
-                "control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "r",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl + S",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$",
-                "Fleet.app",
-                "^com\\.google\\.android\\.studio$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "s",
-            "modifiers": {
-              "mandatory": [
-                "control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "s",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl + T",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "^com\\.google\\.android\\.studio$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "t",
-            "modifiers": {
-              "mandatory": [
-                "control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "t",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl + U",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "Fleet.app",
-                "^com\\.google\\.android\\.studio$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "u",
-            "modifiers": {
-              "mandatory": [
-                "control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "u",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl + V",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "Fleet.app",
-                "^com\\.google\\.android\\.studio$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "v",
-            "modifiers": {
-              "mandatory": [
-                "control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "v",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl + W",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "Fleet.app",
-                "^com\\.google\\.android\\.studio$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "w",
-            "modifiers": {
-              "mandatory": [
-                "control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "w",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl + X",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$",
-                "^dev\\.warp\\.Warp-Stable$",
-                "Fleet.app",
-                "^com\\.google\\.android\\.studio$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "w",
-            "modifiers": {
-              "mandatory": [
-                "control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "w",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl + Y",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$",
-                "^dev\\.warp\\.Warp-Stable$",
-                "Fleet.app",
-                "^com\\.google\\.android\\.studio$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "y",
-            "modifiers": {
-              "mandatory": [
-                "control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "y",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl + Z",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.jetbrains",
-                "^com\\.googlecode\\.iterm2$",
-                "^com\\.apple\\.Terminal$",
-                "^dev\\.warp\\.Warp-Stable$",
-                "Fleet.app",
-                "^com\\.google\\.android\\.studio$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "z",
-            "modifiers": {
-              "mandatory": [
-                "control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "z",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl and -",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.brave\\.Browser",
-                "^com\\.google\\.Chrome",
-                "^com\\.tinyspeck\\.slackmacgap",
-                "^com\\.microsoft\\.teams2"
-              ],
-              "type": "frontmost_application_if"
-            }
-          ],
-          "from": {
-            "key_code": "hyphen",
-            "modifiers": {
-              "mandatory": [
-                "control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "hyphen",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
-      "description": "Ctrl and +",
-      "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com\\.brave\\.Browser",
-                "^com\\.google\\.Chrome",
-                "^com\\.tinyspeck\\.slackmacgap",
-                "^com\\.microsoft\\.teams2"
-              ],
-              "type": "frontmost_application_if"
-            }
-          ],
-          "from": {
-            "key_code": "equal_sign",
-            "modifiers": {
-              "mandatory": [
-                "control"
-              ],
-              "optional": [
-                "any"
-              ]
-            }
-          },
-          "to": [
-            {
-              "key_code": "equal_sign",
-              "modifiers": [
-                "command"
-              ]
-            }
-          ],
-          "type": "basic"
-        }
-      ]
-    },
-    {
       "description": "Alt + F4",
       "manipulators": [
         {
@@ -912,7 +173,7 @@
             {
               "key_code": "q",
               "modifiers": [
-                "left_command"
+                "left_control"
               ]
             }
           ],
@@ -939,7 +200,7 @@
             {
               "key_code": "power",
               "modifiers": [
-                "control",
+                "command",
                 "shift"
               ]
             }
@@ -958,7 +219,6 @@
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
                 "^com\\.apple\\.Terminal$",
-                "Fleet.app",
                 "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
@@ -997,7 +257,6 @@
                 "^com\\.jetbrains",
                 "^com\\.googlecode\\.iterm2$",
                 "^com\\.apple\\.Terminal$",
-                "Fleet.app",
                 "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_unless"
@@ -1015,7 +274,7 @@
             {
               "key_code": "g",
               "modifiers": [
-                "command"
+                "control"
               ]
             }
           ],
@@ -1048,7 +307,7 @@
             {
               "key_code": "r",
               "modifiers": [
-                "left_command"
+                "left_control"
               ]
             }
           ],
@@ -1081,7 +340,7 @@
             {
               "key_code": "y",
               "modifiers": [
-                "left_command"
+                "left_control"
               ]
             }
           ],
@@ -1097,7 +356,6 @@
             {
               "bundle_identifiers": [
                 "^com\\.jetbrains",
-                "Fleet.app",
                 "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_if"
@@ -1118,7 +376,7 @@
             {
               "key_code": "comma",
               "modifiers": [
-                "command"
+                "control"
               ]
             }
           ],
@@ -1134,7 +392,6 @@
             {
               "bundle_identifiers": [
                 "^com\\.jetbrains",
-                "Fleet.app",
                 "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_if"
@@ -1170,7 +427,6 @@
             {
               "bundle_identifiers": [
                 "^com\\.jetbrains",
-                "Fleet.app",
                 "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_if"
@@ -1203,7 +459,6 @@
             {
               "bundle_identifiers": [
                 "^com\\.jetbrains",
-                "Fleet.app",
                 "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_if"
@@ -1236,7 +491,6 @@
             {
               "bundle_identifiers": [
                 "^com\\.jetbrains",
-                "Fleet.app",
                 "^com\\.google\\.android\\.studio$"
               ],
               "type": "frontmost_application_if"
@@ -1269,13 +523,40 @@
             "key_code": "tab",
             "modifiers": {
               "mandatory": [
-                "command"
+                "control"
               ]
             }
           },
           "to": [
             {
               "key_code": "f13"
+            }
+          ],
+          "type": "basic"
+        }
+      ]
+    },
+    {
+      "description": "Disable Ctrl + Q (Quit app)",
+      "manipulators": [
+        {
+          "from": {
+            "key_code": "q",
+            "modifiers": {
+              "mandatory": [
+                "control"
+              ],
+              "optional": [
+                "any"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "q",
+              "modifiers": [
+                "command"
+              ]
             }
           ],
           "type": "basic"
