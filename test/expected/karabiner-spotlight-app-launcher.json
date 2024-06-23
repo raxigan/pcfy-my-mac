@@ -223,7 +223,6 @@
                       "^com\\.jetbrains",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.apple\\.Terminal$",
-                      "Fleet.app",
                       "^com\\.google\\.android\\.studio$"
                     ],
                     "type": "frontmost_application_unless"
@@ -262,7 +261,6 @@
                       "^com\\.jetbrains",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.apple\\.Terminal$",
-                      "Fleet.app",
                       "^com\\.google\\.android\\.studio$"
                     ],
                     "type": "frontmost_application_unless"
@@ -303,7 +301,6 @@
                       "^com\\.jetbrains",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.apple\\.Terminal$",
-                      "Fleet.app",
                       "^com\\.google\\.android\\.studio$"
                     ],
                     "type": "frontmost_application_unless"
@@ -342,7 +339,6 @@
                       "^com\\.jetbrains",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.apple\\.Terminal$",
-                      "Fleet.app",
                       "^com\\.google\\.android\\.studio$"
                     ],
                     "type": "frontmost_application_unless"
@@ -435,7 +431,6 @@
                       "^com\\.jetbrains",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.apple\\.Terminal$",
-                      "Fleet.app",
                       "^com\\.google\\.android\\.studio$"
                     ],
                     "type": "frontmost_application_unless"
@@ -474,7 +469,6 @@
                       "^com\\.jetbrains",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.apple\\.Terminal$",
-                      "Fleet.app",
                       "^com\\.google\\.android\\.studio$"
                     ],
                     "type": "frontmost_application_unless"
@@ -574,7 +568,6 @@
                   {
                     "bundle_identifiers": [
                       "^com\\.jetbrains",
-                      "Fleet.app",
                       "^com\\.google\\.android\\.studio$"
                     ],
                     "type": "frontmost_application_if"
@@ -610,7 +603,6 @@
                   {
                     "bundle_identifiers": [
                       "^com\\.jetbrains",
-                      "Fleet.app",
                       "^com\\.google\\.android\\.studio$"
                     ],
                     "type": "frontmost_application_if"
@@ -645,7 +637,6 @@
                   {
                     "bundle_identifiers": [
                       "^com\\.jetbrains",
-                      "Fleet.app",
                       "^com\\.google\\.android\\.studio$"
                     ],
                     "type": "frontmost_application_if"
@@ -677,7 +668,6 @@
                   {
                     "bundle_identifiers": [
                       "^com\\.jetbrains",
-                      "Fleet.app",
                       "^com\\.google\\.android\\.studio$"
                     ],
                     "type": "frontmost_application_if"
@@ -709,7 +699,6 @@
                   {
                     "bundle_identifiers": [
                       "^com\\.jetbrains",
-                      "Fleet.app",
                       "^com\\.google\\.android\\.studio$"
                     ],
                     "type": "frontmost_application_if"
