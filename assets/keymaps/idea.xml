@@ -354,7 +354,7 @@
     <keyboard-shortcut first-keystroke="shift UP"/>
   </action>
   <action id="QuickJavaDoc">
-    <keyboard-shortcut first-keystroke="meta Q"/>
+    <keyboard-shortcut first-keystroke="control Q"/>
     <mouse-shortcut keystroke="alt button2"/>
   </action>
   <action id="ToggleRenderedDocPresentation">
@@ -609,7 +609,7 @@
     <keyboard-shortcut first-keystroke="meta F1"/>
   </action>
   <action id="EditorContextInfo">
-    <keyboard-shortcut first-keystroke="alt Q"/>
+    <keyboard-shortcut first-keystroke="control Q"/>
   </action>
   <action id="NextDiff">
     <keyboard-shortcut first-keystroke="F7"/>
