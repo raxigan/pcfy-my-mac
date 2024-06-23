@@ -45,7 +45,9 @@ func NewDefaultCommander(verbose bool) *DefaultCommander {
 func (c *DefaultCommander) Run(command string) {
 
 	if command == "clear" {
-		clearConsole()
+		if !c.Verbose {
+			clearConsole()
+		}
 		return
 	}
 
