@@ -291,6 +291,38 @@
     {
       "key": "cmd-right",
       "trigger": "goto-word-right"
+    },
+    {
+      "key": "cmd-left",
+      "trigger": "-home"
+    },
+    {
+      "key": "cmd-right",
+      "trigger": "-end"
+    },
+    {
+      "key": "cmd-shift-right",
+      "trigger": "-shift-end"
+    },
+    {
+      "key": "cmd-shift-right",
+      "trigger": "-shift-end"
+    },
+    {
+      "key": "cmd-shift-down",
+      "trigger": "-shift-goto-document-end"
+    },
+    {
+      "key": "cmd-shift-down",
+      "trigger": "-shift-goto-document-end"
+    },
+    {
+      "key": "cmd-shift-up",
+      "trigger": "-shift-goto-document-start"
+    },
+    {
+      "key": "cmd-shift-left",
+      "trigger": "-shift-home"
     }
   ]
 }
