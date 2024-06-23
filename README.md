@@ -46,6 +46,8 @@ brew install raxigan/tap/pcfy-my-mac
 pcfy-my-mac
 ```
 
+> Remember about executing the binary after every **_brew upgrade_** in order to apply the changes from new release.
+
 ### Script
 
 May require [special terminal permissions](#Terminal-dev-permissions)
@@ -144,7 +146,7 @@ For Mac keyboard layout:
 - Ensure your modifier keys are set to default in _System Settings > Keyboard > Keyboard Shortcuts... > Modifier Keys_
 - Ensure the function keys are enabled in the system settings in order to use shortcuts based on them:
 - There is 1 alternative shortcut provided for Mac keyboard layout (as there is no **Insert** key):
-  - **Alt/Cmd + Insert** (New file in JB tools) → **Alt/Cmd + Enter**
+    - **Alt/Cmd + Insert** (New file in JB tools) → **Alt/Cmd + Enter**
 
 ![function-keys.png](docs/resources/f-keys.png)
 
