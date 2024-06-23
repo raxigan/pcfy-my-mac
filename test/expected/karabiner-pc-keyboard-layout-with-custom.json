@@ -744,6 +744,33 @@
             ]
           },
           {
+            "description": "Disable Ctrl + Q (Quit app)",
+            "manipulators": [
+              {
+                "from": {
+                  "key_code": "q",
+                  "modifiers": {
+                    "mandatory": [
+                      "control"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "q",
+                    "modifiers": [
+                      "command"
+                    ]
+                  }
+                ],
+                "type": "basic"
+              }
+            ]
+          },
+          {
             "description": "Enter to open file/directory in Finder",
             "manipulators": [
               {
