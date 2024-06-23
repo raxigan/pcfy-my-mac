@@ -104,7 +104,7 @@ For Mac keyboard layout:
   Shift + Home/End            # Move to beginning/end of line with selection
   Ctrl + Shift + Home/End     # Move to beginning/end of document with selection
   Ctrl + LMB                  # Select item
-  Ctrl Shift + LMB            # Select multiple items
+  Ctrl + Shift + LMB          # Select multiple items
   Ctrl + +/-                  # Zoom in/out in browser, Slack, Teams
   Ctrl + A                    # Select all
   Ctrl + B                    # Bold
