@@ -8,8 +8,7 @@
   <a href="https://github.com/raxigan/pcfy-my-mac/releases"><img src="https://img.shields.io/github/release/raxigan/pcfy-my-mac.svg" alt="Latest Release"></a>
   </p>
 
-All-in-one project to help you get a **PC**-like experience (known from **Windows** or **Linux** systems) on your *
-*macOS**.
+All-in-one project to help you get a **PC**-like experience (known from **Windows** or **Linux** systems) on your **macOS**
 
   </div>
 </div>
@@ -77,7 +76,7 @@ go run pcfy.go
 |---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
 | **--help**                | Show usage                                                                                                                                         |
 | **--params** <params.yml> | Path to your YAML file containing installation parameters. Allows to run the tool in non-interactive mode. Use below option to see the file format |
-| **--show-sample-yaml**    | Show sample yaml config which can be used as the input for above flag                                                                              |
+| **--show-sample-yaml**    | Show sample YAML config which can be used as the input for above flag                                                                              |
 | **--verbose**             | Enable verbose mode. All performed operations will be logged out to console                                                                        |
 | **--version**             | Show version information                                                                                                                           |
 
