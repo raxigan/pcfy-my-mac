@@ -483,6 +483,9 @@
   <action id="ChangeTypeSignature">
     <keyboard-shortcut first-keystroke="meta shift F6"/>
   </action>
+  <action id="ChangesView.AddUnversioned">
+    <keyboard-shortcut first-keystroke="meta alt a" />
+  </action>
   <action id="DebugClass"/>
   <action id="RunCoverage"/>
   <action id="IntroduceField">
