@@ -177,7 +177,7 @@
       "trigger": "-reformat-code"
     },
     {
-      "key": "ctrl-alt-l",
+      "key": "alt-cmd-l",
       "trigger": "reformat-code"
     },
     {
