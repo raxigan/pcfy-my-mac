@@ -318,6 +318,9 @@ func InstallAltTabPreferences() Task {
 	return Task{
 		Name: "Install AltTab preferences",
 		Execute: func(i install.Installation) error {
+
+			i.Commander.TryLog(install.TaskMsg, fmt.Sprintf("Exclude %s from AltTab", i.Blacklist))
+
 			altTabPlist := filepath.Join(i.PreferencesDir(), "com.lwouis.alt-tab-macos.plist")
 			copy("alt-tab/com.lwouis.alt-tab-macos.plist", altTabPlist, i)
 

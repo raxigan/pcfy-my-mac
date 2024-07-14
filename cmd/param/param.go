@@ -113,16 +113,15 @@ func CollectSurveyParams(fileParams FileParams) Params {
 
 	fp := Params{}
 
-	m := map[string]bool{
+	qNameToIfShouldBeAsked := map[string]bool{
 		"appLauncher":    fileParams.AppLauncher != nil,
 		"terminal":       fileParams.Terminal != nil,
 		"keyboardLayout": fileParams.KeyboardLayout != nil,
 		"keymaps":        fileParams.Keymaps != nil,
-		"blacklist":      fileParams.Blacklist != nil,
 		"systemSettings": fileParams.SystemSettings != nil,
 	}
 
-	for k, v := range m {
+	for k, v := range qNameToIfShouldBeAsked {
 		if v {
 			questionsToAsk = slices.DeleteFunc(questionsToAsk, func(e *survey.Question) bool { return e.Name == k })
 		}

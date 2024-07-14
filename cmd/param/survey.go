@@ -38,21 +38,6 @@ var questions = []*survey.Question{
 		},
 	},
 	{
-		Name: "blacklist",
-		Prompt: &survey.MultiSelect{
-			Message: "Select apps to be excluded from Alt-Tab switcher:",
-			Options: []string{
-				Spotify,
-				Finder,
-				SystemPreferences,
-				ITerm,
-				AltTab,
-			},
-			Help: "Apps to be excluded (e.g. they won't appear in the Alt-Tab switcher) to keep the window list short and clean. " +
-				"Open Alt-Tab app to add more exclusions.",
-		},
-	},
-	{
 		Name: "systemSettings",
 		Prompt: &survey.MultiSelect{
 			Message: "Select additional system settings to apply:",

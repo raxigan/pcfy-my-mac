@@ -1,6 +1,7 @@
 *.iml
 .idea
 .gitconfig
+.DS_Store
 pkg
 test/homedir/**
 !.gitkeep
