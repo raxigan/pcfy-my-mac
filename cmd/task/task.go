@@ -227,6 +227,14 @@ func ApplyTerminalRules() Task {
 						common.PrintColored(common.Yellow, fmt.Sprintf("Warp app not found. Skipping..."))
 					}
 				}
+			case strings.ToLower(param.Wave):
+				{
+					if i.Exists("Wave.app") {
+						ApplyRules(i, "wave.json")
+					} else {
+						common.PrintColored(common.Yellow, fmt.Sprintf("Wave app not found. Skipping..."))
+					}
+				}
 			default:
 				return errors.New("Unknown terminal: " + i.Terminal)
 			}
@@ -325,13 +333,7 @@ func InstallAltTabPreferences() Task {
 			copy("alt-tab/com.lwouis.alt-tab-macos.plist", altTabPlist, i)
 
 			var mappedStrings []string
-			for _, app := range i.Blacklist {
-				bundle, exists := param.AppToBundleMapping[strings.ToLower(app)]
-
-				if !exists {
-					bundle = app
-				}
-
+			for _, bundle := range i.Blacklist {
 				mappedStrings = append(mappedStrings, fmt.Sprintf(`{"ignore":"0","bundleIdentifier":"%s","hide":"1"}`, bundle))
 			}
 

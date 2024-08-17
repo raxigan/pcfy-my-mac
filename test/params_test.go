@@ -51,6 +51,7 @@ func TestInstallInvalidTerminal(t *testing.T) {
 		default
 		iterm
 		warp
+		wave
 		none`)
 }
 

@@ -2,7 +2,6 @@ package param
 
 import (
 	"errors"
-	"strings"
 )
 
 const (
@@ -13,24 +12,12 @@ const (
 	Default = "Default"
 	ITerm   = "iTerm"
 	Warp    = "Warp"
+	Wave    = "Wave"
 
 	PC   = "PC"
 	Mac  = "Mac"
 	None = "None"
-
-	Spotify           = "Spotify"
-	Finder            = "Finder"
-	SystemPreferences = "System Preferences"
-	AltTab            = "AltTab"
 )
-
-var AppToBundleMapping = map[string]string{
-	strings.ToLower(Spotify):           "com.spotify.client",
-	strings.ToLower(Finder):            "com.apple.finder",
-	strings.ToLower(SystemPreferences): "com.apple.systempreferences",
-	strings.ToLower(ITerm):             "com.googlecode.iterm2",
-	strings.ToLower(AltTab):            "com.lwouis.alt-tab-macos",
-}
 
 type IDE struct {
 	ParentDir       string // relative to homedir

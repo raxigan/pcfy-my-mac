@@ -250,7 +250,7 @@ func TestInstallMany(t *testing.T) {
 		Terminal:       "warp",
 		KeyboardLayout: "pc",
 		Keymaps:        param.IdeKeymapOptions(),
-		Blacklist:      []string{"Spotify", "FINDER", "com.apple.AppStore"},
+		Blacklist:      []string{"com.spotify.client", "com.apple.finder", "com.apple.AppStore"},
 		SystemSettings: []string{
 			"Enable Dock auto-hide (2s delay)",
 			"change-dock-minimize-animation-to-scale",

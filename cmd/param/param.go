@@ -73,7 +73,7 @@ func CollectYamlParams(yml string) (FileParams, error) {
 		},
 		func() error {
 			if fp.Terminal != nil {
-				return ValidateParamValues("terminal", &[]string{*fp.Terminal}, []string{Default, ITerm, Warp, None})
+				return ValidateParamValues("terminal", &[]string{*fp.Terminal}, []string{Default, ITerm, Warp, Wave, None})
 			}
 
 			return nil
