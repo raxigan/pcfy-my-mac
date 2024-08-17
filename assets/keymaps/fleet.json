@@ -343,6 +343,90 @@
     {
       "key": "alt-up",
       "trigger": "go-to-prev-symbol"
+    },
+    {
+      "key": "cmd-alt-left",
+      "trigger": "-prev-tab"
+    },
+    {
+      "key": "alt-left",
+      "trigger": "prev-tab"
+    },
+    {
+      "key": "cmd-shift-oumlaut",
+      "trigger": "-prev-tab"
+    },
+    {
+      "key": "cmd-shift-leftbracket",
+      "trigger": "-prev-tab"
+    },
+    {
+      "key": "cmd-shift-leftbracket",
+      "trigger": "-prev-tab"
+    },
+    {
+      "key": "cmd-alt-right",
+      "trigger": "-next-tab"
+    },
+    {
+      "key": "alt-right",
+      "trigger": "next-tab"
+    },
+    {
+      "key": "cmd-alt-right",
+      "trigger": "-next-tab"
+    },
+    {
+      "key": "alt-right",
+      "trigger": "next-tab"
+    },
+    {
+      "key": "cmd-shift-rightbracket",
+      "trigger": "-next-tab"
+    },
+    {
+      "key": "cmd-shift-rightbracket",
+      "trigger": "-next-tab"
+    },
+    {
+      "key": "cmd-shift-aumlaut",
+      "trigger": "-next-tab"
+    },
+    {
+      "key": "cmd-shift-aumlaut",
+      "trigger": "-next-tab"
+    },
+    {
+      "key": "cmd-leftbracket",
+      "trigger": "-back"
+    },
+    {
+      "key": "alt-cmd-left",
+      "trigger": "back"
+    },
+    {
+      "key": "cmd-rightbracket",
+      "trigger": "-forward"
+    },
+    {
+      "key": "alt-cmd-right",
+      "trigger": "forward"
+    },
+    {
+      "key": "cmd-u",
+      "trigger": "-find-usages"
+    },
+    {
+      "key": "alt-f7",
+      "trigger": "find-usages"
+    },
+    {
+      "key": "cmd-u",
+      "trigger": "-find-usages"
+    },
+    {
+      "key": "alt-f7",
+      "trigger": "find-usages"
     }
   ]
 }
