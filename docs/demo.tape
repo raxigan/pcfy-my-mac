@@ -60,18 +60,6 @@ Sleep 1000ms
 Enter
 Sleep 2000ms
 
-# Exclude apps: Spotify and System Preferences
-Space
-Sleep 1000ms
-Down
-Sleep 500ms
-Down
-Sleep 500ms
-Space
-Sleep 1000ms
-Enter
-Sleep 2000ms
-
 # System settings: 1, 3
 Space
 Sleep 500ms
