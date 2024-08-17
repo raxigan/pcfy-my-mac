@@ -30,7 +30,7 @@ You can think of this project as [Kinto](https://github.com/rbreaves/kinto), but
 - **Keyboard shortcuts:** keyboard shortcuts mappings for system, Finder and browser (Chromium-based) actions
 - **JetBrains tools keymaps:** battle-tested keymaps for JetBrains tools
 - **Quick application launching:** launch (or switch) applications quickly with just the Win/Opt key
-- **Window snapping:** snap windows using Win/Opt + ←/→ keys
+- **Window snapping:** snap windows using Win/Opt + ←/→ shortcut
 - **Better window switcher**: move between windows with Alt + Tab shortcut
 - **Everything works on any keyboard layout (you can use both the built-in Mac and external PC keyboards at the same
   time)**
@@ -170,10 +170,9 @@ Also check if **Modify events** option for your keyboard is enabled in *Karabine
 
 ![device-enabled.png](docs/device-enabled.png)
 
-## Missing things:
-
-- Finder keymap might be incomplete
-- Multicursor shortcut (**2 x Ctrl** in JetBrains tools on PC) is under **2 x Alt/Cmd**
+## Contributing
+- Ask a question or share your ideas in [Discussions](https://github.com/raxigan/pcfy-my-mac/discussions)
+- Create & comment issues in [Issues](https://github.com/raxigan/pcfy-my-mac/issues)
 
 ## Acknowledgments
 
