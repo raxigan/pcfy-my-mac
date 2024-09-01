@@ -2,6 +2,7 @@ package install_test
 
 import (
 	"flag"
+	"fmt"
 	"github.com/raxigan/pcfy-my-mac/cmd"
 	"github.com/raxigan/pcfy-my-mac/cmd/common"
 	"github.com/raxigan/pcfy-my-mac/cmd/install"
@@ -338,4 +339,13 @@ func fakeExecCommand(command string, args ...string) *exec.Cmd {
 	cmd := exec.Command(os.Args[0], cs...)
 	cmd.Env = []string{"GO_WANT_HELPER_PROCESS=1"}
 	return cmd
+}
+
+func TestHelperProcess(t *testing.T) {
+	if os.Getenv("GO_WANT_HELPER_PROCESS") != "1" {
+		return
+	}
+	// some code here to check arguments perhaps?
+	fmt.Fprintf(os.Stdout, "siema")
+	os.Exit(0)
 }

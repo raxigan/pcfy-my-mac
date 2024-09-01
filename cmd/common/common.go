@@ -26,8 +26,8 @@ func Exists(command string) bool {
 		return strings.TrimSpace(string(output)) != ""
 	} else {
 
-		cmd := ExecCommand(":")
-		if contains(cmd.Env, "GO_WANT_HELPER_PROCESS=1") {
+		//cmd := ExecCommand(":")
+		if os.Getenv("GO_WANT_HELPER_PROCESS") != "1" {
 			return true
 		}
 
