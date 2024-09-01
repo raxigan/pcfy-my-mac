@@ -65,15 +65,10 @@ func FindMatchingPaths(pattern string, destFile string) ([]string, error) {
 	}
 
 	parentDir := filepath.Dir(pattern[:versionIndex])
-	regexPattern := strings.Replace(pattern, "{version}", ".*", -1) + "$"
-
+	regexPattern := strings.Replace(filepath.Dir(pattern), "{version}", ".*", -1) + "$"
 	re, _ := regexp.Compile(regexPattern)
 
 	var matchingDirs []string
-
-	fmt.Println(parentDir)
-	fmt.Println(regexPattern)
-	fmt.Println("Walking...")
 
 	filepath.WalkDir(parentDir, func(path string, d fs.DirEntry, err error) error {
 
@@ -84,7 +79,12 @@ func FindMatchingPaths(pattern string, destFile string) ([]string, error) {
 		}
 
 		if d.IsDir() && re.MatchString(path) {
-			matchingDirs = append(matchingDirs, filepath.Join(path, destFile))
+
+			countSlashes1 := strings.Count(filepath.Dir(pattern), string(filepath.Separator))
+			countSlashes2 := strings.Count(path, string(filepath.Separator))
+			if countSlashes1 == countSlashes2 {
+				matchingDirs = append(matchingDirs, filepath.Join(path, filepath.Base(pattern), destFile))
+			}
 		}
 
 		return nil
