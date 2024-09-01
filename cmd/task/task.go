@@ -28,7 +28,7 @@ func DownloadDependencies() Task {
 			all := []Dependency{JqDependency(), KarabinerDependency(), AltTabDependency(), RectangleDependency()}
 
 			for _, d := range all {
-				if !i.Exists(d.command) {
+				if !common.Exists(d.command) {
 					notInstalled = append(notInstalled, d.name)
 					commands = append(commands, d.installCommand)
 				}
@@ -62,7 +62,7 @@ func DownloadDependencies() Task {
 func CloseKarabiner() Task {
 	return Task{
 		Name:    "Close Karabiner",
-		Execute: func(i install.Installation) error { i.Run("killall Karabiner-Elements"); return nil },
+		Execute: func(i install.Installation) error { i.Run("killall Karabiner-Menu"); return nil },
 	}
 }
 
@@ -77,7 +77,7 @@ func BackupKarabinerConfig() Task {
 
 			if !configExists {
 				os.MkdirAll(i.KarabinerComplexModificationsDir(), 0755)
-				copy(filepath.Join("karabiner", "default.json"), original, i)
+				copyFile(filepath.Join("karabiner", "default.json"), original, i)
 			}
 
 			err := common.CopyFile(original, backupDest)
@@ -106,7 +106,7 @@ func CreateKarabinerProfile() Task {
 	return Task{
 		Name: "Create new Karabiner profile",
 		Execute: func(i install.Installation) error {
-			copy("karabiner/karabiner-profile.json", "tmp", i)
+			copyFile("karabiner/karabiner-profile.json", "tmp", i)
 			addProfileJqCmd := fmt.Sprintf("jq '.profiles += $profile' %s --slurpfile profile tmp --indent 4 >INPUT.tmp && mv INPUT.tmp %s && rm tmp", i.KarabinerConfigFile(), i.KarabinerConfigFile())
 			i.Run(addProfileJqCmd)
 			return nil
@@ -118,7 +118,7 @@ func NameKarabinerProfile() Task {
 	return Task{
 		Name: "Rename new Karabiner profile",
 		Execute: func(i install.Installation) error {
-			copy("karabiner/karabiner-profile.json", "tmp", i)
+			copyFile("karabiner/karabiner-profile.json", "tmp", i)
 			addProfileJqCmd := fmt.Sprintf("jq '.profiles |= map(if .name == \"_PROFILE_NAME_\" then .name = \"%s\" else . end)' %s > tmp && mv tmp %s", i.ProfileName, i.KarabinerConfigFile(), i.KarabinerConfigFile())
 			i.Run(addProfileJqCmd)
 			return nil
@@ -161,18 +161,18 @@ func ApplyAppLauncherRules() Task {
 				ApplyRules(i, "launchpad.json")
 			case strings.ToLower(param.Alfred):
 				{
-					if i.Exists("Alfred 4.app") || i.Exists("Alfred 5.app") {
+					if common.Exists("Alfred 4.app") || common.Exists("Alfred 5.app") {
 
 						ApplyRules(i, "alfred.json")
 
-						paths, err := common.FindMatchingPaths(i.ApplicationSupportDir()+"/Alfred/Alfred.alfredpreferences/preferences/local", "", "hotkey", "prefs.plist")
+						paths, err := common.FindMatchingPaths(i.ApplicationSupportDir()+"/Alfred/Alfred.alfredpreferences/preferences/local/{version}/hotkey", "prefs.plist")
 
 						if err != nil {
 							return err
 						}
 
 						for _, path := range paths {
-							copy("alfred/prefs.plist", path, i)
+							copyFile("alfred/prefs.plist", path, i)
 						}
 					} else {
 						i.TryLog(install.WarnMsg, "Alfred app not found. Skipping...")
@@ -214,14 +214,14 @@ func ApplyTerminalRules() Task {
 			case strings.ToLower(param.Default):
 				ApplyRules(i, "apple-terminal.json")
 			case strings.ToLower(param.ITerm):
-				if i.Exists("iTerm.app") {
+				if common.Exists("iTerm.app") {
 					ApplyRules(i, "iterm.json")
 				} else {
 					common.PrintColored(common.Yellow, fmt.Sprintf("iTerm app not found. Skipping..."))
 				}
 			case strings.ToLower(param.Warp):
 				{
-					if i.Exists("Warp.app") {
+					if common.Exists("Warp.app") {
 						ApplyRules(i, "warp.json")
 					} else {
 						common.PrintColored(common.Yellow, fmt.Sprintf("Warp app not found. Skipping..."))
@@ -229,7 +229,7 @@ func ApplyTerminalRules() Task {
 				}
 			case strings.ToLower(param.Wave):
 				{
-					if i.Exists("Wave.app") {
+					if common.Exists("Wave.app") {
 						ApplyRules(i, "wave.json")
 					} else {
 						common.PrintColored(common.Yellow, fmt.Sprintf("Wave app not found. Skipping..."))
@@ -292,7 +292,7 @@ func CopyRectanglePreferences() Task {
 		Name: "Install Rectangle preferences",
 		Execute: func(i install.Installation) error {
 			rectanglePlist := filepath.Join(i.PreferencesDir(), "com.knollsoft.Rectangle.plist")
-			copy("rectangle/com.knollsoft.Rectangle.plist", rectanglePlist, i)
+			copyFile("rectangle/com.knollsoft.Rectangle.plist", rectanglePlist, i)
 
 			plutilCmdRectangle := fmt.Sprintf("plutil -convert binary1 %s", rectanglePlist)
 			i.Run(plutilCmdRectangle)
@@ -330,7 +330,7 @@ func InstallAltTabPreferences() Task {
 			i.Commander.TryLog(install.TaskMsg, fmt.Sprintf("Exclude %s from AltTab", i.Blacklist))
 
 			altTabPlist := filepath.Join(i.PreferencesDir(), "com.lwouis.alt-tab-macos.plist")
-			copy("alt-tab/com.lwouis.alt-tab-macos.plist", altTabPlist, i)
+			copyFile("alt-tab/com.lwouis.alt-tab-macos.plist", altTabPlist, i)
 
 			var mappedStrings []string
 			for _, bundle := range i.Blacklist {
@@ -379,7 +379,7 @@ func ApplySystemSettings() Task {
 					}
 				case "enable-home-and-end-keys":
 					{
-						copy("system/DefaultKeyBinding.dict", filepath.Join(i.LibraryDir(), "/KeyBindings/DefaultKeyBinding.dict"), i)
+						copyFile("system/DefaultKeyBinding.dict", filepath.Join(i.LibraryDir(), "/KeyBindings/DefaultKeyBinding.dict"), i)
 					}
 				case "show-hidden-files-in-finder":
 					{
@@ -403,20 +403,14 @@ func ApplySystemSettings() Task {
 }
 
 func ApplyRules(i install.Installation, file string) {
-	copy(filepath.Join("karabiner", file), filepath.Join(i.KarabinerComplexModificationsDir(), file), i)
+	copyFile(filepath.Join("karabiner", file), filepath.Join(i.KarabinerComplexModificationsDir(), file), i)
 	jq := fmt.Sprintf("jq --arg PROFILE_NAME \"%s\" '(.profiles[] | select(.name == \"%s\") | .complex_modifications.rules) += $rules[].rules' %s --slurpfile rules %s/%s >tmp && mv tmp %s", i.ProfileName, i.ProfileName, i.KarabinerConfigFile(), i.KarabinerComplexModificationsDir(), file, i.KarabinerConfigFile())
 	i.Run(jq)
 }
 
 func InstallIdeKeymap(i install.Installation, ide param.IDE) error {
 
-	var destDirs []string
-
-	if ide.MultipleDirs {
-		destDirs = i.IdeKeymapPaths(ide)
-	} else {
-		destDirs = []string{filepath.Join(i.Path, ide.ParentDir, ide.Dir, ide.KeymapsDir, ide.DestKeymapsFile)}
-	}
+	var destDirs = i.IdeKeymapPaths(ide)
 
 	if len(destDirs) == 0 {
 		i.TryLog(install.WarnMsg, fmt.Sprintf("%s not found. Skipping...", ide.FullName))
@@ -424,7 +418,7 @@ func InstallIdeKeymap(i install.Installation, ide param.IDE) error {
 	}
 
 	for _, d := range destDirs {
-		err := copy(i.SourceKeymap(ide), d, i)
+		err := copyFile(i.SourceKeymap(ide), d, i)
 
 		if err != nil {
 			return err
@@ -438,7 +432,7 @@ func CopyHidutilRemappingFile() Task {
 	return Task{
 		Name: "Copy hidutil remapping file",
 		Execute: func(i install.Installation) error {
-			copy("system/com.github.pcfy-my-mac.plist", filepath.Join(i.LaunchAgents(), "com.github.pcfy-my-mac.plist"), i)
+			copyFile("system/com.github.pcfy-my-mac.plist", filepath.Join(i.LaunchAgents(), "com.github.pcfy-my-mac.plist"), i)
 			return nil
 		},
 	}
@@ -463,8 +457,6 @@ func ExecuteHidutil() Task {
 			command = strings.Join(strings.Fields(command), " ")
 			command = strings.ReplaceAll(command, "/usr/bin/hidutil", "hidutil")
 
-			fmt.Println(command)
-
 			i.Run(command)
 
 			return nil
@@ -472,7 +464,7 @@ func ExecuteHidutil() Task {
 	}
 }
 
-func copy(src, dst string, i install.Installation) error {
+func copyFile(src, dst string, i install.Installation) error {
 	loggedSrc := strings.ReplaceAll(src, i.HomeDir.Path, "~")
 	loggedDst := strings.ReplaceAll(dst, i.HomeDir.Path, "~")
 	i.TryLog(install.FileMsg, fmt.Sprintf("Copy file %s to %s", loggedSrc, loggedDst))

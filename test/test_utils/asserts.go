@@ -18,8 +18,8 @@ func AssertFilesEqual(t *testing.T, actual, expected string) {
 	AssertFileExists(t, actual)
 	AssertFileExists(t, expected)
 
-	actualFileContent := readFile(actual)
-	expectedFileContent := readFile(expected)
+	actualFileContent := ReadFile(actual)
+	expectedFileContent := ReadFile(expected)
 
 	if strings.TrimSpace(actualFileContent) != strings.TrimSpace(expectedFileContent) {
 		fmt.Println("=== ACTUAL:")
@@ -67,7 +67,7 @@ func AssertFileExists(t *testing.T, filename string) {
 	}
 }
 
-func readFile(filename string) string {
+func ReadFile(filename string) string {
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		return ""

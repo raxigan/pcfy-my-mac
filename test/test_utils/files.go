@@ -27,6 +27,15 @@ func RemoveFilesWithExt(path, ext string) {
 	})
 }
 
+func RemoveDirs(path, dir string) {
+	filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
+		if info.IsDir() && strings.HasSuffix(filePath, dir) {
+			os.Remove(filePath)
+		}
+		return nil
+	})
+}
+
 func Trim(yaml string) string {
 	return strings.TrimSpace(strings.ReplaceAll(yaml, "\t", ""))
 }

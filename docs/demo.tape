@@ -42,23 +42,6 @@ Sleep 2500ms
 Enter
 Sleep 2000ms
 
-# Keymaps to install: IJ, GoLand and Fleet
-Space
-Sleep 1000ms
-Down
-Sleep 500ms
-Down
-Sleep 500ms
-Down
-Sleep 500ms
-Space
-Sleep 1000ms
-Down
-Sleep 500ms
-Space
-Sleep 1000ms
-Enter
-Sleep 2000ms
 
 # System settings: 1, 3
 Space
@@ -69,5 +52,17 @@ Down
 Sleep 500ms
 Space
 Sleep 1500ms
+Enter
+
+# Keymaps to install: IJ, GoLand and Fleet
+Sleep 1000ms
+Down
+Sleep 800ms
+Space
+Sleep 500ms
+Down
+Sleep 500ms
+Space
+Sleep 1000ms
 Enter
 Sleep 8000ms

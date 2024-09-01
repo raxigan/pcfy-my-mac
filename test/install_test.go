@@ -2,12 +2,16 @@ package install_test
 
 import (
 	"flag"
+	"fmt"
 	"github.com/raxigan/pcfy-my-mac/cmd"
 	"github.com/raxigan/pcfy-my-mac/cmd/common"
 	"github.com/raxigan/pcfy-my-mac/cmd/install"
 	"github.com/raxigan/pcfy-my-mac/cmd/param"
 	"github.com/raxigan/pcfy-my-mac/test/test_utils"
+	"github.com/stretchr/testify/assert"
+	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"testing"
 )
@@ -261,7 +265,8 @@ func TestInstallMany(t *testing.T) {
 		},
 	}
 
-	home, c, _ := runInstaller(t, params)
+	home, output, _ := runInstaller(t, params)
+	fmt.Println(output == "")
 
 	actual := home.KarabinerConfigFile()
 	expected := "expected/karabiner-alfred-warp-pc.json"
@@ -278,34 +283,24 @@ func TestInstallMany(t *testing.T) {
 
 	test_utils.AssertFilesEqual(t, "../assets/system/com.github.pcfy-my-mac.plist", filepath.Join(home.LaunchAgents(), "com.github.pcfy-my-mac.plist"))
 
-	test_utils.AssertSlicesEqual(t, c.CommandsLog, []string{
-		"killall Karabiner-Elements",
-		"open -a Karabiner-Elements",
-		"killall Rectangle",
-		"plutil -convert binary1 /homedir/Library/Preferences/com.knollsoft.Rectangle.plist",
-		"defaults read com.knollsoft.Rectangle.plist",
-		"open -a Rectangle",
-		"killall AltTab",
-		"plutil -convert binary1 /homedir/Library/Preferences/com.lwouis.alt-tab-macos.plist",
-		"defaults read com.lwouis.alt-tab-macos.plist",
-		"open -a AltTab",
-		"defaults write com.apple.dock autohide -bool true",
-		"defaults write com.apple.dock autohide-delay -float 2 && killall Dock",
-		`defaults write com.apple.dock "mineffect" -string "scale" && killall Dock`,
-		"defaults write com.apple.finder AppleShowAllFiles -bool true",
-		"defaults write com.apple.finder _FXSortFoldersFirst -bool true",
-		"defaults write com.apple.finder _FXShowPosixPathInTitle -bool true",
-		"hidutil property --set '{\"UserKeyMapping\":[ { \"HIDKeyboardModifierMappingSrc\": 0x7000000E0, \"HIDKeyboardModifierMappingDst\": 0x7000000E3 }, { \"HIDKeyboardModifierMappingSrc\": 0x7000000E3, \"HIDKeyboardModifierMappingDst\": 0x7000000E0 }, { \"HIDKeyboardModifierMappingSrc\": 0x7000000E4, \"HIDKeyboardModifierMappingDst\": 0x7000000E7 }, { \"HIDKeyboardModifierMappingSrc\": 0x7000000E7, \"HIDKeyboardModifierMappingDst\": 0x7000000E4 } ]}'",
-		"clear",
-	})
+	expected = test_utils.ReadFile("expected/output.txt")
+	assert.Equal(t, expected, output)
 }
 
-func runInstaller(t *testing.T, params param.Params) (install.HomeDir, test_utils.MockCommander, error) {
-	commander := *test_utils.NewMockCommander()
+func runInstaller(t *testing.T, params param.Params) (install.HomeDir, string, error) {
+	common.ExecCommand = fakeExecCommand
+	os.Setenv("GO_WANT_HELPER_PROCESS", "1")
+	os.Setenv("HOME", testHomeDir().Path)
+	defer func() { common.ExecCommand = exec.Command }()
+	commander := install.NewDefaultCommander(true)
 	homeDir := testHomeDir()
-	err := cmd.Launch(homeDir, &commander, test_utils.FakeTimeProvider{}, params)
+	var err error = nil
+	output, err := captureOutput(func() error {
+		err := cmd.Launch(homeDir, commander, test_utils.FakeTimeProvider{}, params)
+		return err
+	})
 	t.Cleanup(func() { tearDown(homeDir) })
-	return homeDir, commander, err
+	return homeDir, output, err
 }
 
 func testHomeDir() install.HomeDir {
@@ -315,16 +310,39 @@ func testHomeDir() install.HomeDir {
 	}
 }
 
+//goland:noinspection ALL because it's test code
 func tearDown(homeDir install.HomeDir) {
 	test_utils.RemoveFiles(filepath.Join(homeDir.Path, ".config"))
 	test_utils.RemoveFiles(homeDir.KarabinerConfigBackupFile(test_utils.FakeTimeProvider{}.Now()))
 	test_utils.RemoveFiles(homeDir.IdesKeymapPaths(param.IDEKeymaps)...)
 	test_utils.RemoveFilesWithExt(homeDir.LibraryDir(), "plist")
 	test_utils.RemoveFilesWithExt(homeDir.LibraryDir(), "dict")
+	test_utils.RemoveDirs(homeDir.ApplicationSupportDir(), "keymaps")
+	test_utils.RemoveDirs(homeDir.ApplicationSupportDir(), "hotkey")
 	common.CopyFile(karabinerTestDefaultConfig(homeDir), homeDir.KarabinerConfigFile())
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError) // reset flags
 }
 
 func karabinerTestDefaultConfig(i install.HomeDir) string {
 	return filepath.Join(i.KarabinerConfigDir(), "karabiner-default.json")
+}
+
+func fakeExecCommand(command string, args ...string) *exec.Cmd {
+	cs := []string{"-test.run=TestHelperProcess", "--", command}
+	cs = append(cs, args...)
+	execCommand := exec.Command(os.Args[0], cs...)
+	return execCommand
+}
+
+func captureOutput(f func() error) (string, error) {
+	orig := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+	err := f()
+	os.Stdout = orig
+	w.Close()
+	out, _ := io.ReadAll(r)
+	s := string(out)
+	fmt.Println(s)
+	return s, err
 }

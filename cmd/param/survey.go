@@ -30,14 +30,6 @@ var questions = []*survey.Question{
 		},
 	},
 	{
-		Name: "keymaps",
-		Prompt: &survey.MultiSelect{
-			Message: "Select keymaps to install:",
-			Options: IdeKeymapOptions(),
-			Help:    "IDEs/tools to apply the PC keymaps to",
-		},
-	},
-	{
 		Name: "systemSettings",
 		Prompt: &survey.MultiSelect{
 			Message: "Select additional system settings to apply:",

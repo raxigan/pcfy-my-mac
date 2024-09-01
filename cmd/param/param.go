@@ -113,7 +113,7 @@ func CollectSurveyParams(fileParams FileParams) Params {
 
 	fp := Params{}
 
-	qNameToIfShouldBeAsked := map[string]bool{
+	qNameToIfShouldNotBeAsked := map[string]bool{
 		"appLauncher":    fileParams.AppLauncher != nil,
 		"terminal":       fileParams.Terminal != nil,
 		"keyboardLayout": fileParams.KeyboardLayout != nil,
@@ -121,9 +121,27 @@ func CollectSurveyParams(fileParams FileParams) Params {
 		"systemSettings": fileParams.SystemSettings != nil,
 	}
 
-	for k, v := range qNameToIfShouldBeAsked {
+	for k, v := range qNameToIfShouldNotBeAsked {
 		if v {
 			questionsToAsk = slices.DeleteFunc(questionsToAsk, func(e *survey.Question) bool { return e.Name == k })
+		}
+	}
+
+	if !qNameToIfShouldNotBeAsked["keymaps"] {
+
+		ides := findIdes()
+
+		if len(ides) > 0 {
+			questionsToAsk = append(questionsToAsk,
+				&survey.Question{
+					Name: "keymaps",
+					Prompt: &survey.MultiSelect{
+						Message: "Select tools to install keymap for:",
+						Options: ides,
+						Help:    "IDEs/tools to apply the PC keymaps to",
+					},
+				},
+			)
 		}
 	}
 
@@ -143,4 +161,16 @@ func ToSimpleParamName(name string) string {
 	loweredAndSnaked := strings.TrimSpace(strings.ReplaceAll(strings.ToLower(name), " ", "-"))
 	noBrackets := strings.ReplaceAll(strings.ReplaceAll(loweredAndSnaked, "(", ""), ")", "")
 	return strings.ReplaceAll(noBrackets, "\"", "")
+}
+
+func findIdes() []string {
+	var ides []string
+
+	for _, e := range IDEKeymaps {
+		if common.Exists(e.FullName + ".app") {
+			ides = append(ides, strings.TrimSuffix(e.FullName, ".app"))
+		}
+	}
+
+	return ides
 }

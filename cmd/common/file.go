@@ -6,12 +6,13 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
 func CopyFileFromEmbedFS(src, dst string) error {
-	assets := &assets.Assets
-	data, _ := fs.ReadFile(assets, src)
+	assetsFs := &assets.Assets
+	data, _ := fs.ReadFile(assetsFs, src)
 	os.MkdirAll(filepath.Dir(dst), 0755)
 	return os.WriteFile(dst, data, 0755)
 }
@@ -53,28 +54,37 @@ func FileExists(filename string) bool {
 	return !os.IsNotExist(err)
 }
 
-func FindMatchingPaths(basePath, namePrefix, subDir, fileName string) ([]string, error) {
+func FindMatchingPaths(pattern string, destFile string) ([]string, error) {
+	versionIndex := strings.Index(pattern, "{version}")
 
-	var result []string
+	if versionIndex == -1 {
+		return []string{filepath.Join(pattern, destFile)}, nil
+	}
 
-	err := filepath.Walk(basePath, func(path string, info os.FileInfo, err error) error {
+	parentDir := filepath.Dir(pattern[:versionIndex])
+	regexPattern := strings.Replace(filepath.Dir(pattern), "{version}", ".*", -1) + "$"
+	re, _ := regexp.Compile(regexPattern)
 
-		if path != basePath && strings.HasPrefix(info.Name(), namePrefix) {
-			if err != nil {
-				return err
-			}
+	var matchingDirs []string
 
-			if FileExists(filepath.Join(basePath, info.Name())) {
-				destDir := filepath.Join(path, subDir)
-				destFilePath := filepath.Join(destDir, fileName)
-				result = append(result, destFilePath)
+	filepath.WalkDir(parentDir, func(path string, d fs.DirEntry, err error) error {
+
+		if err != nil {
+			return filepath.SkipDir
+		}
+
+		if d.IsDir() && re.MatchString(path) {
+			countSlashes1 := strings.Count(filepath.Dir(pattern), string(filepath.Separator))
+			countSlashes2 := strings.Count(path, string(filepath.Separator))
+			if countSlashes1 == countSlashes2 {
+				matchingDirs = append(matchingDirs, filepath.Join(path, filepath.Base(pattern), destFile))
 			}
 		}
 
 		return nil
 	})
 
-	return result, err
+	return matchingDirs, nil
 }
 
 func ReplaceWordInFile(path, oldWord, newWord string) error {
