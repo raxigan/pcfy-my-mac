@@ -25,9 +25,24 @@ func Exists(command string) bool {
 		output, _ := cmd.Output()
 		return strings.TrimSpace(string(output)) != ""
 	} else {
+
+		cmd := ExecCommand(":")
+		if contains(cmd.Env, "GO_WANT_HELPER_PROCESS=1") {
+			return true
+		}
+
 		_, err := exec.LookPath(command)
 		return err == nil
 	}
+}
+
+func contains[T comparable](slice []T, element T) bool {
+	for _, v := range slice {
+		if v == element {
+			return true
+		}
+	}
+	return false
 }
 
 func GetOrDefaultString(launcher string, launcher2 *string) string {

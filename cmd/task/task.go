@@ -457,8 +457,6 @@ func ExecuteHidutil() Task {
 			command = strings.Join(strings.Fields(command), " ")
 			command = strings.ReplaceAll(command, "/usr/bin/hidutil", "hidutil")
 
-			fmt.Println(command)
-
 			i.Run(command)
 
 			return nil
