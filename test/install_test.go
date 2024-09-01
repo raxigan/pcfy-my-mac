@@ -290,6 +290,7 @@ func TestInstallMany(t *testing.T) {
 func runInstaller(t *testing.T, params param.Params) (install.HomeDir, string, error) {
 	common.ExecCommand = fakeExecCommand
 	os.Setenv("GO_WANT_HELPER_PROCESS", "1")
+	os.Setenv("HOME", testHomeDir().Path)
 	defer func() { common.ExecCommand = exec.Command }()
 	commander := install.NewDefaultCommander(true)
 	homeDir := testHomeDir()

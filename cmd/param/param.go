@@ -166,11 +166,7 @@ func ToSimpleParamName(name string) string {
 func findIdes() []string {
 	var ides []string
 
-	var ideNames = []IDE{
-		IntelliJ(), IntelliJCE(), PyCharm(), GoLand(), Fleet(),
-	}
-
-	for _, e := range ideNames {
+	for _, e := range IDEKeymaps {
 		if common.Exists(e.FullName + ".app") {
 			ides = append(ides, strings.TrimSuffix(e.FullName, ".app"))
 		}
