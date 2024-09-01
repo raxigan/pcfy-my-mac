@@ -20,68 +20,47 @@ const (
 )
 
 type IDE struct {
-	ParentDir       string // relative to homedir
-	Dir             string // relative to parentDir
-	KeymapsDir      string // relative to dir
+	KeymapsDir      string // relative to homedir
 	FullName        string
 	SrcKeymapsFile  string
 	DestKeymapsFile string
-	MultipleDirs    bool
 }
 
 func IntelliJ() IDE {
 	return IDE{
-		ParentDir:       "Library/Application Support/JetBrains",
-		Dir:             "IntelliJ",
-		KeymapsDir:      "keymaps",
-		FullName:        "IntelliJ IDEA Ultimate",
-		SrcKeymapsFile:  "idea.xml",
-		DestKeymapsFile: "intellij-idea-ultimate.xml",
-		MultipleDirs:    true,
+		KeymapsDir:     "Library/Application Support/JetBrains/IntelliJ{version}/keymaps",
+		FullName:       "IntelliJ IDEA Ultimate",
+		SrcKeymapsFile: "idea.xml",
 	}
 }
 
 func IntelliJCE() IDE {
 	return IDE{
-		ParentDir:       "Library/Application Support/JetBrains",
-		Dir:             "IdeaIC",
-		KeymapsDir:      "keymaps",
-		FullName:        "IntelliJ IDEA CE",
-		SrcKeymapsFile:  "idea.xml",
-		DestKeymapsFile: "intellij-idea-community-edition.xml",
-		MultipleDirs:    true,
+		KeymapsDir:     "Library/Application Support/JetBrains/IdeaIC{version}/keymaps",
+		FullName:       "IntelliJ IDEA CE",
+		SrcKeymapsFile: "idea.xml",
 	}
 }
 
 func PyCharm() IDE {
 	return IDE{
-		ParentDir:       "Library/Application Support/JetBrains",
-		Dir:             "PyCharmCE",
-		KeymapsDir:      "keymaps",
-		FullName:        "PyCharm CE",
-		SrcKeymapsFile:  "idea.xml",
-		DestKeymapsFile: "pycharm-community-edition.xml",
-		MultipleDirs:    true,
+		KeymapsDir:     "Library/Application Support/JetBrains/PyCharmCE{version}/keymaps",
+		FullName:       "PyCharm CE",
+		SrcKeymapsFile: "idea.xml",
 	}
 }
 
 func GoLand() IDE {
 	return IDE{
-		ParentDir:       "Library/Application Support/JetBrains",
-		Dir:             "GoLand",
-		KeymapsDir:      "keymaps",
-		FullName:        "GoLand",
-		SrcKeymapsFile:  "idea.xml",
-		DestKeymapsFile: "goland.xml",
-		MultipleDirs:    true,
+		KeymapsDir:     "Library/Application Support/JetBrains/GoLand{version}/keymaps",
+		FullName:       "GoLand",
+		SrcKeymapsFile: "idea.xml",
 	}
 }
 
 func Fleet() IDE {
 	return IDE{
-		ParentDir:       "",
-		Dir:             ".fleet",
-		KeymapsDir:      "keymap",
+		KeymapsDir:      ".fleet/keymap",
 		FullName:        "Fleet",
 		SrcKeymapsFile:  "fleet.json",
 		DestKeymapsFile: "user.json",

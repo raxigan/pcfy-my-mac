@@ -7,7 +7,6 @@ import (
 	"github.com/schollz/progressbar/v3"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 	"time"
 )
@@ -25,7 +24,6 @@ func (tp DefaultTimeProvider) Now() time.Time {
 
 type Commander interface {
 	Run(command string)
-	Exists(command string) bool
 	Exit(code int)
 	TryLog(msgType LogMessage, text string)
 }
@@ -53,7 +51,14 @@ func (c *DefaultCommander) Run(command string) {
 
 	c.TryLog(CmdMsg, command)
 
-	out, err := exec.Command("/bin/bash", "-c", command).CombinedOutput()
+	var out []byte = nil
+	var err error = nil
+
+	if strings.HasPrefix(command, "jq") {
+		out, err = exec.Command("/bin/bash", "-c", command).CombinedOutput()
+	} else {
+		out, err = common.ExecCommand("/bin/bash", "-c", command).CombinedOutput()
+	}
 
 	if strings.Fields(command)[0] != "killall" && err != nil {
 		var exitErr *exec.ExitError
@@ -67,18 +72,9 @@ func (c *DefaultCommander) Run(command string) {
 }
 
 func clearConsole() {
-	cmd := exec.Command("clear")
+	cmd := common.ExecCommand("clear")
 	cmd.Stdout = os.Stdout
 	cmd.Run()
-}
-
-func (c *DefaultCommander) Exists(command string) bool {
-	if strings.HasSuffix(command, ".app") {
-		return common.FileExists(filepath.Join("/Applications", command))
-	} else {
-		_, err := exec.LookPath(command)
-		return err == nil
-	}
 }
 
 func (c *DefaultCommander) Exit(code int) {

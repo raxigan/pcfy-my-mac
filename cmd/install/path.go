@@ -5,6 +5,7 @@ import (
 	"github.com/raxigan/pcfy-my-mac/cmd/param"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -64,7 +65,8 @@ func (home HomeDir) IdesKeymapPaths(ide []param.IDE) []string {
 
 	for _, e := range ide {
 
-		dirs, _ := common.FindMatchingPaths(filepath.Join(home.Path, e.ParentDir), e.Dir, e.KeymapsDir, e.DestKeymapsFile)
+		keymapDest := initializeWithDefault(e.DestKeymapsFile, formatString(e.FullName)+".xml")
+		dirs, _ := common.FindMatchingPaths(filepath.Join(home.Path, e.KeymapsDir), keymapDest)
 
 		for _, e1 := range dirs {
 			result = append(result, e1)
@@ -72,4 +74,17 @@ func (home HomeDir) IdesKeymapPaths(ide []param.IDE) []string {
 	}
 
 	return result
+}
+
+func initializeWithDefault(original, defaultValue string) string {
+	if original == "" {
+		return defaultValue
+	}
+	return original
+}
+
+func formatString(input string) string {
+	lowercased := strings.ToLower(input)
+	formatted := strings.ReplaceAll(lowercased, " ", "-")
+	return formatted
 }

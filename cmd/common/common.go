@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"os"
+	"os/exec"
+	"strings"
 )
 
 const Yellow = "\033[33m"
@@ -14,6 +16,19 @@ const Green = "\033[32m"
 const Cyan = "\033[36m"
 const Purple = "\033[35m"
 const Reset = "\033[0m"
+
+var ExecCommand = exec.Command
+
+func Exists(command string) bool {
+	if strings.HasSuffix(command, ".app") {
+		cmd := ExecCommand("mdfind", "-name", command)
+		output, _ := cmd.Output()
+		return strings.TrimSpace(string(output)) != ""
+	} else {
+		_, err := exec.LookPath(command)
+		return err == nil
+	}
+}
 
 func GetOrDefaultString(launcher string, launcher2 *string) string {
 	if launcher2 != nil {

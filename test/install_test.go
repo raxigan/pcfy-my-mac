@@ -8,6 +8,7 @@ import (
 	"github.com/raxigan/pcfy-my-mac/cmd/param"
 	"github.com/raxigan/pcfy-my-mac/test/test_utils"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"testing"
 )
@@ -301,6 +302,8 @@ func TestInstallMany(t *testing.T) {
 }
 
 func runInstaller(t *testing.T, params param.Params) (install.HomeDir, test_utils.MockCommander, error) {
+	common.ExecCommand = fakeExecCommand
+	defer func() { common.ExecCommand = exec.Command }()
 	commander := *test_utils.NewMockCommander()
 	homeDir := testHomeDir()
 	err := cmd.Launch(homeDir, &commander, test_utils.FakeTimeProvider{}, params)
@@ -327,4 +330,12 @@ func tearDown(homeDir install.HomeDir) {
 
 func karabinerTestDefaultConfig(i install.HomeDir) string {
 	return filepath.Join(i.KarabinerConfigDir(), "karabiner-default.json")
+}
+
+func fakeExecCommand(command string, args ...string) *exec.Cmd {
+	cs := []string{"-test.run=TestHelperProcess", "--", command}
+	cs = append(cs, args...)
+	cmd := exec.Command(os.Args[0], cs...)
+	cmd.Env = []string{"GO_WANT_HELPER_PROCESS=1"}
+	return cmd
 }

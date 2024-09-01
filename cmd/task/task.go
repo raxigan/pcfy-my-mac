@@ -28,7 +28,7 @@ func DownloadDependencies() Task {
 			all := []Dependency{JqDependency(), KarabinerDependency(), AltTabDependency(), RectangleDependency()}
 
 			for _, d := range all {
-				if !i.Exists(d.command) {
+				if !common.Exists(d.command) {
 					notInstalled = append(notInstalled, d.name)
 					commands = append(commands, d.installCommand)
 				}
@@ -161,11 +161,11 @@ func ApplyAppLauncherRules() Task {
 				ApplyRules(i, "launchpad.json")
 			case strings.ToLower(param.Alfred):
 				{
-					if i.Exists("Alfred 4.app") || i.Exists("Alfred 5.app") {
+					if common.Exists("Alfred 4.app") || common.Exists("Alfred 5.app") {
 
 						ApplyRules(i, "alfred.json")
 
-						paths, err := common.FindMatchingPaths(i.ApplicationSupportDir()+"/Alfred/Alfred.alfredpreferences/preferences/local", "", "hotkey", "prefs.plist")
+						paths, err := common.FindMatchingPaths(i.ApplicationSupportDir()+"/Alfred/Alfred.alfredpreferences/preferences/local/{version}/hotkey", "prefs.plist")
 
 						if err != nil {
 							return err
@@ -214,14 +214,14 @@ func ApplyTerminalRules() Task {
 			case strings.ToLower(param.Default):
 				ApplyRules(i, "apple-terminal.json")
 			case strings.ToLower(param.ITerm):
-				if i.Exists("iTerm.app") {
+				if common.Exists("iTerm.app") {
 					ApplyRules(i, "iterm.json")
 				} else {
 					common.PrintColored(common.Yellow, fmt.Sprintf("iTerm app not found. Skipping..."))
 				}
 			case strings.ToLower(param.Warp):
 				{
-					if i.Exists("Warp.app") {
+					if common.Exists("Warp.app") {
 						ApplyRules(i, "warp.json")
 					} else {
 						common.PrintColored(common.Yellow, fmt.Sprintf("Warp app not found. Skipping..."))
@@ -229,7 +229,7 @@ func ApplyTerminalRules() Task {
 				}
 			case strings.ToLower(param.Wave):
 				{
-					if i.Exists("Wave.app") {
+					if common.Exists("Wave.app") {
 						ApplyRules(i, "wave.json")
 					} else {
 						common.PrintColored(common.Yellow, fmt.Sprintf("Wave app not found. Skipping..."))
@@ -410,13 +410,7 @@ func ApplyRules(i install.Installation, file string) {
 
 func InstallIdeKeymap(i install.Installation, ide param.IDE) error {
 
-	var destDirs []string
-
-	if ide.MultipleDirs {
-		destDirs = i.IdeKeymapPaths(ide)
-	} else {
-		destDirs = []string{filepath.Join(i.Path, ide.ParentDir, ide.Dir, ide.KeymapsDir, ide.DestKeymapsFile)}
-	}
+	var destDirs = i.IdeKeymapPaths(ide)
 
 	if len(destDirs) == 0 {
 		i.TryLog(install.WarnMsg, fmt.Sprintf("%s not found. Skipping...", ide.FullName))

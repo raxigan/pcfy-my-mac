@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -53,28 +54,33 @@ func FileExists(filename string) bool {
 	return !os.IsNotExist(err)
 }
 
-func FindMatchingPaths(basePath, namePrefix, subDir, fileName string) ([]string, error) {
+func FindMatchingPaths(pattern string, destFile string) ([]string, error) {
+	versionIndex := strings.Index(pattern, "{version}")
 
-	var result []string
+	if versionIndex == -1 {
+		return []string{filepath.Join(pattern, destFile)}, nil
+	}
 
-	err := filepath.Walk(basePath, func(path string, info os.FileInfo, err error) error {
+	parentDir := filepath.Dir(pattern[:versionIndex])
+	regexPattern := strings.Replace(pattern, "{version}", ".*", -1) + "$"
 
-		if path != basePath && strings.HasPrefix(info.Name(), namePrefix) {
-			if err != nil {
-				return err
-			}
+	re, _ := regexp.Compile(regexPattern)
 
-			if FileExists(filepath.Join(basePath, info.Name())) {
-				destDir := filepath.Join(path, subDir)
-				destFilePath := filepath.Join(destDir, fileName)
-				result = append(result, destFilePath)
-			}
+	var matchingDirs []string
+
+	filepath.WalkDir(parentDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return filepath.SkipDir
+		}
+
+		if d.IsDir() && re.MatchString(path) {
+			matchingDirs = append(matchingDirs, filepath.Join(path, destFile))
 		}
 
 		return nil
 	})
 
-	return result, err
+	return matchingDirs, nil
 }
 
 func ReplaceWordInFile(path, oldWord, newWord string) error {
