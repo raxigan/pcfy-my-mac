@@ -9,11 +9,12 @@ system-settings: # or empty: []
   - show-directories-on-top-in-finder
   - show-full-posix-path-in-finder-window-title
 ides: # or empty: []
-  - idea
-  - idea-ce
-  - pycharm-ce
-  - goland
-  - fleet
+  - IntelliJ IDEA Ultimate
+  - IntelliJ IDEA Community Edition
+  - PyCharm Professional Edition
+  - PyCharm Community Edition
+  - Android Studio
+  - Fleet
 blacklist: # or empty: []
   - com.spotify.client
   - com.apple.finder

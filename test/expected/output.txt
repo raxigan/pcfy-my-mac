@@ -39,9 +39,11 @@ PASS
 Install IDE keymaps
 Copy file keymaps/idea.xml to ~/Library/Application Support/JetBrains/IntelliJIdea2023.1/keymaps/intellij-idea-ultimate.xml
 Copy file keymaps/idea.xml to ~/Library/Application Support/JetBrains/IntelliJIdea2023.2/keymaps/intellij-idea-ultimate.xml
-Copy file keymaps/idea.xml to ~/Library/Application Support/JetBrains/IdeaIC2023.2/keymaps/intellij-idea-ce.xml
-PyCharm CE not found. Skipping...
+Copy file keymaps/idea.xml to ~/Library/Application Support/JetBrains/IdeaIC2023.2/keymaps/intellij-idea-community-edition.xml
+PyCharm Professional Edition not found. Skipping...
+PyCharm Community Edition not found. Skipping...
 Copy file keymaps/idea.xml to ~/Library/Application Support/JetBrains/GoLand2023.2/keymaps/goland.xml
+Android Studio not found. Skipping...
 Copy file keymaps/fleet.json to ~/.fleet/keymap/user.json
 Close rectangle
 killall Rectangle
