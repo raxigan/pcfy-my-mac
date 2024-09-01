@@ -136,7 +136,7 @@ func CollectSurveyParams(fileParams FileParams) Params {
 				&survey.Question{
 					Name: "keymaps",
 					Prompt: &survey.MultiSelect{
-						Message: "Select tools to install keymaps for:",
+						Message: "Select tools to install keymap for:",
 						Options: ides,
 						Help:    "IDEs/tools to apply the PC keymaps to",
 					},
