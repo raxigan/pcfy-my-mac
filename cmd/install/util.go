@@ -60,7 +60,7 @@ func (c *DefaultCommander) Run(command string) {
 		out, err = common.ExecCommand("/bin/bash", "-c", command).CombinedOutput()
 	}
 
-	if strings.HasPrefix(command, "killall") && err != nil {
+	if !strings.HasPrefix(command, "killall") && err != nil {
 		var exitErr *exec.ExitError
 		if errors.As(err, &exitErr) {
 			c.TryLog(StdErrMsg, string(out))
