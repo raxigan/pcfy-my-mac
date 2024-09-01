@@ -1,0 +1,129 @@
+Install dependencies
+Close Karabiner
+killall Karabiner-Elements
+testing: warning: no tests to run
+PASS
+
+Backup karabiner config
+Copy file karabiner/default.json to ~/.config/karabiner/karabiner.json
+Delete existing Karabiner profile
+jq --arg PROFILE_NAME "PCfy" 'del(.profiles[] | select(.name == "PCfy"))' ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/karabiner.json >tmp && mv tmp ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/karabiner.json
+Create new Karabiner profile
+Copy file karabiner/karabiner-profile.json to tmp
+jq '.profiles += $profile' ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/karabiner.json --slurpfile profile tmp --indent 4 >INPUT.tmp && mv INPUT.tmp ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/karabiner.json && rm tmp
+Rename new Karabiner profile
+Copy file karabiner/karabiner-profile.json to tmp
+jq '.profiles |= map(if .name == "_PROFILE_NAME_" then .name = "PCfy" else . end)' ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/karabiner.json > tmp && mv tmp ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/karabiner.json
+Unselect other Karabiner profiles
+jq '.profiles |= map(if .name != "PCfy" then .selected = false else . end)' ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/karabiner.json > tmp && mv tmp ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/karabiner.json
+Apply terminal rules
+Copy file karabiner/warp.json to ~/.config/karabiner/assets/complex_modifications/warp.json
+jq --arg PROFILE_NAME "PCfy" '(.profiles[] | select(.name == "PCfy") | .complex_modifications.rules) += $rules[].rules' ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/karabiner.json --slurpfile rules ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/assets/complex_modifications/warp.json >tmp && mv tmp ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/karabiner.json
+Apply main Karabiner rules
+Copy file karabiner/main.json to ~/.config/karabiner/assets/complex_modifications/main.json
+jq --arg PROFILE_NAME "PCfy" '(.profiles[] | select(.name == "PCfy") | .complex_modifications.rules) += $rules[].rules' ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/karabiner.json --slurpfile rules ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/assets/complex_modifications/main.json >tmp && mv tmp ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/karabiner.json
+Copy file karabiner/finder.json to ~/.config/karabiner/assets/complex_modifications/finder.json
+jq --arg PROFILE_NAME "PCfy" '(.profiles[] | select(.name == "PCfy") | .complex_modifications.rules) += $rules[].rules' ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/karabiner.json --slurpfile rules ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/assets/complex_modifications/finder.json >tmp && mv tmp ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/karabiner.json
+Apply app launcher rules
+Copy file karabiner/alfred.json to ~/.config/karabiner/assets/complex_modifications/alfred.json
+jq --arg PROFILE_NAME "PCfy" '(.profiles[] | select(.name == "PCfy") | .complex_modifications.rules) += $rules[].rules' ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/karabiner.json --slurpfile rules ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/assets/complex_modifications/alfred.json >tmp && mv tmp ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/karabiner.json
+Copy file alfred/prefs.plist to ~/Library/Application Support/Alfred/Alfred.alfredpreferences/preferences/local/64185304872debd80b4a1545f17ff4716b29e2d4/hotkey/prefs.plist
+Apply keyboard layout rules
+Reformat Karabiner config file
+jq '.' ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/karabiner.json > tmp && mv tmp ~/dev/os/pcfy-my-mac/test/homedir/.config/karabiner/karabiner.json
+Open Karabiner-Elements.app
+open -a Karabiner-Elements
+testing: warning: no tests to run
+PASS
+
+Install IDE keymaps
+Copy file keymaps/idea.xml to ~/Library/Application Support/JetBrains/IntelliJIdea2023.1/keymaps/intellij-idea-ultimate.xml
+Copy file keymaps/idea.xml to ~/Library/Application Support/JetBrains/IntelliJIdea2023.2/keymaps/intellij-idea-ultimate.xml
+Copy file keymaps/idea.xml to ~/Library/Application Support/JetBrains/IdeaIC2023.2/keymaps/intellij-idea-ce.xml
+PyCharm CE not found. Skipping...
+Copy file keymaps/idea.xml to ~/Library/Application Support/JetBrains/GoLand2023.2/keymaps/goland.xml
+Copy file keymaps/fleet.json to ~/.fleet/keymap/user.json
+Close rectangle
+killall Rectangle
+testing: warning: no tests to run
+PASS
+
+Install Rectangle preferences
+Copy file rectangle/com.knollsoft.Rectangle.plist to ~/Library/Preferences/com.knollsoft.Rectangle.plist
+plutil -convert binary1 ~/dev/os/pcfy-my-mac/test/homedir/Library/Preferences/com.knollsoft.Rectangle.plist
+testing: warning: no tests to run
+PASS
+
+defaults read com.knollsoft.Rectangle.plist
+testing: warning: no tests to run
+PASS
+
+Open Rectangle.app
+open -a Rectangle
+testing: warning: no tests to run
+PASS
+
+Close AtlTab.app
+killall AltTab
+testing: warning: no tests to run
+PASS
+
+Install AltTab preferences
+Exclude [com.spotify.client com.apple.finder com.apple.AppStore] from AltTab
+Copy file alt-tab/com.lwouis.alt-tab-macos.plist to ~/Library/Preferences/com.lwouis.alt-tab-macos.plist
+plutil -convert binary1 ~/dev/os/pcfy-my-mac/test/homedir/Library/Preferences/com.lwouis.alt-tab-macos.plist
+testing: warning: no tests to run
+PASS
+
+defaults read com.lwouis.alt-tab-macos.plist
+testing: warning: no tests to run
+PASS
+
+Open AtlTab.app
+open -a AltTab
+testing: warning: no tests to run
+PASS
+
+Apply system settings
+defaults write com.apple.dock autohide -bool true
+testing: warning: no tests to run
+PASS
+
+defaults write com.apple.dock autohide-delay -float 2 && killall Dock
+testing: warning: no tests to run
+PASS
+
+defaults write com.apple.dock "mineffect" -string "scale" && killall Dock
+testing: warning: no tests to run
+PASS
+
+Copy file system/DefaultKeyBinding.dict to ~/Library/KeyBindings/DefaultKeyBinding.dict
+defaults write com.apple.finder AppleShowAllFiles -bool true
+testing: warning: no tests to run
+PASS
+
+defaults write com.apple.finder _FXSortFoldersFirst -bool true
+testing: warning: no tests to run
+PASS
+
+defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+testing: warning: no tests to run
+PASS
+
+Copy hidutil remapping file
+Copy file system/com.github.pcfy-my-mac.plist to ~/Library/LaunchAgents/com.github.pcfy-my-mac.plist
+Execute hidutil command
+hidutil property --set '{"UserKeyMapping":[ { "HIDKeyboardModifierMappingSrc": 0x7000000E0, "HIDKeyboardModifierMappingDst": 0x7000000E3 }, { "HIDKeyboardModifierMappingSrc": 0x7000000E3, "HIDKeyboardModifierMappingDst": 0x7000000E0 }, { "HIDKeyboardModifierMappingSrc": 0x7000000E4, "HIDKeyboardModifierMappingDst": 0x7000000E7 }, { "HIDKeyboardModifierMappingSrc": 0x7000000E7, "HIDKeyboardModifierMappingDst": 0x7000000E4 } ]}'
+testing: warning: no tests to run
+PASS
+
+PC'fied
+
+Almost ready!
+
+1. Restart the tools (if any) you installed the keymaps for, and then select
+   the new keymap "PCfy" in settings.
+2. Grant appropriate system permissions to the following tools when prompted:
+ • Karabiner-Elements
+ • Alt-Tab
+ • Rectangle

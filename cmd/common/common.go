@@ -25,12 +25,9 @@ func Exists(command string) bool {
 		output, _ := cmd.Output()
 		return strings.TrimSpace(string(output)) != ""
 	} else {
-
-		//cmd := ExecCommand(":")
-		if os.Getenv("GO_WANT_HELPER_PROCESS") != "1" {
+		if os.Getenv("GO_WANT_HELPER_PROCESS") != "" {
 			return true
 		}
-
 		_, err := exec.LookPath(command)
 		return err == nil
 	}

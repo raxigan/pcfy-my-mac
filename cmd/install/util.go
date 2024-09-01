@@ -60,7 +60,7 @@ func (c *DefaultCommander) Run(command string) {
 		out, err = common.ExecCommand("/bin/bash", "-c", command).CombinedOutput()
 	}
 
-	if strings.Fields(command)[0] != "killall" && err != nil {
+	if strings.HasPrefix(command, "killall") && err != nil {
 		var exitErr *exec.ExitError
 		if errors.As(err, &exitErr) {
 			c.TryLog(StdErrMsg, string(out))
@@ -98,6 +98,9 @@ type LogMessage struct {
 }
 
 func (c *DefaultCommander) TryLog(logMsg LogMessage, output string) {
+
+	output = strings.ReplaceAll(output, os.Getenv("HOME"), "~")
+
 	if logMsg.msgType == ErrMsg.msgType || logMsg.msgType == StdErrMsg.msgType {
 		log(logMsg, output)
 	} else if !c.Verbose && c.Progress != nil {
@@ -108,5 +111,12 @@ func (c *DefaultCommander) TryLog(logMsg LogMessage, output string) {
 }
 
 func log(msg LogMessage, output string) {
-	fmt.Println(fmt.Sprintf("[%s] %s", common.Colored(msg.color, msg.msgType), output))
+
+	isHelper := os.Getenv("GO_WANT_HELPER_PROCESS")
+
+	if isHelper == "" {
+		fmt.Println(fmt.Sprintf("[%s] %s", common.Colored(msg.color, msg.msgType), output))
+	} else {
+		fmt.Println(output)
+	}
 }
