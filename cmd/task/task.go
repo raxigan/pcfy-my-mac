@@ -62,7 +62,7 @@ func DownloadDependencies() Task {
 func CloseKarabiner() Task {
 	return Task{
 		Name:    "Close Karabiner",
-		Execute: func(i install.Installation) error { i.Run("killall Karabiner-Elements"); return nil },
+		Execute: func(i install.Installation) error { i.Run("killall Karabiner-Menu"); return nil },
 	}
 }
 

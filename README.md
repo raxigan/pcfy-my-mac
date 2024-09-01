@@ -27,7 +27,7 @@ You can think of this project as [Kinto](https://github.com/rbreaves/kinto), but
 
 ## Features
 
-- **Keyboard shortcuts:** keyboard shortcuts mappings for system, Finder and browser (Chromium-based) actions
+- **Keyboard shortcuts:** keyboard shortcuts mappings for system and browser (Chromium-based) actions
 - **JetBrains tools keymaps:** battle-tested keymaps for JetBrains tools
 - **Quick application launching:** launch (or switch) applications quickly with just the Win/Opt key
 - **Window snapping:** snap windows using Win/Opt + ←/→ shortcut
