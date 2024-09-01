@@ -44,10 +44,6 @@ func (c *MockCommander) Run(command string) {
 	}
 }
 
-func (c *MockCommander) Exists(command string) bool {
-	return true
-}
-
 func (c *MockCommander) Exit(code int) {}
 
 type FakeTimeProvider struct {

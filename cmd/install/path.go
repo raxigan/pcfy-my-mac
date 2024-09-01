@@ -1,7 +1,6 @@
 package install
 
 import (
-	"fmt"
 	"github.com/raxigan/pcfy-my-mac/cmd/common"
 	"github.com/raxigan/pcfy-my-mac/cmd/param"
 	"os"
@@ -65,9 +64,6 @@ func (home HomeDir) IdesKeymapPaths(ide []param.IDE) []string {
 	var result []string
 
 	for _, e := range ide {
-
-		fmt.Println("Find dirs", e)
-
 		keymapDest := initializeWithDefault(e.DestKeymapsFile, formatString(e.FullName)+".xml")
 		dirs, _ := common.FindMatchingPaths(filepath.Join(home.Path, e.KeymapsDir), keymapDest)
 

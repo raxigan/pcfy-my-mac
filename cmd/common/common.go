@@ -36,15 +36,6 @@ func Exists(command string) bool {
 	}
 }
 
-func contains[T comparable](slice []T, element T) bool {
-	for _, v := range slice {
-		if v == element {
-			return true
-		}
-	}
-	return false
-}
-
 func GetOrDefaultString(launcher string, launcher2 *string) string {
 	if launcher2 != nil {
 		return *launcher2

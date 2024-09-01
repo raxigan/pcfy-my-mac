@@ -318,6 +318,7 @@ func testHomeDir() install.HomeDir {
 	}
 }
 
+//goland:noinspection ALL because it's test code
 func tearDown(homeDir install.HomeDir) {
 	test_utils.RemoveFiles(filepath.Join(homeDir.Path, ".config"))
 	test_utils.RemoveFiles(homeDir.KarabinerConfigBackupFile(test_utils.FakeTimeProvider{}.Now()))
@@ -337,7 +338,7 @@ func karabinerTestDefaultConfig(i install.HomeDir) string {
 func fakeExecCommand(command string, args ...string) *exec.Cmd {
 	cs := []string{"-test.run=TestHelperProcess", "--", command}
 	cs = append(cs, args...)
-	cmd := exec.Command(os.Args[0], cs...)
-	cmd.Env = []string{"GO_WANT_HELPER_PROCESS=1"}
-	return cmd
+	execCommand := exec.Command(os.Args[0], cs...)
+	execCommand.Env = []string{"GO_WANT_HELPER_PROCESS=1"}
+	return execCommand
 }

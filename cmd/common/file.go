@@ -1,7 +1,6 @@
 package common
 
 import (
-	"fmt"
 	"github.com/raxigan/pcfy-my-mac/assets"
 	"io"
 	"io/fs"
@@ -12,8 +11,8 @@ import (
 )
 
 func CopyFileFromEmbedFS(src, dst string) error {
-	assets := &assets.Assets
-	data, _ := fs.ReadFile(assets, src)
+	assetsFs := &assets.Assets
+	data, _ := fs.ReadFile(assetsFs, src)
 	os.MkdirAll(filepath.Dir(dst), 0755)
 	return os.WriteFile(dst, data, 0755)
 }
@@ -58,8 +57,6 @@ func FileExists(filename string) bool {
 func FindMatchingPaths(pattern string, destFile string) ([]string, error) {
 	versionIndex := strings.Index(pattern, "{version}")
 
-	fmt.Println(pattern)
-
 	if versionIndex == -1 {
 		return []string{filepath.Join(pattern, destFile)}, nil
 	}
@@ -72,14 +69,11 @@ func FindMatchingPaths(pattern string, destFile string) ([]string, error) {
 
 	filepath.WalkDir(parentDir, func(path string, d fs.DirEntry, err error) error {
 
-		fmt.Println(path)
-
 		if err != nil {
 			return filepath.SkipDir
 		}
 
 		if d.IsDir() && re.MatchString(path) {
-
 			countSlashes1 := strings.Count(filepath.Dir(pattern), string(filepath.Separator))
 			countSlashes2 := strings.Count(path, string(filepath.Separator))
 			if countSlashes1 == countSlashes2 {
