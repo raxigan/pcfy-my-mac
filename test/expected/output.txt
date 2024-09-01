@@ -1,6 +1,6 @@
 Install dependencies
 Close Karabiner
-killall Karabiner-Elements
+killall Karabiner-Menu
 testing: warning: no tests to run
 PASS
 
