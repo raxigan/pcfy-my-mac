@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"github.com/raxigan/pcfy-my-mac/assets"
 	"io"
 	"io/fs"
@@ -57,6 +58,8 @@ func FileExists(filename string) bool {
 func FindMatchingPaths(pattern string, destFile string) ([]string, error) {
 	versionIndex := strings.Index(pattern, "{version}")
 
+	fmt.Println(pattern)
+
 	if versionIndex == -1 {
 		return []string{filepath.Join(pattern, destFile)}, nil
 	}
@@ -68,7 +71,14 @@ func FindMatchingPaths(pattern string, destFile string) ([]string, error) {
 
 	var matchingDirs []string
 
+	fmt.Println(parentDir)
+	fmt.Println(regexPattern)
+	fmt.Println("Walking...")
+
 	filepath.WalkDir(parentDir, func(path string, d fs.DirEntry, err error) error {
+
+		fmt.Println(path)
+
 		if err != nil {
 			return filepath.SkipDir
 		}
