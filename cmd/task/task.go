@@ -269,7 +269,13 @@ func CopyIdeKeymaps() Task {
 		Name: "Install IDE keymaps",
 		Execute: func(i install.Installation) error {
 			for _, keymap := range i.Keymaps {
-				name, _ := param.IdeKeymapByFullName(keymap)
+				name, err := param.IdeKeymapByFullName(keymap)
+
+				if err != nil {
+					i.Commander.TryLog(install.StdErrMsg, err.Error())
+					i.Exit(1)
+				}
+
 				InstallIdeKeymap(i, name)
 			}
 			return nil

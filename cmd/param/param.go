@@ -86,7 +86,7 @@ func CollectYamlParams(yml string) (FileParams, error) {
 			return nil
 		},
 		func() error {
-			return ValidateParamValues("ides", fp.Keymaps, append(IdeKeymapOptions(), []string{"all"}...))
+			return ValidateParamValues("ides", fp.Keymaps, IdeKeymapOptions())
 		},
 		func() error {
 			return ValidateParamValues("system-settings", fp.SystemSettings, SystemSettings)
