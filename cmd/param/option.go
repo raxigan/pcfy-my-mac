@@ -76,7 +76,7 @@ func AndroidStudio() IDE {
 
 func Fleet() IDE {
 	return IDE{
-		KeymapsDir:      ".fleet/keymap",
+		KeymapsDir:      "Library/Application Support/JetBrains/Fleet{version}/keymap",
 		FullName:        "Fleet",
 		SrcKeymapsFile:  "fleet.json",
 		DestKeymapsFile: "user.json",

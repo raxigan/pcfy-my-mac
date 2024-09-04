@@ -2,431 +2,439 @@
   "keymap": [
     {
       "key": "alt-shift-down",
-      "trigger": "-move-line-down"
+      "action": "-move-line-down"
     },
     {
       "key": "cmd-shift-down",
-      "trigger": "-move-line-down"
+      "action": "-move-line-down"
     },
     {
       "key": "alt-shift-up",
-      "trigger": "-move-line-up"
+      "action": "-move-line-up"
     },
     {
       "key": "cmd-shift-up",
-      "trigger": "-move-line-up"
+      "action": "-move-line-up"
     },
     {
       "key": "shift-cmd-up",
-      "trigger": "move-line-up"
+      "action": "move-line-up"
     },
     {
       "key": "cmd-backspace",
-      "trigger": "-delete-line"
+      "action": "-editor/delete-line"
     },
     {
       "key": "cmd-y",
-      "trigger": "delete-line"
+      "action": "editor/delete-line"
     },
     {
       "key": "ctrl-shift-down",
-      "trigger": "-go-to-next-symbol"
+      "action": "-editor/move-caret-to-next-symbol"
     },
     {
       "key": "ctrl-shift-up",
-      "trigger": "-go-to-prev-symbol"
+      "action": "-editor/move-caret-to-previous-symbol"
     },
     {
       "key": "alt-left",
-      "trigger": "-goto-word-left"
+      "action": "-editor/move-caret-to-previous-word"
     },
     {
       "key": "cmd-left",
-      "trigger": "goto-word-left"
+      "action": "editor/move-caret-to-previous-word"
     },
     {
       "key": "shift-left",
-      "trigger": "-shift-arrow-left"
+      "action": "-shift-arrow-left"
     },
     {
       "key": "shift-left",
-      "trigger": "shift-arrow-left"
+      "action": "shift-arrow-left"
     },
     {
       "key": "shift-right",
-      "trigger": "-shift-arrow-right"
+      "action": "-shift-arrow-right"
     },
     {
       "key": "shift-right",
-      "trigger": "shift-arrow-right"
+      "action": "shift-arrow-right"
     },
     {
       "key": "shift-alt-right",
-      "trigger": "-shift-goto-word-right"
+      "action": "-editor/move-caret-to-next-word-with-selection"
     },
     {
       "key": "shift-cmd-right",
-      "trigger": "shift-goto-word-right"
+      "action": "editor/move-caret-to-next-word-with-selection"
     },
     {
       "key": "shift-alt-left",
-      "trigger": "-shift-goto-word-left"
+      "action": "-editor/move-caret-to-previous-word-with-selection"
     },
     {
       "key": "shift-cmd-left",
-      "trigger": "shift-goto-word-left"
+      "action": "editor/move-caret-to-previous-word-with-selection"
     },
     {
       "key": "cmd-a",
-      "trigger": "-select-all"
+      "action": "-select-all"
     },
     {
       "key": "cmd-a",
-      "trigger": "select-all"
+      "action": "select-all"
     },
     {
       "key": "ctrl-a",
-      "trigger": "-home"
+      "action": "-home"
     },
     {
       "key": "alt-up",
-      "trigger": "-expand-selection"
+      "action": "-expand-selection"
     },
     {
       "key": "alt-down",
-      "trigger": "-shrink-selection"
+      "action": "-shrink-selection"
     },
     {
       "key": "ctrl-f",
-      "trigger": "-arrow-right"
+      "action": "-arrow-right"
     },
     {
       "key": "cmd-g",
-      "trigger": "-next-occurrence"
+      "action": "-next-occurrence"
     },
     {
       "key": "f3",
-      "trigger": "next-occurrence"
+      "action": "next-occurrence"
     },
     {
       "key": "cmd-shift-g",
-      "trigger": "-prev-occurrence"
+      "action": "-prev-occurrence"
     },
     {
       "key": "shift-f3",
-      "trigger": "prev-occurrence"
+      "action": "prev-occurrence"
     },
     {
       "key": "cmd-digit1",
-      "trigger": "-focus-and-toggle-left-panel"
+      "action": "-toggle-left-panel"
     },
     {
       "key": "alt-digit1",
-      "trigger": "focus-and-toggle-left-panel"
+      "action": "toggle-left-panel"
     },
     {
       "key": "cmd-shift-o",
-      "trigger": "-show-goto-file-panel"
+      "action": "-goto/file"
     },
     {
-      "key": "shift-ctrl-n",
-      "trigger": "show-goto-file-panel"
+      "key": "shift-cmd-n",
+      "action": "goto/file"
     },
     {
       "key": "ctrl-r",
-      "trigger": "-go-to-run"
+      "action": "-run-and-debug"
     },
     {
       "key": "ctrl-shift-r",
-      "trigger": "-run/run-at-caret"
+      "action": "-run/run-in-context"
     },
     {
       "key": "shift-f10",
-      "trigger": "run/current-file"
+      "action": "run/run-current-file"
     },
     {
       "key": "ctrl-v",
-      "trigger": "-page-down"
+      "action": "-page-down"
     },
     {
       "key": "cmd-d",
-      "trigger": "-select-next-occurrence"
+      "action": "-select-next-occurrence"
     },
     {
       "key": "alt-j",
-      "trigger": "select-next-occurrence"
+      "action": "select-next-occurrence"
     },
     {
       "key": "cmd-shift-l",
-      "trigger": "-select-all-occurrences"
+      "action": "-select-all-occurrences"
     },
     {
       "key": "shift-ctrl-alt-j",
-      "trigger": "select-all-occurrences"
+      "action": "select-all-occurrences"
     },
     {
       "key": "cmd-return",
-      "trigger": "-new-line"
+      "action": "-editor/insert-new-line-below"
     },
     {
       "key": "shift-return",
-      "trigger": "new-line"
+      "action": "editor/insert-new-line-below"
     },
     {
       "key": "alt-shift-f",
-      "trigger": "-reformat-code"
+      "action": "-reformat-code"
     },
     {
       "key": "alt-cmd-l",
-      "trigger": "reformat-code"
+      "action": "reformat-code"
     },
     {
       "key": "cmd-e",
-      "trigger": "-next-error"
+      "action": "-editor/go-to-next-problem"
     },
     {
       "key": "f2",
-      "trigger": "next-error"
+      "action": "editor/go-to-next-problem"
     },
     {
       "key": "cmd-shift-e",
-      "trigger": "-prev-error"
+      "action": "-editor/go-to-previous-problem"
     },
     {
       "key": "shift-f2",
-      "trigger": "prev-error"
+      "action": "editor/go-to-previous-problem"
     },
     {
       "key": "ctrl-d",
-      "trigger": "-delete-forward"
+      "action": "-delete-forward"
     },
     {
       "key": "ctrl-r",
-      "trigger": "-rename"
+      "action": "-rename"
     },
     {
       "key": "shift-f6",
-      "trigger": "rename"
+      "action": "rename"
     },
     {
       "key": "ctrl-r",
-      "trigger": "-workspace-tree/rename-file"
+      "action": "-files/rename"
     },
     {
       "key": "shift-f6",
-      "trigger": "workspace-tree/rename-file"
+      "action": "files/rename"
     },
     {
       "key": "shift-return",
-      "trigger": "-wrap-line"
+      "action": "-wrap-line"
     },
     {
       "key": "cmd-b",
-      "trigger": "-go-to-declaration"
+      "action": "-go-to-declaration"
     },
     {
       "key": "f4",
-      "trigger": "go-to-declaration"
+      "action": "go-to-declaration"
     },
     {
       "key": "f4",
-      "trigger": "-navigate"
+      "action": "-navigate/edit"
     },
     {
       "key": "cmd-backspace",
-      "trigger": "-workspace-tree/delete-file"
+      "action": "-files/delete"
     },
     {
       "key": "cmd-delete",
-      "trigger": "-workspace-tree/delete-file"
+      "action": "-files/delete"
     },
     {
       "key": "delete",
-      "trigger": "workspace-tree/delete-file"
+      "action": "files/delete"
     },
     {
       "key": "alt-shift-d",
-      "trigger": "-duplicate-line"
+      "action": "-editor/duplicate-line"
     },
     {
       "key": "cmd-d",
-      "trigger": "duplicate-line"
+      "action": "editor/duplicate-line"
     },
     {
       "key": "alt-shift-up",
-      "trigger": "-expand-selection"
+      "action": "-expand-selection"
     },
     {
       "key": "cmd-w",
-      "trigger": "expand-selection"
+      "action": "expand-selection"
     },
     {
       "key": "cmd-w",
-      "trigger": "-close-tab"
+      "action": "-close-tab"
     },
     {
       "key": "alt-shift-down",
-      "trigger": "-shrink-selection"
+      "action": "-shrink-selection"
     },
     {
       "key": "shift-cmd-w",
-      "trigger": "shrink-selection"
+      "action": "shrink-selection"
     },
     {
       "key": "alt-right",
-      "trigger": "-goto-word-right"
+      "action": "-editor/move-caret-to-next-word"
     },
     {
       "key": "cmd-right",
-      "trigger": "goto-word-right"
+      "action": "editor/move-caret-to-next-word"
     },
     {
       "key": "alt-right",
-      "trigger": "-goto-word-right"
+      "action": "-editor/move-caret-to-next-word"
     },
     {
       "key": "cmd-right",
-      "trigger": "goto-word-right"
+      "action": "editor/move-caret-to-next-word"
     },
     {
       "key": "cmd-left",
-      "trigger": "-home"
+      "action": "-home"
     },
     {
       "key": "cmd-right",
-      "trigger": "-end"
+      "action": "-end"
     },
     {
       "key": "cmd-shift-right",
-      "trigger": "-shift-end"
+      "action": "-shift-end"
     },
     {
       "key": "cmd-shift-right",
-      "trigger": "-shift-end"
+      "action": "-shift-end"
     },
     {
       "key": "cmd-shift-down",
-      "trigger": "-shift-goto-document-end"
+      "action": "-editor/move-caret-to-end-of-document-with-selection"
     },
     {
       "key": "cmd-shift-down",
-      "trigger": "-shift-goto-document-end"
+      "action": "-editor/move-caret-to-end-of-document-with-selection"
     },
     {
       "key": "cmd-shift-up",
-      "trigger": "-shift-goto-document-start"
+      "action": "-editor/move-caret-to-start-of-document-with-selection"
     },
     {
       "key": "cmd-shift-left",
-      "trigger": "-shift-home"
+      "action": "-shift-home"
     },
     {
       "key": "alt-down",
-      "trigger": "-move-line-down"
+      "action": "-move-line-down"
     },
     {
       "key": "alt-up",
-      "trigger": "-move-line-up"
+      "action": "-move-line-up"
     },
     {
       "key": "shift-cmd-down",
-      "trigger": "move-line-down"
+      "action": "move-line-down"
     },
     {
       "key": "alt-down",
-      "trigger": "go-to-next-symbol"
+      "action": "editor/move-caret-to-next-symbol"
     },
     {
       "key": "alt-up",
-      "trigger": "go-to-prev-symbol"
+      "action": "editor/move-caret-to-previous-symbol"
     },
     {
       "key": "alt-up",
-      "trigger": "go-to-prev-symbol"
+      "action": "editor/move-caret-to-previous-symbol"
     },
     {
       "key": "cmd-alt-left",
-      "trigger": "-prev-tab"
+      "action": "-prev-tab"
     },
     {
       "key": "alt-left",
-      "trigger": "prev-tab"
+      "action": "prev-tab"
     },
     {
       "key": "cmd-shift-oumlaut",
-      "trigger": "-prev-tab"
+      "action": "-prev-tab"
     },
     {
       "key": "cmd-shift-leftbracket",
-      "trigger": "-prev-tab"
+      "action": "-prev-tab"
     },
     {
       "key": "cmd-shift-leftbracket",
-      "trigger": "-prev-tab"
+      "action": "-prev-tab"
     },
     {
       "key": "cmd-alt-right",
-      "trigger": "-next-tab"
+      "action": "-next-tab"
     },
     {
       "key": "alt-right",
-      "trigger": "next-tab"
+      "action": "next-tab"
     },
     {
       "key": "cmd-alt-right",
-      "trigger": "-next-tab"
+      "action": "-next-tab"
     },
     {
       "key": "alt-right",
-      "trigger": "next-tab"
+      "action": "next-tab"
     },
     {
       "key": "cmd-shift-rightbracket",
-      "trigger": "-next-tab"
+      "action": "-next-tab"
     },
     {
       "key": "cmd-shift-rightbracket",
-      "trigger": "-next-tab"
+      "action": "-next-tab"
     },
     {
       "key": "cmd-shift-aumlaut",
-      "trigger": "-next-tab"
+      "action": "-next-tab"
     },
     {
       "key": "cmd-shift-aumlaut",
-      "trigger": "-next-tab"
+      "action": "-next-tab"
     },
     {
       "key": "cmd-leftbracket",
-      "trigger": "-back"
+      "action": "-back"
     },
     {
       "key": "alt-cmd-left",
-      "trigger": "back"
+      "action": "back"
     },
     {
       "key": "cmd-rightbracket",
-      "trigger": "-forward"
+      "action": "-forward"
     },
     {
       "key": "alt-cmd-right",
-      "trigger": "forward"
+      "action": "forward"
     },
     {
       "key": "cmd-u",
-      "trigger": "-find-usages"
+      "action": "-find-usages"
     },
     {
       "key": "alt-f7",
-      "trigger": "find-usages"
+      "action": "find-usages"
     },
     {
       "key": "cmd-u",
-      "trigger": "-find-usages"
+      "action": "-find-usages"
     },
     {
       "key": "alt-f7",
-      "trigger": "find-usages"
+      "action": "find-usages"
+    },
+    {
+      "key": "shift-cmd-c",
+      "action": "copy-path"
+    },
+    {
+      "key": "cmd-p",
+      "action": "-goto/file"
     }
   ]
 }

@@ -140,6 +140,9 @@ For Mac keyboard layout:
 
 </details>
 
+## Version compatibility
+- Fleet 1.39.118+
+
 ## Additional notes
 
 - Only tools that have been installed via the JetBrains Toolbox are supported **[JetBrains keymaps only]**
