@@ -138,7 +138,7 @@ func CollectSurveyParams(fileParams FileParams) Params {
 					Prompt: &survey.MultiSelect{
 						Message: "Select tools to install keymap for:",
 						Options: ides,
-						Help:    "IDEs/tools to apply the PC keymaps to",
+						Help:    `This list shows some of your installed apps. Select the ones you want to apply custom keymap for`,
 					},
 				},
 			)
