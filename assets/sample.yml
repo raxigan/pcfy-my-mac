@@ -8,7 +8,7 @@ system-settings: # or empty: []
   - show-hidden-files-in-finder
   - show-directories-on-top-in-finder
   - show-full-posix-path-in-finder-window-title
-ides: # or empty: []
+keymaps: # or empty: []
   - IntelliJ IDEA Ultimate
   - IntelliJ IDEA Community Edition
   - PyCharm Professional Edition
