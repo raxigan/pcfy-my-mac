@@ -129,7 +129,7 @@
       "action": "-goto/file"
     },
     {
-      "key": "shift-cmd-n",
+      "key": "shift-ctrl-n",
       "action": "goto/file"
     },
     {
@@ -429,12 +429,28 @@
       "action": "find-usages"
     },
     {
-      "key": "shift-cmd-c",
-      "action": "copy-path"
+      "key": "ctrl-g ctrl-u",
+      "action": "-git/pull"
     },
     {
-      "key": "cmd-p",
-      "action": "-goto/file"
+      "key": "cmd-t",
+      "action": "git/pull"
+    },
+    {
+      "key": "cmd-t",
+      "action": "-goto/tool"
+    },
+    {
+      "key": "cmd-t",
+      "action": "-goto/tool"
+    },
+    {
+      "key": "cmd-k",
+      "action": "git/commit"
+    },
+    {
+      "key": "cmd-k",
+      "action": "-goto/everything"
     }
   ]
 }

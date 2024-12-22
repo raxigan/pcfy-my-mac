@@ -35,7 +35,7 @@ You can think of this project as [Kinto](https://github.com/rbreaves/kinto), but
 - **Everything works on any keyboard layout (you can use both the built-in Mac and external PC keyboards at the same
   time)**
 
-<img src="docs/demo.gif" alt="demo" width="100%"/>
+<img src=".docs/demo.gif" alt="demo" width="100%"/>
 
 ## Installation
 
@@ -151,7 +151,7 @@ For Mac keyboard layout:
 - There is 1 alternative shortcut provided for Mac keyboard layout (as there is no **Insert** key):
     - **Alt/Cmd + Insert** (New file in JB tools) → **Alt/Cmd + Enter**
 
-![function-keys.png](docs/resources/f-keys.png)
+![function-keys.png](.docs/resources/f-keys.png)
 
 ### Terminal dev permissions
 
@@ -159,19 +159,25 @@ For Mac keyboard layout:
 the following permissions for your terminal. Just go to *System Settings* > *Privacy & Security* > *Developer Tools*
 and enable it:
 
-![terminal_permissions.png](docs/terminal-permissions.png)
+![terminal_permissions.png](.docs/terminal-permissions.png)
 
 ## Troubleshooting
 
-**Problem**: Shortcuts from [the list](#shortcut-list) do not work
+- **Problem**: Shortcuts from [the list](#shortcut-list) do not work
 
 **Solution**: Verify the **PCfy** profile is selected in Karabiner-Elements:
 
-![karabiner-profile.png](docs/karabiner-profile.png)
+![karabiner-profile.png](.docs/karabiner-profile.png)
 
 Also check if **Modify events** option for your keyboard is enabled in *Karabiner-Elements* > *Settings* > *Devices*:
 
-![device-enabled.png](docs/device-enabled.png)
+![device-enabled.png](.docs/device-enabled.png)
+
+- **Problem**: On pressing '~' (tilde), § (section sign) is entered instead. This might happen if your external keyboard and the built-in one are of different types: ANSI/ISO/JIS
+
+**Solution**: Ensure **ANSI** keyboard type is selected in `Karabiner Elements` → `Virtual Keyboard`
+
+![karabiner-virtual-kb.png](.docs/karabiner-virtual-kb.png)
 
 ## Contributing
 - Ask a question or share your ideas in [Discussions](https://github.com/raxigan/pcfy-my-mac/discussions)
