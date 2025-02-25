@@ -441,10 +441,6 @@
       "action": "-goto/tool"
     },
     {
-      "key": "cmd-t",
-      "action": "-goto/tool"
-    },
-    {
       "key": "cmd-k",
       "action": "git/commit"
     },
