@@ -8,3 +8,4 @@ test/homedir/**
 custom-params.yml
 /pcfy-my-mac
 **/DefaultKeyBinding.dict
+uninstall-dependencies.sh
