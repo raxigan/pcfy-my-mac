@@ -323,6 +323,7 @@ func tearDown(homeDir install.HomeDir) {
 	test_utils.RemoveDirs(homeDir.ApplicationSupportDir(), "hotkey")
 	common.CopyFile(karabinerTestDefaultConfig(homeDir), homeDir.KarabinerConfigFile())
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError) // reset flags
+	os.Setenv("GO_WANT_HELPER_PROCESS", "")
 }
 
 func karabinerTestDefaultConfig(i install.HomeDir) string {
