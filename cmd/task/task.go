@@ -28,9 +28,12 @@ func DownloadDependencies() Task {
 			all := []Dependency{JqDependency(), KarabinerDependency(), AltTabDependency(), RectangleDependency()}
 
 			for _, d := range all {
-				if !common.Exists(d.command) {
+				if !common.ExistsWithLog(d.command, func(x string) { i.TryLog(install.CmdMsg, x) }) {
+					i.TryLog(install.WarnMsg, fmt.Sprintf("%s app not found, it will be installed", d.name))
 					notInstalled = append(notInstalled, d.name)
 					commands = append(commands, d.installCommand)
+				} else {
+					i.TryLog(install.WarnMsg, fmt.Sprintf("%s app is already installed", d.name))
 				}
 			}
 
@@ -175,7 +178,8 @@ func ApplyAppLauncherRules() Task {
 							copyFile("alfred/prefs.plist", path, i)
 						}
 					} else {
-						i.TryLog(install.WarnMsg, "Alfred app not found. Skipping...")
+						i.TryLog(install.WarnMsg, "Alfred app not found. Skip and fallback to None...")
+						ApplyRules(i, "app-launcher-none.json")
 					}
 				}
 			default:
@@ -214,26 +218,24 @@ func ApplyTerminalRules() Task {
 			case strings.ToLower(param.Default):
 				ApplyRules(i, "apple-terminal.json")
 			case strings.ToLower(param.ITerm):
-				if common.Exists("iTerm.app") {
+				if common.ExistsWithLog("iTerm.app", func(x string) {
+					i.TryLog(install.CmdMsg, x)
+				}) {
 					ApplyRules(i, "iterm.json")
 				} else {
-					common.PrintColored(common.Yellow, fmt.Sprintf("iTerm app not found. Skipping..."))
+					common.PrintColored(common.Yellow, fmt.Sprintf("iTerm app not found. Skip and fallback to None..."))
 				}
 			case strings.ToLower(param.Warp):
-				{
-					if common.Exists("Warp.app") {
-						ApplyRules(i, "warp.json")
-					} else {
-						common.PrintColored(common.Yellow, fmt.Sprintf("Warp app not found. Skipping..."))
-					}
+				if common.Exists("Warp.app") {
+					ApplyRules(i, "warp.json")
+				} else {
+					common.PrintColored(common.Yellow, fmt.Sprintf("Warp app not found. Skip and fallback to None..."))
 				}
 			case strings.ToLower(param.Wave):
-				{
-					if common.Exists("Wave.app") {
-						ApplyRules(i, "wave.json")
-					} else {
-						common.PrintColored(common.Yellow, fmt.Sprintf("Wave app not found. Skipping..."))
-					}
+				if common.Exists("Wave.app") {
+					ApplyRules(i, "wave.json")
+				} else {
+					common.PrintColored(common.Yellow, fmt.Sprintf("Wave app not found. Skipping..."))
 				}
 			default:
 				return errors.New("Unknown terminal: " + i.Terminal)
@@ -372,16 +374,19 @@ func ApplySystemSettings() Task {
 		Execute: func(i install.Installation) error {
 			for _, value := range i.SystemSettings {
 				simpleParamName := param.ToSimpleParamName(value)
+				anyDockSettingsApplied := false
 
 				switch simpleParamName {
 				case "enable-dock-auto-hide-2s-delay":
 					{
 						i.Run("defaults write com.apple.dock autohide -bool true")
 						i.Run("defaults write com.apple.dock autohide-delay -float 2 && killall Dock")
+						anyDockSettingsApplied = true
 					}
 				case "change-dock-minimize-animation-to-scale":
 					{
 						i.Run(`defaults write com.apple.dock "mineffect" -string "scale" && killall Dock`)
+						anyDockSettingsApplied = true
 					}
 				case "enable-home-and-end-keys":
 					{
@@ -399,7 +404,10 @@ func ApplySystemSettings() Task {
 					{
 						i.Run("defaults write com.apple.finder _FXShowPosixPathInTitle -bool true")
 					}
+				}
 
+				if anyDockSettingsApplied {
+					i.Run(`killall Dock`)
 				}
 			}
 

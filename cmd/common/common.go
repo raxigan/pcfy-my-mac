@@ -19,9 +19,30 @@ const Reset = "\033[0m"
 
 var ExecCommand = exec.Command
 
+type VoidFunc func(string)
+
+func ExistsWithLog(command string, fn VoidFunc) bool {
+	if strings.HasSuffix(command, ".app") {
+		appSuffixRemoved := strings.ReplaceAll(command, ".app", "")
+		cmd := ExecCommand("mdfind", "-name", appSuffixRemoved)
+		output, _ := cmd.Output()
+
+		fn(string(output))
+
+		return anyLineEndsWith(string(output), command)
+	} else {
+		if os.Getenv("GO_WANT_HELPER_PROCESS") != "" {
+			return true
+		}
+		_, err := exec.LookPath(command)
+		return err == nil
+	}
+}
+
 func Exists(command string) bool {
 	if strings.HasSuffix(command, ".app") {
-		cmd := ExecCommand("mdfind", "-name", command)
+		appSuffixRemoved := strings.ReplaceAll(command, ".app", "")
+		cmd := ExecCommand("mdfind", "-name", appSuffixRemoved)
 		output, _ := cmd.Output()
 		return strings.TrimSpace(string(output)) != ""
 	} else {
@@ -31,6 +52,18 @@ func Exists(command string) bool {
 		_, err := exec.LookPath(command)
 		return err == nil
 	}
+}
+
+func anyLineEndsWith(multilineStr string, suffix string) bool {
+	lines := strings.Split(multilineStr, "\n")
+
+	for _, line := range lines {
+		if strings.HasSuffix(line, suffix) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func GetOrDefaultString(launcher string, launcher2 *string) string {

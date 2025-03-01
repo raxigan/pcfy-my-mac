@@ -58,6 +58,8 @@ func Install(i install.Installation) error {
 		}
 	}
 
+	i.TryLog(install.TaskMsg, "Installed successfully")
+
 	fmt.Println("PC'fied")
 	i.Commander.Run("clear")
 	fmt.Println(`
