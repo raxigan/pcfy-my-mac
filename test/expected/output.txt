@@ -1,9 +1,13 @@
 Install dependencies
+jq app is already installed
+/Applications/Karabiner-Elements.app
+Karabiner-Elements app is already installed
+/Applications/AltTab.app
+AltTab app is already installed
+/Applications/Rectangle.app
+Rectangle app is already installed
 Close Karabiner
 killall Karabiner-Menu
-testing: warning: no tests to run
-PASS
-
 Backup karabiner config
 Copy file karabiner/default.json to ~/.config/karabiner/karabiner.json
 Delete existing Karabiner profile
@@ -33,9 +37,6 @@ Reformat Karabiner config file
 jq '.' ~/.config/karabiner/karabiner.json > tmp && mv tmp ~/.config/karabiner/karabiner.json
 Open Karabiner-Elements.app
 open -a Karabiner-Elements
-testing: warning: no tests to run
-PASS
-
 Install IDE keymaps
 Copy file keymaps/idea.xml to ~/Library/Application Support/JetBrains/IntelliJIdea2023.1/keymaps/intellij-idea-ultimate.xml
 Copy file keymaps/idea.xml to ~/Library/Application Support/JetBrains/IntelliJIdea2023.2/keymaps/intellij-idea-ultimate.xml
@@ -47,78 +48,35 @@ Android Studio not found. Skipping...
 Copy file keymaps/fleet.json to ~/Library/Application Support/JetBrains/Fleet/keymap/user.json
 Close rectangle
 killall Rectangle
-testing: warning: no tests to run
-PASS
-
 Install Rectangle preferences
 Copy file rectangle/com.knollsoft.Rectangle.plist to ~/Library/Preferences/com.knollsoft.Rectangle.plist
 plutil -convert binary1 ~/Library/Preferences/com.knollsoft.Rectangle.plist
-testing: warning: no tests to run
-PASS
-
 defaults read com.knollsoft.Rectangle.plist
-testing: warning: no tests to run
-PASS
-
 Open Rectangle.app
 open -a Rectangle
-testing: warning: no tests to run
-PASS
-
 Close AtlTab.app
 killall AltTab
-testing: warning: no tests to run
-PASS
-
 Install AltTab preferences
 Exclude [com.spotify.client com.apple.finder com.apple.AppStore] from AltTab
 Copy file alt-tab/com.lwouis.alt-tab-macos.plist to ~/Library/Preferences/com.lwouis.alt-tab-macos.plist
 plutil -convert binary1 ~/Library/Preferences/com.lwouis.alt-tab-macos.plist
-testing: warning: no tests to run
-PASS
-
 defaults read com.lwouis.alt-tab-macos.plist
-testing: warning: no tests to run
-PASS
-
 Open AtlTab.app
 open -a AltTab
-testing: warning: no tests to run
-PASS
-
 Apply system settings
 defaults write com.apple.dock autohide -bool true
-testing: warning: no tests to run
-PASS
-
-defaults write com.apple.dock autohide-delay -float 2 && killall Dock
-testing: warning: no tests to run
-PASS
-
-defaults write com.apple.dock "mineffect" -string "scale" && killall Dock
-testing: warning: no tests to run
-PASS
-
+defaults write com.apple.dock autohide-delay -float 2
+defaults write com.apple.dock "mineffect" -string "scale"
 Copy file system/DefaultKeyBinding.dict to ~/Library/KeyBindings/DefaultKeyBinding.dict
 defaults write com.apple.finder AppleShowAllFiles -bool true
-testing: warning: no tests to run
-PASS
-
 defaults write com.apple.finder _FXSortFoldersFirst -bool true
-testing: warning: no tests to run
-PASS
-
 defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
-testing: warning: no tests to run
-PASS
-
+killall Dock
 Copy hidutil remapping file
 Copy file system/com.github.pcfy-my-mac.plist to ~/Library/LaunchAgents/com.github.pcfy-my-mac.plist
 Execute hidutil command
 hidutil property --set '{"UserKeyMapping":[ { "HIDKeyboardModifierMappingSrc": 0x7000000E0, "HIDKeyboardModifierMappingDst": 0x7000000E3 }, { "HIDKeyboardModifierMappingSrc": 0x7000000E3, "HIDKeyboardModifierMappingDst": 0x7000000E0 }, { "HIDKeyboardModifierMappingSrc": 0x7000000E4, "HIDKeyboardModifierMappingDst": 0x7000000E7 }, { "HIDKeyboardModifierMappingSrc": 0x7000000E7, "HIDKeyboardModifierMappingDst": 0x7000000E4 } ]}'
-testing: warning: no tests to run
-PASS
-
+Installed successfully
 PC'fied
 
 Almost ready!

@@ -44,7 +44,7 @@ func Exists(command string) bool {
 		appSuffixRemoved := strings.ReplaceAll(command, ".app", "")
 		cmd := ExecCommand("mdfind", "-name", appSuffixRemoved)
 		output, _ := cmd.Output()
-		return strings.TrimSpace(string(output)) != ""
+		return anyLineEndsWith(string(output), command)
 	} else {
 		if os.Getenv("GO_WANT_HELPER_PROCESS") != "" {
 			return true

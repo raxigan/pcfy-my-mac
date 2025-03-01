@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -333,6 +334,25 @@ func fakeExecCommand(command string, args ...string) *exec.Cmd {
 	cs = append(cs, args...)
 	execCommand := exec.Command(os.Args[0], cs...)
 	return execCommand
+}
+
+func TestHelperProcess(t *testing.T) {
+	if os.Getenv("GO_WANT_HELPER_PROCESS") != "1" {
+		return
+	}
+
+	args := strings.Join(os.Args, "")
+	split := strings.Split(args, "--")
+	command := split[len(split)-1]
+
+	if strings.HasPrefix(command, "mdfind") {
+		format := os.Args[len(os.Args)-1]
+		fmt.Fprintf(os.Stdout, fmt.Sprintf("/Applications/%s.app", format))
+	} else {
+		fmt.Fprintf(os.Stdout, "")
+	}
+
+	os.Exit(0)
 }
 
 func captureOutput(f func() error) (string, error) {
