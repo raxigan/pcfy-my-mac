@@ -7,9 +7,11 @@ import (
 	"github.com/raxigan/pcfy-my-mac/cmd/common"
 	"github.com/raxigan/pcfy-my-mac/cmd/install"
 	"github.com/raxigan/pcfy-my-mac/cmd/param"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 type Task struct {
@@ -23,7 +25,7 @@ func DownloadDependencies() Task {
 		Execute: func(i install.Installation) error {
 
 			var notInstalled []string
-			var commands []string
+			var commands []Dependency
 
 			all := []Dependency{JqDependency(), KarabinerDependency(), AltTabDependency(), RectangleDependency()}
 
@@ -31,7 +33,7 @@ func DownloadDependencies() Task {
 				if !common.ExistsWithLog(d.command, func(x string) { i.TryLog(install.CmdMsg, x) }) {
 					i.TryLog(install.WarnMsg, fmt.Sprintf("%s app not found, it will be installed", d.name))
 					notInstalled = append(notInstalled, d.name)
-					commands = append(commands, d.installCommand)
+					commands = append(commands, d)
 				} else {
 					i.TryLog(install.WarnMsg, fmt.Sprintf("%s app is already installed", d.name))
 				}
@@ -52,12 +54,26 @@ func DownloadDependencies() Task {
 				}
 
 				for _, c := range commands {
-					i.Run(c)
+					i.Run(c.installCommand)
+					i.Progress()
+
+					err := common.Until(
+						func() bool {
+							i.Progress()
+							return common.Exists(c.command)
+						},
+						common.WithPollInterval(1000*time.Millisecond),
+						common.WithTimeout(60*time.Second),
+					)
+
+					if err != nil {
+						common.ExistsWithLog("Rectangle.app", func(x string) { i.TryLog(install.CmdMsg, x) })
+						log.Fatalf("Timed out: %v %s", err, c.name)
+					}
 				}
 			}
 
 			return nil
-
 		},
 	}
 }

@@ -22,8 +22,13 @@ func Launch(homeDir install.HomeDir, commander install.Commander, tp install.Tim
 
 func Install(i install.Installation) error {
 
+	installDeps := task.DownloadDependencies()
+	err := installDeps.Execute(i)
+	if err != nil {
+		return err
+	}
+
 	tasks := []task.Task{
-		task.DownloadDependencies(),
 		task.CloseKarabiner(),
 		task.BackupKarabinerConfig(),
 		task.DeleteExistingKarabinerProfile(),
@@ -49,6 +54,7 @@ func Install(i install.Installation) error {
 	}
 
 	for _, t := range tasks {
+		i.Commander.Progress()
 		i.Commander.TryLog(install.TaskMsg, t.Name)
 
 		err := t.Execute(i)

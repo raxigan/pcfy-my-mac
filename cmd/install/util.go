@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/raxigan/pcfy-my-mac/cmd/common"
 	"github.com/schollz/progressbar/v3"
+	"math/rand"
 	"os"
 	"os/exec"
 	"strings"
@@ -26,17 +27,21 @@ type Commander interface {
 	Run(command string)
 	Exit(code int)
 	TryLog(msgType LogMessage, text string)
+	Progress()
 }
 
 type DefaultCommander struct {
-	Verbose  bool
-	Progress *progressbar.ProgressBar
+	Verbose     bool
+	Progressbar *progressbar.ProgressBar
 }
 
 func NewDefaultCommander(verbose bool) *DefaultCommander {
 	return &DefaultCommander{
-		Verbose:  verbose,
-		Progress: progressbar.NewOptions(100, progressbar.OptionSetWidth(60)),
+		Verbose: verbose,
+		Progressbar: progressbar.DefaultBytes(
+			-1,
+			"installing",
+		),
 	}
 }
 
@@ -81,6 +86,12 @@ func (c *DefaultCommander) Exit(code int) {
 	os.Exit(code)
 }
 
+func (c *DefaultCommander) Progress() {
+	if !c.Verbose {
+		c.Progressbar.Add(rand.Intn(25000) + 1000)
+	}
+}
+
 var (
 	TaskMsg   = LogMessage{"TASK", common.Blue}
 	CmdMsg    = LogMessage{"CMD", common.Green}
@@ -103,8 +114,7 @@ func (c *DefaultCommander) TryLog(logMsg LogMessage, output string) {
 
 	if logMsg.msgType == ErrMsg.msgType || logMsg.msgType == StdErrMsg.msgType {
 		log(logMsg, output)
-	} else if !c.Verbose && c.Progress != nil {
-		c.Progress.Add(4)
+	} else if !c.Verbose {
 	} else if len(output) != 0 {
 		log(logMsg, output)
 	}
