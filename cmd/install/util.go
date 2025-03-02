@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/raxigan/pcfy-my-mac/cmd/common"
 	"github.com/schollz/progressbar/v3"
-	"math/rand"
 	"os"
 	"os/exec"
 	"strings"
@@ -37,11 +36,8 @@ type DefaultCommander struct {
 
 func NewDefaultCommander(verbose bool) *DefaultCommander {
 	return &DefaultCommander{
-		Verbose: verbose,
-		Progressbar: progressbar.DefaultBytes(
-			-1,
-			"installing",
-		),
+		Verbose:     verbose,
+		Progressbar: nil,
 	}
 }
 
@@ -88,7 +84,23 @@ func (c *DefaultCommander) Exit(code int) {
 
 func (c *DefaultCommander) Progress() {
 	if !c.Verbose {
-		c.Progressbar.Add(rand.Intn(25000) + 1000)
+		if c.Progressbar != nil {
+			c.Progressbar.Add(1)
+		} else {
+			c.Progressbar = progressbar.NewOptions64(
+				-1,
+				progressbar.OptionSetDescription("installing"),
+				progressbar.OptionSetWriter(os.Stderr),
+				progressbar.OptionSetWidth(10),
+				progressbar.OptionThrottle(65*time.Millisecond),
+				progressbar.OptionOnCompletion(func() {
+					fmt.Fprint(os.Stderr, "\n")
+				}),
+				progressbar.OptionSpinnerType(14),
+				progressbar.OptionFullWidth(),
+				progressbar.OptionSetRenderBlankState(true),
+			)
+		}
 	}
 }
 
