@@ -23,6 +23,7 @@ func Launch(homeDir install.HomeDir, commander install.Commander, tp install.Tim
 func Install(i install.Installation) error {
 
 	installDeps := task.DownloadDependencies()
+	i.Commander.TryLog(install.TaskMsg, installDeps.Name)
 	err := installDeps.Execute(i)
 	if err != nil {
 		return err
