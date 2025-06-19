@@ -348,9 +348,9 @@ func TestHelperProcess(t *testing.T) {
 
 	if strings.HasPrefix(command, "mdfind") {
 		format := os.Args[len(os.Args)-1]
-		fmt.Fprintf(os.Stdout, fmt.Sprintf("/Applications/%s.app", format))
+		fmt.Print("/Applications/" + format + ".app")
 	} else {
-		fmt.Fprintf(os.Stdout, "")
+		fmt.Print()
 	}
 
 	os.Exit(0)
