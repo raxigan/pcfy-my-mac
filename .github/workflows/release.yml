@@ -1,3 +1,4 @@
+# Only for tags not created by "Create Version Tag" workflow
 name: Release
 
 on:
