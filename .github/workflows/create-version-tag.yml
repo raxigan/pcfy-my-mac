@@ -17,6 +17,8 @@ on:
         required: false
         type: string
         default: 'Automated version bump'
+  push:
+    branches: [ feature/release-action ]
 
 jobs:
   create-tag:
