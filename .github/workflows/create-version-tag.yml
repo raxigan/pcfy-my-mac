@@ -12,11 +12,6 @@ on:
           - patch
           - minor
           - major
-      tag_message:
-        description: 'Tag message (optional)'
-        required: false
-        type: string
-        default: 'Automated version bump'
 
 jobs:
   create-tag:
@@ -30,7 +25,6 @@ jobs:
       - name: Get latest tag
         id: get_tag
         run: |
-          # Get the latest tag, default to v0.0.0 if no tags exist
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
           echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
           echo "Latest tag: $LATEST_TAG"
@@ -75,16 +69,3 @@ jobs:
           git push origin "$NEW_TAG"
           
           echo "Created and pushed tag: $NEW_TAG"
-
-#      - name: Create GitHub Release
-#        uses: actions/create-release@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          tag_name: ${{ steps.next_version.outputs.new_version }}
-#          release_name: Release ${{ steps.next_version.outputs.new_version }}
-#          body: |
-#            Version bump: ${{ inputs.version_type }}
-#            ${{ inputs.tag_message }}
-#          draft: false
-#          prerelease: false
