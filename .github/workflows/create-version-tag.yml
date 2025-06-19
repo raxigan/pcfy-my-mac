@@ -40,14 +40,12 @@ jobs:
         run: |
           LATEST_TAG="${{ steps.get_tag.outputs.latest_tag }}"
           VERSION_TYPE="${{ inputs.version_type }}"
-          
-          # Split version into parts
+
           IFS='.' read -r -a VERSION_PARTS <<< "$LATEST_TAG"
           MAJOR=${VERSION_PARTS[0]:-0}
           MINOR=${VERSION_PARTS[1]:-0}
           PATCH=${VERSION_PARTS[2]:-0}
-          
-          # Calculate next version based on type
+
           case $VERSION_TYPE in
             "major")
               MAJOR=$((MAJOR + 1))
