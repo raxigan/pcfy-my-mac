@@ -17,9 +17,6 @@ on:
         required: false
         type: string
         default: 'Automated version bump'
-  push:
-    branches:
-      - '*'
 
 jobs:
   create-tag:
