@@ -42,7 +42,7 @@ jobs:
           VERSION_TYPE="${{ inputs.version_type }}"
           
           # Split version into parts
-          IFS='.' read -r -a VERSION_PARTS <<< "LATEST_TAG"
+          IFS='.' read -r -a VERSION_PARTS <<< "$LATEST_TAG"
           MAJOR=${VERSION_PARTS[0]:-0}
           MINOR=${VERSION_PARTS[1]:-0}
           PATCH=${VERSION_PARTS[2]:-0}
