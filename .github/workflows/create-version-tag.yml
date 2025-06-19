@@ -1,0 +1,95 @@
+name: Create Version Tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Version bump type'
+        required: true
+        type: choice
+        default: 'patch'
+        options:
+          - patch
+          - minor
+          - major
+      tag_message:
+        description: 'Tag message (optional)'
+        required: false
+        type: string
+        default: 'Automated version bump'
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get latest tag
+        id: get_tag
+        run: |
+          # Get the latest tag, default to v0.0.0 if no tags exist
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "Latest tag: $LATEST_TAG"
+
+      - name: Calculate next version
+        id: next_version
+        run: |
+          LATEST_TAG="${{ steps.get_tag.outputs.latest_tag }}"
+          VERSION_TYPE="${{ inputs.version_type }}"
+          
+          # Remove 'v' prefix if present
+          VERSION=${LATEST_TAG#v}
+          
+          # Split version into parts
+          IFS='.' read -r -a VERSION_PARTS <<< "$VERSION"
+          MAJOR=${VERSION_PARTS[0]:-0}
+          MINOR=${VERSION_PARTS[1]:-0}
+          PATCH=${VERSION_PARTS[2]:-0}
+          
+          # Calculate next version based on type
+          case $VERSION_TYPE in
+            "major")
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            "minor")
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            "patch")
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+          
+          NEW_VERSION="v${MAJOR}.${MINOR}.${PATCH}"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "Next version: $NEW_VERSION"
+
+      - name: Create and push tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          NEW_TAG="${{ steps.next_version.outputs.new_version }}"
+          git tag -a "$NEW_TAG" -m "${{ inputs.tag_message }}"
+          git push origin "$NEW_TAG"
+          
+          echo "Created and pushed tag: $NEW_TAG"
+
+#      - name: Create GitHub Release
+#        uses: actions/create-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          tag_name: ${{ steps.next_version.outputs.new_version }}
+#          release_name: Release ${{ steps.next_version.outputs.new_version }}
+#          body: |
+#            Version bump: ${{ inputs.version_type }}
+#            ${{ inputs.tag_message }}
+#          draft: false
+#          prerelease: false
