@@ -41,11 +41,8 @@ jobs:
           LATEST_TAG="${{ steps.get_tag.outputs.latest_tag }}"
           VERSION_TYPE="${{ inputs.version_type }}"
           
-          # Remove 'v' prefix if present
-          VERSION=${LATEST_TAG#v}
-          
           # Split version into parts
-          IFS='.' read -r -a VERSION_PARTS <<< "$VERSION"
+          IFS='.' read -r -a VERSION_PARTS <<< "LATEST_TAG"
           MAJOR=${VERSION_PARTS[0]:-0}
           MINOR=${VERSION_PARTS[1]:-0}
           PATCH=${VERSION_PARTS[2]:-0}
@@ -66,7 +63,7 @@ jobs:
               ;;
           esac
           
-          NEW_VERSION="v${MAJOR}.${MINOR}.${PATCH}"
+          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "Next version: $NEW_VERSION"
 
