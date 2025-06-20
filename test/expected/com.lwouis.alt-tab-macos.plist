@@ -8,6 +8,8 @@
         <string>1</string>
         <key>appsToShow</key>
         <string>0</string>
+        <key>appearanceStyle</key>
+        <string>1</string>
         <key>blacklist</key>
         <string>[{"ignore":"0","bundleIdentifier":"com.spotify.client","hide":"1"},{"ignore":"0","bundleIdentifier":"com.apple.finder","hide":"1"},{"ignore":"0","bundleIdentifier":"com.apple.AppStore","hide":"1"}]</string>
         <key>crashPolicy</key>

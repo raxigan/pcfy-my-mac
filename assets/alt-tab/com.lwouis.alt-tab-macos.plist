@@ -8,6 +8,8 @@
         <string>1</string>
         <key>appsToShow</key>
         <string>0</string>
+        <key>appearanceStyle</key>
+        <string>1</string>
         <key>blacklist</key>
         <string>_BLACKLIST_</string>
         <key>crashPolicy</key>
