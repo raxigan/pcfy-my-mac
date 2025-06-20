@@ -27,13 +27,13 @@ You can think of this project as [Kinto](https://github.com/rbreaves/kinto), but
 
 ## Features
 
-- **Keyboard shortcuts:** keyboard shortcuts mappings for system and browser (Chromium-based) actions
-- **JetBrains tools keymaps:** battle-tested keymaps for JetBrains tools
-- **Quick application launching:** launch (or switch) applications quickly with just the Win/Opt key
-- **Window snapping:** snap windows using Win/Opt + ←/→ shortcut
-- **Better window switcher**: move between windows with Alt + Tab shortcut
-- **Everything works on any keyboard layout (you can use both the built-in Mac and external PC keyboards at the same
-  time)**
+- **Keyboard shortcuts** for system and browser (Chromium-based) actions
+- Battle-tested **JetBrains tools keymaps**
+- **Quick application launching** with the Win/Opt key - just like on PC (Menu Start)
+- **Snapping windows** using Win/Opt + ←/→/↑/↓ shortcut
+- **Better window switcher** - move between windows with Alt + Tab shortcut
+- **Everything works on any keyboard layout out of the box - you can use both the built-in Mac and external PC keyboards at the same
+  time**
 
 <img src=".docs/demo.gif" alt="demo" width="100%"/>
 
