@@ -74,6 +74,26 @@ func TestInstallWithPcKeyboardLayout(t *testing.T) {
 	test_utils.AssertFilesEqual(t, actual, expected)
 }
 
+func TestInstallWithIsoKeyboardType(t *testing.T) {
+
+	params := param.Params{
+		AppLauncher:    "none",
+		Terminal:       "none",
+		KeyboardLayout: "pc",
+		KeyboardType:   "iso",
+		Keymaps:        []string{},
+		Blacklist:      []string{},
+		SystemSettings: []string{},
+	}
+
+	home, _, _ := runInstaller(t, params)
+
+	actual := home.KarabinerConfigFile()
+	expected := "expected/karabiner-iso-keyboard-type.json"
+
+	test_utils.AssertFilesEqual(t, actual, expected)
+}
+
 func TestInstallWithUnknownKeyboardLayout(t *testing.T) {
 
 	params := param.Params{

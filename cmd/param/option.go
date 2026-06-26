@@ -17,6 +17,10 @@ const (
 	PC   = "PC"
 	Mac  = "Mac"
 	None = "None"
+
+	ANSI = "ansi"
+	ISO  = "iso"
+	JIS  = "jis"
 )
 
 type IDE struct {
@@ -53,7 +57,7 @@ func PyCharmCE() IDE {
 func PyCharm() IDE {
 	return IDE{
 		KeymapsDir:     "Library/Application Support/JetBrains/PyCharm{version}/keymaps",
-		FullName:       "PyCharm Professional Edition",
+		FullName:       "PyCharm",
 		SrcKeymapsFile: "idea.xml",
 	}
 }

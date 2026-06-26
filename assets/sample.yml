@@ -1,6 +1,7 @@
 app-launcher: spotlight # or launchpad, alfred, none
 terminal: default # or iterm, warp, none
 keyboard-layout: pc # or mac, none
+keyboard-type: ansi # or iso, jis
 system-settings: # or empty: []
   - enable-dock-auto-hide-2s-delay
   - change-Dock-minimize-animation-to-scale
@@ -11,7 +12,7 @@ system-settings: # or empty: []
 keymaps: # or empty: []
   - IntelliJ IDEA Ultimate
   - IntelliJ IDEA Community Edition
-  - PyCharm Professional Edition
+  - PyCharm
   - PyCharm Community Edition
   - Android Studio
   - Fleet

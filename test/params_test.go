@@ -65,6 +65,17 @@ func TestInstallInvalidKeyboardLayout(t *testing.T) {
 		mac`)
 }
 
+func TestInstallInvalidKeyboardType(t *testing.T) {
+
+	yml := test_utils.Trim(`keyboard-type: unknown`)
+	_, err := param.CollectYamlParams(yml)
+
+	test_utils.AssertErrorContains(t, err, `Invalid param 'keyboard-type' value/s 'unknown', valid values:
+		ansi
+		iso
+		jis`)
+}
+
 func TestReadParamsFromYmlFile(t *testing.T) {
 
 	params, _ := param.CollectParams("assets/params.yml")

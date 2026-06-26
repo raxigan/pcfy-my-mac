@@ -126,6 +126,14 @@ func CreateKarabinerProfile() Task {
 		Name: "Create new Karabiner profile",
 		Execute: func(i install.Installation) error {
 			copyFile("karabiner/karabiner-profile.json", "tmp", i)
+
+			keyboardType := strings.ToLower(i.KeyboardType)
+			if keyboardType == "" {
+				common.ReplaceWordInFile("tmp", ",\n    \"keyboard_type_v2\": \"$keyboard-type\"", "")
+			} else {
+				common.ReplaceWordInFile("tmp", "$keyboard-type", keyboardType)
+			}
+
 			addProfileJqCmd := fmt.Sprintf("jq '.profiles += $profile' %s --slurpfile profile tmp --indent 4 >INPUT.tmp && mv INPUT.tmp %s && rm tmp", i.KarabinerConfigFile(), i.KarabinerConfigFile())
 			i.Run(addProfileJqCmd)
 			return nil
