@@ -98,7 +98,7 @@ For Mac keyboard layout:
   Alt + Tab                   # Switch to next window
   Alt + Shift                 # Switch to previous window (only when switcher is opened)
   Win + Left/Right            # Snap window to left/right
-  Win + Up/Down               # Maximixe/almost maximize window
+  Win + Up/Down               # Maximize/almost maximize window
   Ctrl + Left/Right           # Move to previous/next word
   Ctrl + Shift + Left/Right   # Select previous/next word
   Home/End                    # Move to beginning/end of line
@@ -131,7 +131,7 @@ For Mac keyboard layout:
   Ctrl + Shift + Z            # Redo
   Win + L                     # Lock screen
   F2                          # Rename file in Finder
-  F3/Shift + F3               # Move to next/previous ocurrence in text
+  F3/Shift + F3               # Move to next/previous occurrence in text
   Alt + F4                    # Quit application
   F5                          # Reload page in browser
   Win                         # Open preferred application launcher
@@ -185,7 +185,7 @@ Also check if **Modify events** option for your keyboard is enabled in *Karabine
 
 ## Acknowledgments
 
-- [@tezeko](https://github.com/tekezo) for [Karabiner-Elements](https://karabiner-elements.pqrs.org/)
+- [@tekezo](https://github.com/tekezo) for [Karabiner-Elements](https://karabiner-elements.pqrs.org/)
 - [@lwouis](https://github.com/lwouis) for [AltTab](https://alt-tab-macos.netlify.app/)
 - [@rxhanson](https://github.com/rxhanson) for [Rectangle](https://rectangleapp.com/)
 - [@rux616](https://github.com/rux616) for [karabiner-windows-mode](https://github.com/rux616/karabiner-windows-mode)
