@@ -27,15 +27,22 @@ You can think of this project as [Kinto](https://github.com/rbreaves/kinto), but
 
 ## Features
 
-- **Keyboard shortcuts** for system and browser (Chromium-based) actions
-- Battle-tested **JetBrains tools keymaps**
-- **Quick application launching** with the Win/Opt key - just like on PC (Menu Start)
+- **PC-style keyboard shortcuts** for system, text editing and browser (Chromium-based) actions - `Ctrl+C`/`Ctrl+V`, word navigation, `Home`/`End`, `Alt+F4` and many more
+- Battle-tested **JetBrains tools keymaps** (IntelliJ IDEA, PyCharm, GoLand, Android Studio, Fleet)
+- **Quick application launching** with the Win/Opt key - just like the Start menu on PC
 - **Snapping windows** using Win/Opt + ←/→/↑/↓ shortcut
-- **Better window switcher** - move between windows with Alt + Tab shortcut
+- **Better window switcher** - move between windows with the Alt + Tab shortcut
+- **Configurable** app launcher (Spotlight, Launchpad or Alfred) and terminal (Apple Terminal, iTerm, Warp or Wave)
+- Optional **macOS quality-of-life tweaks** - Dock auto-hide, Finder improvements, enabling the `Home`/`End` keys and more
 - **Everything works on any keyboard layout out of the box - you can use both the built-in Mac and external PC keyboards at the same
   time**
 
 <img src=".docs/demo.gif" alt="demo" width="100%"/>
+
+## Requirements
+
+- **macOS** (Apple Silicon or Intel)
+- The required apps - [Karabiner-Elements](https://karabiner-elements.pqrs.org/), [AltTab](https://alt-tab-macos.netlify.app/), [Rectangle](https://rectangleapp.com/) and `jq` - are **installed automatically** via [Homebrew](https://brew.sh/) if missing (you'll be asked for confirmation first)
 
 ## Installation
 
@@ -80,6 +87,27 @@ go run pcfy.go
 | **--show-sample-yaml**    | Show sample YAML config which can be used as the input for above flag                                                                              |
 | **--verbose**             | Enable verbose mode. All performed operations will be logged out to console                                                                        |
 | **--version**             | Show version information                                                                                                                           |
+
+## Configuration
+
+The tool can be run in two ways:
+
+- **Interactive mode** - just run `pcfy-my-mac` and answer the on-screen prompts.
+- **Non-interactive mode** - pass a YAML file with `--params my-config.yml` to run the whole setup unattended (handy for reproducible setups across machines). Generate a starting point with `pcfy-my-mac --show-sample-yaml`.
+
+Every parameter is optional - anything you omit is asked for interactively (except `keyboard-type`, which is available through the YAML file only).
+
+| Parameter          | Description                                                                 | Allowed values                                                                                                  |
+|--------------------|-----------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|
+| `app-launcher`     | Application opened with the Win/Opt key                                      | `spotlight`, `launchpad`, `alfred`, `none`                                                                      |
+| `terminal`         | Terminal opened with `Ctrl + Alt + T`                                       | `default` (Apple Terminal), `iterm`, `warp`, `wave`, `none`                                                     |
+| `keyboard-layout`  | Layout of your external keyboard, used to adjust the setup                  | `pc`, `mac`, `none`                                                                                             |
+| `keyboard-type`    | Physical keyboard type written to the Karabiner virtual keyboard (omit to keep Karabiner's default) | `ansi`, `iso`, `jis`                                                                  |
+| `system-settings`  | Optional macOS tweaks to apply                                              | Dock auto-hide, Dock minimize animation, `Home`/`End` keys, Finder improvements (see the sample YAML)           |
+| `keymaps`          | JetBrains IDEs to install the keymap for                     | `IntelliJ IDEA Ultimate`, `IntelliJ IDEA Community Edition`, `PyCharm`, `PyCharm Community Edition`, `GoLand`, `Android Studio`, `Fleet` |
+| `blacklist`        | App bundle identifiers to hide from the AltTab window switcher              | e.g. `com.spotify.client`, `com.apple.finder`                                                                   |
+
+> Your existing Karabiner-Elements configuration is backed up before any changes are made, so you can always revert.
 
 ## Shortcut list
 
@@ -175,7 +203,7 @@ Also check if **Modify events** option for your keyboard is enabled in *Karabine
 
 - **Problem**: On pressing '~' (tilde), § (section sign) is entered instead. This might happen if your external keyboard and the built-in one are of different types: ANSI/ISO/JIS
 
-**Solution**: Ensure **ANSI** keyboard type is selected in `Karabiner Elements` → `Virtual Keyboard`
+**Solution**: Set the matching keyboard type (usually **ANSI**) - either via the [`keyboard-type`](#configuration) parameter, or manually in `Karabiner-Elements` → `Virtual Keyboard`
 
 ![karabiner-virtual-kb.png](.docs/karabiner-virtual-kb.png)
 
