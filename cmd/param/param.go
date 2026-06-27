@@ -13,6 +13,7 @@ type Params struct {
 	AppLauncher    string
 	Terminal       string
 	KeyboardLayout string
+	KeyboardType   string
 	Keymaps        []string
 	SystemSettings []string
 	Blacklist      []string
@@ -22,6 +23,7 @@ type FileParams struct {
 	AppLauncher    *string `yaml:"app-launcher"`
 	Terminal       *string
 	KeyboardLayout *string `yaml:"keyboard-layout"`
+	KeyboardType   *string `yaml:"keyboard-type"`
 	Keymaps        *[]string
 	SystemSettings *[]string `yaml:"system-settings"`
 	Blacklist      *[]string
@@ -86,6 +88,13 @@ func CollectYamlParams(yml string) (FileParams, error) {
 			return nil
 		},
 		func() error {
+			if fp.KeyboardType != nil {
+				return ValidateParamValues("keyboard-type", &[]string{*fp.KeyboardType}, []string{ANSI, ISO, JIS})
+			}
+
+			return nil
+		},
+		func() error {
 			return ValidateParamValues("ides", fp.Keymaps, IdeKeymapOptions())
 		},
 		func() error {
@@ -101,6 +110,7 @@ func CollectYamlParams(yml string) (FileParams, error) {
 		AppLauncher:    fp.AppLauncher,
 		Terminal:       fp.Terminal,
 		KeyboardLayout: fp.KeyboardLayout,
+		KeyboardType:   fp.KeyboardType,
 		Keymaps:        fp.Keymaps,
 		SystemSettings: fp.SystemSettings,
 		Blacklist:      fp.Blacklist,
@@ -151,6 +161,7 @@ func CollectSurveyParams(fileParams FileParams) Params {
 		AppLauncher:    common.GetOrDefaultString(fp.AppLauncher, fileParams.AppLauncher),
 		Terminal:       common.GetOrDefaultString(fp.Terminal, fileParams.Terminal),
 		KeyboardLayout: common.GetOrDefaultString(fp.KeyboardLayout, fileParams.KeyboardLayout),
+		KeyboardType:   common.GetOrDefaultString(fp.KeyboardType, fileParams.KeyboardType),
 		Keymaps:        common.GetOrDefaultSlice(fp.Keymaps, fileParams.Keymaps),
 		Blacklist:      common.GetOrDefaultSlice(fp.Blacklist, fileParams.Blacklist),
 		SystemSettings: common.GetOrDefaultSlice(fp.SystemSettings, fileParams.SystemSettings),
